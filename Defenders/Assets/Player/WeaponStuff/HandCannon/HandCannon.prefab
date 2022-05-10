@@ -189,3 +189,4 @@ MonoBehaviour:
   returnSpeed: 2
   clipSize: 8
   bulletCost: 3
+  gunAnims: {fileID: 22100000, guid: 97332f63b1ebe4144befec8c3a5e9ad6, type: 2}

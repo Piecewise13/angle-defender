@@ -61,6 +61,7 @@ MonoBehaviour:
   returnSpeed: 2
   clipSize: 30
   bulletCost: 1
+  gunAnims: {fileID: 22100000, guid: 0c52af83e161f41c79d51fd0fa617175, type: 2}
 --- !u!1 &9218556060212924031
 GameObject:
   m_ObjectHideFlags: 0

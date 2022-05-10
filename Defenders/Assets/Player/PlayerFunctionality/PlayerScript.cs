@@ -10,6 +10,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] private Transform groundCheck;
     private MouseLook lookScript;
     private WeaponInventoryManager weaponManager;
+    public Animator animator;
 
     /*
      * HUD SCRIPTS
@@ -26,6 +27,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] private float jumpHeight;
     private float forwardValue;
     private float sideValue;
+    private bool canJump;
 
     private Vector3 moveDir;
     private float gravity = -9.81f;
@@ -59,6 +61,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
         weaponManager = GetComponent<WeaponInventoryManager>();
+        animator = GetComponent<Animator>();
 
         upgradeTree.gameObject.SetActive(false);
     }
@@ -76,7 +79,17 @@ public class PlayerScript : MonoBehaviour, Damageable
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
+            canJump = true;
+            animator.SetBool("isFalling", false);
         }
+
+        if (velocity.y < 0 && !isGrounded)
+        {
+            animator.SetBool("isFalling", true);
+        }
+
+
+
         if (canMove)
         {
             forwardValue = Input.GetAxis("Vertical");
@@ -84,14 +97,24 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
             moveDir = forwardValue * transform.forward + sideValue * transform.right;
-
+            if (!moveDir.Equals(Vector3.zero))
+            {
+                animator.SetBool("isWalking", true);
+            } else
+            {
+                animator.SetBool("isWalking", false);
+                
+            }
             controller.Move(moveDir * movementSpeed * Time.deltaTime);
 
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") && canJump)
             {
 
-
+                canJump = false;
                 velocity.y = jumpHeight;
+                
+                animator.SetTrigger("isJumping");
+                animator.SetBool("isFalling", true);
             }
 
         }
@@ -179,8 +202,14 @@ public class PlayerScript : MonoBehaviour, Damageable
             Cursor.lockState = CursorLockMode.Locked;
             lookScript.setCanLook(true);
             canMove = true;
+
             weaponManager.canShoot(true);
         }
+    }
+
+    public void ChangeWeaponAnimationOverride(AnimatorOverrideController overrideController)
+    {
+        animator.runtimeAnimatorController = overrideController;
     }
 
     public void takeDamage(float damage, Collider hitCollider)

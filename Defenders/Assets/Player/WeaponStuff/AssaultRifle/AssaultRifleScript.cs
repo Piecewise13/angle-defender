@@ -79,6 +79,15 @@ public class AssaultRifleScript : BasicWeaponScript
             }
             setupTimer += Time.deltaTime;
         }
+
+        if (isReloading)
+        {
+            if (reloadDuration + startReloadTime < Time.time)
+            {
+                isReloading = false;
+                canShoot = true;
+            }
+        }
     }
 
     public IEnumerator spawnTrail(TrailRenderer trail, RaycastHit hit)
@@ -111,7 +120,7 @@ public class AssaultRifleScript : BasicWeaponScript
 
     public override void EquipGun()
     {
-        //animator stuff
+        
         setUp = true;
         canShoot = false;
         transform.localPosition = Vector3.zero;

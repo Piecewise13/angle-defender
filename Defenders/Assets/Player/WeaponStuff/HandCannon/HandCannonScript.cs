@@ -69,6 +69,15 @@ public class HandCannonScript : BasicWeaponScript
             }
             setupTimer += Time.deltaTime;
         }
+
+        if (isReloading)
+        {
+            if (reloadDuration + startReloadTime < Time.time)
+            {
+                isReloading = false;
+                canShoot = true;
+            }
+        }
     }
 
     public IEnumerator spawnTrail(TrailRenderer trail, RaycastHit hit)

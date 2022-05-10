@@ -51,10 +51,12 @@ public class WeaponInventoryManager : MonoBehaviour
         }
         weaponIndex = index;
         weapons[weaponIndex].SetActive(true);
-        playerAnimator.SetTrigger("newGun");
+        
+        
 
         try{
             equipedWeapon = weapons[weaponIndex].GetComponent<BasicWeaponScript>();
+            playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
             //BasicWeaponScript.damageMultiplier = damageMultiplier;
         } catch
@@ -62,7 +64,7 @@ public class WeaponInventoryManager : MonoBehaviour
 
         }
 
-
+        playerAnimator.SetTrigger("newGun");
     }
 
     public void canShoot(bool value)

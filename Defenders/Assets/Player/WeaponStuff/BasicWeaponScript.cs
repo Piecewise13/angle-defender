@@ -36,8 +36,14 @@ public abstract class BasicWeaponScript : MonoBehaviour
     protected int currentNumOfBullets;
     protected static int bulletsCarried = 100;
     [SerializeField]protected int bulletCost;
+    public AnimatorOverrideController gunAnims;
+    protected static float reloadDuration = 2.5f;
+    protected bool isReloading;
+    protected float startReloadTime; 
 
     protected static HUDScript hud;
+    protected Animator playerAnimator;
+    protected static PlayerScript player;
 
     protected float setupTimer;
     
@@ -48,6 +54,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     void Start()
     {
         playerCamera = gameObject.GetComponentInParent<Camera>();
+        playerAnimator = GetComponentInParent<Animator>();
         hud = GameObject.FindObjectOfType<HUDScript>();
         UpdateHUD();
         cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
@@ -81,6 +88,10 @@ public abstract class BasicWeaponScript : MonoBehaviour
        
         bulletsCarried -= (clipSize - currentNumOfBullets) * bulletCost;
         currentNumOfBullets = clipSize;
+        canShoot = false;
+        isReloading = true;
+        startReloadTime = Time.time;
+        playerAnimator.SetTrigger("reloadGun");
         UpdateHUD();
     }
 
