@@ -10,7 +10,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     protected NavMeshAgent agent;
     protected static EggScript eggScript;
     protected static GameObject egg;
-    protected static PlayerScript player;
     protected static ResourceSpawner resourceSpawner;
 
     public float health { get; set; }
@@ -21,7 +20,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     // Start is called before the first frame update
     protected void initValues()
     {
-        player = FindObjectOfType<PlayerScript>();
         resourceSpawner = FindObjectOfType<ResourceSpawner>();
         eggScript = FindObjectOfType<EggScript>();
         egg = eggScript.transform.root.gameObject;
@@ -32,8 +30,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     
 
-    public abstract void takeDamage(float damage, Collider hitCollider);
-   
+    public abstract void takeDamage(float damage, Collider hitCollider);   
 
     public abstract void death();
 
