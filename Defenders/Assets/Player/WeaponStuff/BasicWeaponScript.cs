@@ -34,7 +34,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     //Reload and Bullet Stuff
     public int clipSize;
     protected int currentNumOfBullets;
-    protected static int bulletsCarried = 100;
+    protected static int bulletsCarried = 20;
     [SerializeField]protected int bulletCost;
     public AnimatorOverrideController gunAnims;
     protected static float reloadDuration = 2.5f;
@@ -85,9 +85,23 @@ public abstract class BasicWeaponScript : MonoBehaviour
 
     public void Reload()
     {
-       
-        bulletsCarried -= (clipSize - currentNumOfBullets) * bulletCost;
-        currentNumOfBullets = clipSize;
+        if (bulletsCarried <= 0)
+        {
+            bulletsCarried = 0;
+            return;
+        }
+        print((clipSize - currentNumOfBullets) * bulletCost);
+       if ((clipSize - currentNumOfBullets) * bulletCost > bulletsCarried)
+        {
+            print("testing run");
+            currentNumOfBullets += bulletsCarried / bulletCost;
+            bulletsCarried = bulletsCarried % bulletCost;
+        } else
+        {
+            bulletsCarried -= (clipSize - currentNumOfBullets) * bulletCost;
+            currentNumOfBullets = clipSize;
+        }
+
         canShoot = false;
         isReloading = true;
         startReloadTime = Time.time;
