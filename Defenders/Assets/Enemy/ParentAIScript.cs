@@ -11,7 +11,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     protected static EggScript eggScript;
     protected static GameObject egg;
     protected static ResourceSpawner resourceSpawner;
-
+    [SerializeField] protected float maxHealth;
     public float health { get; set; }
     public bool isDead { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
@@ -20,6 +20,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     // Start is called before the first frame update
     protected void initValues()
     {
+        health = maxHealth;
         resourceSpawner = FindObjectOfType<ResourceSpawner>();
         eggScript = FindObjectOfType<EggScript>();
         egg = eggScript.transform.root.gameObject;

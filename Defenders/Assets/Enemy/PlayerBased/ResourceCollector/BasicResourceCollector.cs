@@ -8,7 +8,7 @@ public class BasicResourceCollector : ParentAIScript
     private GameObject targetResource;
     private Damageable targetScript;
     
-    public float maxHealth;
+    
     public float headDamageMultiplier;
 
     public float resourceCollectionDelay;

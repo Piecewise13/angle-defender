@@ -17,11 +17,11 @@ public class WeaponSway : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxisRaw("MouseX") * swayMultiplier;
-        float mouseY = Input.GetAxisRaw("MouseY") * swayMultiplier;
+        float mouseX = Input.GetAxisRaw("Mouse X") * -swayMultiplier;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * -swayMultiplier;
 
         Quaternion rotX = Quaternion.AngleAxis(-mouseY, Vector3.right);
-        Quaternion rotY = Quaternion.AngleAxis(mouseX, Vector3.up);
+        Quaternion rotY = Quaternion.AngleAxis(mouseX , Vector3.up);
 
         Quaternion targetRotation = rotX * rotY;
 

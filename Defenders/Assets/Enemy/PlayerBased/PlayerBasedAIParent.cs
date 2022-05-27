@@ -7,6 +7,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 
     protected PlayerScript player;
 
+
     private static PlayerScript[] players;
 
     private void Awake()
