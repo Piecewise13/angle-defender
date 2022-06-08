@@ -9,6 +9,10 @@ public class WeaponInventoryManager : MonoBehaviour
     public GameObject weaponRoot;
     private BasicWeaponScript equipedWeapon;
 
+
+
+
+    private PlayerScript player;
     private int weaponIndex;
 
     public int unlockedTier = 0;
@@ -22,6 +26,7 @@ public class WeaponInventoryManager : MonoBehaviour
     void Start()
     {
         buildingScript = GetComponent<BuildingScript>();
+        player = GetComponentInChildren<PlayerScript>();
     }
 
     // Update is called once per frame
@@ -58,6 +63,7 @@ public class WeaponInventoryManager : MonoBehaviour
             equipedWeapon = weapons[weaponIndex].GetComponent<BasicWeaponScript>();
             playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
+            //equipedWeapon.SetPlayer(player);
             //BasicWeaponScript.damageMultiplier = damageMultiplier;
         } catch
         {
@@ -71,6 +77,9 @@ public class WeaponInventoryManager : MonoBehaviour
     {
         weapons[weaponIndex].GetComponent<BasicWeaponScript>().setCanShoot(value);
     }
+
+
+
 
     public void GiveNewGun(GameObject gun, int weaponTier)
     {

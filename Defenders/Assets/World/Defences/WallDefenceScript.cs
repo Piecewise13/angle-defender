@@ -7,6 +7,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 {
     public ResourceType type;
 
+    public static Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 
     
 
@@ -35,6 +36,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         
     }
 
+
     
 
 
@@ -44,7 +46,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         health -= damage;
     }
 
-    public void takeDamage(float damage, Collider hitCollider)
+    public void TakeDamage(float damage, Collider hitCollider)
     {
         if (!isDead)
         {
@@ -53,12 +55,12 @@ public class WallDefenceScript : MonoBehaviour, Damageable
             //print("Wall taking damage health: " + health);
             if (health <= 0.0f)
             {
-                death();
+                Death();
             }
         }
     }
 
-    public void death()
+    public void Death()
     {
 
         //print(wallMesh.activeSelf);

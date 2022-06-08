@@ -59,7 +59,7 @@ public class BasicResourceCollector : ParentAIScript
             anim.SetBool("isCollecting", true);
             if (lastAttackTime + resourceCollectionDelay < Time.time)
             {
-                targetScript.takeDamage(attackDamage, null);
+                targetScript.TakeDamage(attackDamage, null);
                 lastAttackTime = Time.time;
             }
         }
@@ -152,9 +152,8 @@ public class BasicResourceCollector : ParentAIScript
 
 
 
-    public override void death()
+    public override void Death()
     {
-        print(collectedAmount);
         if (collectedAmount > 0)
         {
             switch (collectedResource)
@@ -178,12 +177,12 @@ public class BasicResourceCollector : ParentAIScript
     }
 
 
-    public override void reachedEgg()
+    public override void ReachedEgg()
     {
         throw new System.NotImplementedException();
     }
 
-    public override void takeDamage(float damage, Collider hitCollider)
+    public override void TakeDamage(float damage, Collider hitCollider)
     {
         
         if (hitCollider.gameObject.tag.Equals("Head"))
@@ -198,7 +197,7 @@ public class BasicResourceCollector : ParentAIScript
         if (health <= 0f)
         {
             
-            death();
+            Death();
         }
     }
 }

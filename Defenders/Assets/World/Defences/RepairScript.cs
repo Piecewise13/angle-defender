@@ -15,6 +15,7 @@ public class RepairScript : MonoBehaviour
     public int cost;
     public float repairAmount;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,12 +43,15 @@ public class RepairScript : MonoBehaviour
             }
         }
     }
+
+    
+
     public void repair()
     {
         if (lastRepairTime + timeDelay < Time.time)
         {
 
-            if (player.getResourceAmount(wallDefence.type) >= cost)
+            if (CanAfford())
             {
                 if (wallDefence.health <= 0)
                 {
@@ -58,7 +62,7 @@ public class RepairScript : MonoBehaviour
                         wallDefence.Rebuild();
                         wallDefence.health += repairAmount;
                         print(gameObject.name + " health: " + wallDefence.health);
-                        player.updateResourceAmount(wallDefence.type, -cost);
+                        ChargePlayer();
                     }
 
                 } else
@@ -72,13 +76,44 @@ public class RepairScript : MonoBehaviour
                     {
                         wallDefence.health += repairAmount;
                         print(gameObject.name + " health: " + wallDefence.health);
-                        player.updateResourceAmount(wallDefence.type, -cost);
+                        ChargePlayer();
                     }
                 }
 
 
             }
+            else
+            {
+                print("Can't Affor");
+                //PLAY SOUND
+            }
             lastRepairTime = Time.time;
         }
     }
+
+
+    private bool CanAfford()
+    {
+
+        for (int i = 0; i < (int)ResourceType.Count; i++)
+        {
+            print(i + ", " + (ResourceType)i);
+            if (player.GetResourceAmount((ResourceType)i) < WallDefenceScript.cost[(ResourceType)i])
+            {
+                
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void ChargePlayer()
+    {
+        for (int i = 0; i < (int)ResourceType.Count; i++)
+        {
+            player.SetResourceAmount((ResourceType)i, -WallDefenceScript.cost[(ResourceType)i]);
+        }
+    }
+    
 }

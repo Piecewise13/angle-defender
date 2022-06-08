@@ -13,33 +13,7 @@ public class HandCannonScript : BasicWeaponScript
             if (currentNumOfBullets != 0) {
                 if (shootDelay + lastShootTime < Time.time)
                 {
-                    RaycastHit hit;
-                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layer))
-                    {
-                        TrailRenderer trail = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-
-                        StartCoroutine(spawnTrail(trail, hit));
-                        try
-                        {
-                            Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
-
-
-                            hitGameobject.takeDamage(damage, hit.collider);
-                        }
-
-                        catch (System.Exception)
-                        {
-
-                        }
-
-
-                    }
-
-                    lastShootTime = Time.time;
-                    currentNumOfBullets -= 1;
-                    UpdateHUD();
-
-                    Recoil();
+                    Shoot();
 
                 }
             } else
@@ -49,12 +23,27 @@ public class HandCannonScript : BasicWeaponScript
 
 
         }
+
         ControlRecoil();
 
         if(Input.GetButtonDown("Reload") && currentNumOfBullets != clipSize)
         {
             Reload();
             //PLAY RELOAD ANIM
+        }
+
+
+        /*
+         * AIMING STUFF
+         */ 
+        if (Input.GetButtonDown("Fire2") && canShoot)
+        {
+            StartAim();
+        }
+
+        if (Input.GetButtonUp("Fire2") && canShoot)
+        {
+            StopAim();
         }
 
         if (setUp)
@@ -65,38 +54,16 @@ public class HandCannonScript : BasicWeaponScript
                 setUp = false;
                 canShoot = true;
                 setupTimer = 0;
-                print("set up");
             }
             setupTimer += Time.deltaTime;
         }
 
         if (isReloading)
         {
-            if (reloadDuration + startReloadTime < Time.time)
-            {
-                isReloading = false;
-                canShoot = true;
-            }
+            FinishReload();
         }
     }
 
-    public IEnumerator spawnTrail(TrailRenderer trail, RaycastHit hit)
-    {
-        float time = 0;
-        Vector3 startPosition = trail.transform.position;
-
-        while (time < 1)
-        {
-            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
-            time += Time.deltaTime / trail.time;
-            yield return null;
-        }
-        //animator.SetBool("isShooting", false);
-        trail.transform.position = hit.point;
-        //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
-        Destroy(trail.gameObject, trail.time);
-
-    }
 
     public override void EquipGun()
     {
@@ -104,7 +71,6 @@ public class HandCannonScript : BasicWeaponScript
         setUp = true;
         canShoot = false;
         transform.localPosition = Vector3.zero;
-        UpdateHUD();
         //print(transform.localPosition);
     }
 }

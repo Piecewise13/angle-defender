@@ -25,7 +25,7 @@ public class IngotScript : MonoBehaviour
         if (other.gameObject.transform.root.gameObject.tag.Equals("Player"))
         {
             PlayerScript player = other.gameObject.transform.root.gameObject.GetComponent<PlayerScript>();
-            player.updateResourceAmount(type, amount);
+            player.SetResourceAmount(type, amount);
             Destroy(gameObject);
         } else if (other.gameObject.transform.root.gameObject.tag.Equals("Enemy"))
         {

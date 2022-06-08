@@ -5,12 +5,23 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour, Damageable
 {
+
+    /*
+     * PLAYER COMPONENTS VARS
+     */
     public CharacterController controller;
     public Camera playerCamera;
     [SerializeField] private Transform groundCheck;
     private MouseLook lookScript;
     private WeaponInventoryManager weaponManager;
     public Animator animator;
+
+    /*
+     * WEAPON VARS
+     */
+    private float defaultFov;
+    [SerializeField] private int soulFire;
+    [SerializeField] private int maxSoulFire;
 
     /*
      * HUD SCRIPTS
@@ -64,6 +75,8 @@ public class PlayerScript : MonoBehaviour, Damageable
         animator = GetComponent<Animator>();
 
         upgradeTree.gameObject.SetActive(false);
+        defaultFov = playerCamera.fieldOfView;
+
     }
 
     // Update is called once per frame
@@ -123,44 +136,21 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         controller.Move(velocity * Time.deltaTime);
         #endregion
+
+
+
+
     }
 
-    public void updateResourceAmount(ResourceType type, int amount)
+
+    public void ChangeCameraZoom(float amount)
     {
-        switch (type)
-        {
-            case ResourceType.Wood:
-                woodAmount += amount;
-                break;
-            case ResourceType.Iron:
-                ironAmount += amount;
-                break;
-
-            case ResourceType.Diamond:
-                diamondAmount += amount;
-                break;
-
-        }
-        hudScript.UpdateResourceValues();
-        hudScript.ResoucesChangeFade(type, amount);
+        playerCamera.fieldOfView = defaultFov / amount;
     }
 
-    public int getResourceAmount (ResourceType type){
 
-        switch (type)
-        {
-            case ResourceType.Wood:
-                return woodAmount;
-                
-            case ResourceType.Iron:
-                return ironAmount;
-                
-            case ResourceType.Diamond:
-                return diamondAmount;
-            
-        }
-        return -1;
-    }
+
+
 
     //public void upgradeTreeOpen(bool isOpen)
     //{
@@ -207,15 +197,87 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
+
+
     public void ChangeWeaponAnimationOverride(AnimatorOverrideController overrideController)
     {
         animator.runtimeAnimatorController = overrideController;
     }
 
-    public void takeDamage(float damage, Collider hitCollider)
+    public void TakeDamage(float damage, Collider hitCollider)
     {
         throw new System.NotImplementedException();
     }
 
-    public void death() { }
+    public void Death() { }
+
+
+    /*
+     * GET AND SET VARS
+     */
+    #region
+    public void SetResourceAmount(ResourceType type, int delta)
+    {
+        switch (type)
+        {
+            case ResourceType.Wood:
+                woodAmount += delta;
+                break;
+            case ResourceType.Iron:
+                ironAmount += delta;
+                break;
+
+            case ResourceType.Diamond:
+                diamondAmount += delta;
+                break;
+
+        }
+        if (delta == 0)
+        {
+            return;
+        }
+        hudScript.UpdateResourceValues();
+        hudScript.ResoucesChangeFade(type, delta);
+    }
+
+    public int GetResourceAmount(ResourceType type)
+    {
+
+        switch (type)
+        {
+            case ResourceType.Wood:
+                return woodAmount;
+
+            case ResourceType.Iron:
+                return ironAmount;
+
+            case ResourceType.Diamond:
+                return diamondAmount;
+
+        }
+        return -1;
+    }
+
+    public int GetSoulFire()
+    {
+        return soulFire;
+    }
+
+    public void SetSoulFire(int delta)
+    {
+        soulFire += delta;
+        hudScript.UpdateSoulFireValues();
+    }
+
+
+    public void SetSoulFireMax(int delta)
+    {
+        maxSoulFire += delta;
+    }
+
+    public int GetSoulFireMax()
+    {
+        return maxSoulFire;
+    }
+    #endregion
 }

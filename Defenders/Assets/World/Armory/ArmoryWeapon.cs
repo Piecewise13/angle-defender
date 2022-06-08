@@ -12,12 +12,12 @@ public class ArmoryWeapon : MonoBehaviour, Damageable
     [SerializeField] private GameObject gun;
     public int wallTier;
 
-    public void death()
+    public void Death()
     {
         throw new System.NotImplementedException();
     }
 
-    public void takeDamage(float damage, Collider hitCollider)
+    public void TakeDamage(float damage, Collider hitCollider)
     {
         //print("hit " + hitCollider + ", gun: " + this.gun);
         //print("Weapon Rack: " + gun);

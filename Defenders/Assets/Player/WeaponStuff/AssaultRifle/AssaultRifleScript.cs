@@ -6,10 +6,9 @@ public class AssaultRifleScript : BasicWeaponScript
 {
 
     
-    TrailRenderer trailObject;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         //Shoot weapon
         if (Input.GetButton("Fire1") && canShoot)
@@ -18,42 +17,22 @@ public class AssaultRifleScript : BasicWeaponScript
             {
                 if (shootDelay + lastShootTime < Time.time)
                 {
-                    //print("shooting");
-
-                    RaycastHit hit;
-                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layer))
-                    {
-                        trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-                        //print("hit gameobject: " + hit.collider.gameObject);
-                        StartCoroutine(spawnTrail(trailObject, hit));
-                        try
-                        {
-
-                            Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
-                            //print("damageable gameobject: " + hitGameobject);
-
-
-                            hitGameobject.takeDamage(damage * (1 + damageMultiplier), hit.collider);
-                            //print(damage * damageMultiplier);
-
-                        }
-                        catch (System.Exception)
-                        {
-
-                        }
-
-
-                    }
-
-                    lastShootTime = Time.time;
-                    Recoil();
-                    currentNumOfBullets -= 1;
-                    UpdateHUD();
+                    Shoot();
                 }
             } else
             {
                 //play out of bullets sound
             }
+        }
+
+        if (Input.GetButtonDown("Fire2") && canShoot)
+        {
+            StartAim();
+        }
+
+        if (Input.GetButtonUp("Fire2") && canShoot)
+        {
+            StopAim();
         }
 
         //bring recoil back to center
@@ -62,7 +41,6 @@ public class AssaultRifleScript : BasicWeaponScript
         if (Input.GetButtonDown("Reload") && currentNumOfBullets != clipSize)
         {
             Reload();
-            //play animation
         }
 
 
@@ -82,41 +60,12 @@ public class AssaultRifleScript : BasicWeaponScript
 
         if (isReloading)
         {
-            if (reloadDuration + startReloadTime < Time.time)
-            {
-                isReloading = false;
-                canShoot = true;
-            }
+            FinishReload();
         }
     }
 
-    public IEnumerator spawnTrail(TrailRenderer trail, RaycastHit hit)
-    {
-        float time = 0;
-        Vector3 startPosition = trail.transform.position;
 
-        while(time < 1)
-        {
-            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
-            time += Time.deltaTime / trail.time;
-            yield return null;
-        }
-        //animator.SetBool("isShooting", false);
-        trail.transform.position = hit.point;
-        //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
-        Destroy(trail.gameObject, trail.time);
-        
-    }
 
-    private void OnDestroy()
-    {
-        if (trailObject != null)
-        {
-            Destroy(trailObject.gameObject);
-            
-        }
-
-    }
 
     public override void EquipGun()
     {

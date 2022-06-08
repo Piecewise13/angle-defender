@@ -6,6 +6,7 @@ public class BulletForge : MonoBehaviour
 {
     private bool playerEnter;
     public PlayerScript player;
+    public WeaponInventoryManager inventory;
 
     private int bulletsProduced;
 
@@ -54,6 +55,7 @@ public class BulletForge : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             player = other.gameObject.GetComponentInParent<PlayerScript>();
+            inventory = other.gameObject.GetComponentInParent<WeaponInventoryManager>();
             playerEnter = true;
             ReplenishBullets();
         }
@@ -74,7 +76,6 @@ public class BulletForge : MonoBehaviour
     {
 
             bulletsProduced += bulletAmount;
-            print("produced : " + bulletsProduced);
         
     }
 
@@ -82,10 +83,8 @@ public class BulletForge : MonoBehaviour
     {
         if (bulletsProduced > 0)
         {
-            print("gave bullets: " + bulletsProduced);
             
-            player.hudScript.BulletsChangeFade(bulletsProduced);
-            BasicWeaponScript.ChangeBulletsCarried(bulletsProduced);
+            player.SetSoulFire(bulletsProduced);
             bulletsProduced = 0;
         }
 
@@ -97,7 +96,7 @@ public class BulletForge : MonoBehaviour
         inMenu = !inMenu;
         bulletForgeUI.SetActive(inMenu);
         player.openUIElement(inMenu);
-        player.updateResourceAmount(ResourceType.Iron, -amount);
+        player.SetResourceAmount(ResourceType.Iron, -amount);
     }
 
     public void UpgradeForge(int upgradeAmount)

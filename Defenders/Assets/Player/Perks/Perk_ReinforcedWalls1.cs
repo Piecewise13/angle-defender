@@ -6,7 +6,10 @@ public class Perk_ReinforcedWalls1 : ParentPerkScript
 {
     public override void UnlockUpgrade()
     {
-        print("unlockingWalls");
+        WallDefenceScript.cost.Clear();
+        WallDefenceScript.cost.Add(ResourceType.Wood, 20);
+        WallDefenceScript.cost.Add(ResourceType.Iron, 0);
+        WallDefenceScript.cost.Add(ResourceType.Diamond, 0);
     }
 
     // Start is called before the first frame update

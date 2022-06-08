@@ -133,22 +133,22 @@ public class LungerScript : PlayerBasedAIParent
     }
 
 
-    public override void death()
+    public override void Death()
     {
         Destroy(gameObject);
     }
 
-    public override void reachedEgg()
+    public override void ReachedEgg()
     {
         throw new System.NotImplementedException();
     }
 
-    public override void takeDamage(float damage, Collider hitCollider)
+    public override void TakeDamage(float damage, Collider hitCollider)
     {
         health -= damage;
         if (health <= 0)
         {
-            death();
+            Death();
         }
     }
 

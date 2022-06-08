@@ -23,17 +23,15 @@ public class HUDScript : MonoBehaviour
     public RectTransform diamondChangePos;
     public GameObject changeValue;
 
-    
+
 
 
 
     [Header("Player Variables")]
-    public TMP_Text currentHealth;
-    public TMP_Text maxHealth;
-    public TMP_Text currentBullets;
-    public TMP_Text maxBullets;
+    public Slider healthSlider;
+    public Slider soulFireSlider;
+    private float previousSoulFire;
 
-    public TMP_Text bulletCarried;
 
 
     // Start is called before the first frame update
@@ -41,6 +39,7 @@ public class HUDScript : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>();
         UpdateResourceValues();
+        UpdateSoulFireValues();
         UpdateHealth();
     }
 
@@ -50,39 +49,27 @@ public class HUDScript : MonoBehaviour
         
     }
 
-    public void UpdateBulletValues(int maxNum, int currentNum)
+    public void UpdateSoulFireValues()
     {
-        currentBullets.text = currentNum.ToString();
-        maxBullets.text = "/" + maxNum.ToString();
-        UpdateBulletValues();
 
-    }
-    public void UpdateBulletValues()
-    {
-        bulletCarried.text = BasicWeaponScript.NumBulletsCarried().ToString();
-        
+        soulFireSlider.value = (float)player.GetSoulFire() / (float)player.GetSoulFireMax();
 
     }
 
     public void UpdateHealth()
     {
-        maxHealth.text = "/" + player.maxHealth.ToString();
-        currentHealth.text =  (player.health.ToString());
+
     }
 
 
     public void UpdateResourceValues()
     {
 
-        woodText.text = player.getResourceAmount(ResourceType.Wood).ToString();
-        ironText.text = player.getResourceAmount(ResourceType.Iron).ToString();
-        diamondText.text = player.getResourceAmount(ResourceType.Diamond).ToString();
+        woodText.text = player.GetResourceAmount(ResourceType.Wood).ToString();
+        ironText.text = player.GetResourceAmount(ResourceType.Iron).ToString();
+        diamondText.text = player.GetResourceAmount(ResourceType.Diamond).ToString();
     }
 
-    public void BulletsChangeFade(int amount)
-    {
-        Instantiate(changeValue, bulletCarried.rectTransform.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
-    }
 
     public void ResoucesChangeFade(ResourceType resource, int amount)
     {

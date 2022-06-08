@@ -113,7 +113,7 @@ public class EggScript : MonoBehaviour
         } else if (other.gameObject.tag.Equals("Enemy"))
         {
             ParentAIScript enemyScript = GetComponent<ParentAIScript>();
-            enemyScript.reachedEgg();
+            enemyScript.ReachedEgg();
             eggHealth -= enemyScript.health;
             if (eggHealth <= 0)
             {

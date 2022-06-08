@@ -21,15 +21,15 @@ public class GlobalCodeObjects : MonoBehaviour
 
 public interface Damageable
 {
-    void takeDamage(float damage, Collider hitCollider);
-    void death();
+    void TakeDamage(float damage, Collider hitCollider);
+    void Death();
 
     float health { get; set;}
     bool isDead { get; set; }
     
 }
 
-public enum upgradeType
+public enum UpgradeType
 {
     Defence,
     Player,

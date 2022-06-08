@@ -37,10 +37,9 @@ public class RocketLauncher : BasicWeaponScript
                 
                 lastShootTime = Time.time;
                 currentNumOfBullets -= 1;
-                UpdateHUD();
                 //spawn stuff
 
-                Recoil();
+                AddRecoil();
             }
 
         }

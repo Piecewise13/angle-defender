@@ -16,6 +16,7 @@ public class ResourceSpawner : MonoBehaviour
 
     public float range = 10.0f;
 
+
     [Header("Resources")]
     public GameObject ironResource;
     public GameObject woodResource;
@@ -58,7 +59,7 @@ public class ResourceSpawner : MonoBehaviour
 
 
 
-    bool RandomPoint(Vector3 center, float range, out Vector3 result)
+    bool RandomPoint(Vector3 center, float range, out Vector3 result, out Vector3 normal)
     {
         for (int i = 0; i < 30; i++)
         {
@@ -71,11 +72,16 @@ public class ResourceSpawner : MonoBehaviour
                 {
                     
                     result = hit.position;
+                    normal = hit.normal;
+                    
                     return true;
                 }
             }
         }
+
         result = Vector3.zero;
+        normal = Vector3.zero;
+
         return false;
     }
 
@@ -91,8 +97,9 @@ public class ResourceSpawner : MonoBehaviour
     GameObject spawnResource()
     {
         Vector3 randomPoint;
+        Vector3 normal;
 
-        while (!RandomPoint(Vector3.zero, range, out randomPoint))
+        while (!RandomPoint(Vector3.zero, range, out randomPoint, out normal))
         {
             
         }
@@ -102,17 +109,17 @@ public class ResourceSpawner : MonoBehaviour
         if (randomNum < diamondChance)
         {
 
-            return Instantiate(diamondResource, randomPoint, Quaternion.Euler(0f, Random.value * 360f, 0f));
+            return Instantiate(diamondResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal));
 
 
         }
         else if (randomNum < ironChance)
         {
-            return Instantiate(ironResource, randomPoint, Quaternion.Euler(0f, Random.value * 360f, 0f));
+            return Instantiate(ironResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal));
         }
         else
         {
-            return (Instantiate(woodResource, randomPoint, Quaternion.Euler(0f, Random.value * 360f, 0f)));
+            return (Instantiate(woodResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal)));
         }
 
         

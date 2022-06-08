@@ -61,7 +61,7 @@ public class BulletForgeUI : MonoBehaviour
 
     public void OnEnable()
     {
-        ironAmount = ((int)forge.player.getResourceAmount(ResourceType.Iron));
+        ironAmount = ((int)forge.player.GetResourceAmount(ResourceType.Iron));
         currentIron.text = ironAmount.ToString();
         sliderMaxValue.text = ironAmount.ToString();
 

@@ -15,12 +15,15 @@ public abstract class BasicWeaponScript : MonoBehaviour
     //Bullet Tracer 
     public TrailRenderer bulletTrail;
     public GameObject bulletSpawnPoint;
+    protected TrailRenderer trailObject;
 
     //Shoot Speed Stuff
     public float shootDelay;
     protected float lastShootTime;
     [SerializeField] protected float weaponSetUpTime;
     protected bool setUp = true;
+
+    [SerializeField] protected float adsZoom;
 
     //Recoil Vars
     protected Camera playerCamera;
@@ -34,16 +37,18 @@ public abstract class BasicWeaponScript : MonoBehaviour
     //Reload and Bullet Stuff
     public int clipSize;
     protected int currentNumOfBullets;
-    protected static int bulletsCarried = 20;
+
     [SerializeField]protected int bulletCost;
     public AnimatorOverrideController gunAnims;
     protected static float reloadDuration = 2.5f;
     protected bool isReloading;
-    protected float startReloadTime; 
+    protected float startReloadTime;
+    protected ParticleSystem bulletSystem;
 
     protected static HUDScript hud;
     protected Animator playerAnimator;
-    protected static PlayerScript player;
+    protected PlayerScript player;
+    protected WeaponInventoryManager inventory;
 
     protected float setupTimer;
     
@@ -55,12 +60,17 @@ public abstract class BasicWeaponScript : MonoBehaviour
     {
         playerCamera = gameObject.GetComponentInParent<Camera>();
         playerAnimator = GetComponentInParent<Animator>();
+        player = GetComponentInParent<PlayerScript>();
         hud = GameObject.FindObjectOfType<HUDScript>();
-        UpdateHUD();
-        cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
+        bulletSystem = GetComponentInChildren<ParticleSystem>();
+        inventory = GetComponentInParent<WeaponInventoryManager>();
         currentNumOfBullets = clipSize;
+        cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
+        
+
         EquipGun();
     }
+
 
     // Update is called once per frame
     protected void ControlRecoil()
@@ -71,7 +81,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
         cameraRotator.transform.localRotation = Quaternion.Euler(currentRotation);
     }
 
-    protected void Recoil()
+    protected void AddRecoil()
     {
         targetRotation += new Vector3(recoilAmount.x,
     Random.Range(-recoilAmount.y, recoilAmount.y),
@@ -83,51 +93,143 @@ public abstract class BasicWeaponScript : MonoBehaviour
         canShoot = value;
     }
 
+    protected void Shoot()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layer))
+        {
+            trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
+            //print("hit gameobject: " + hit.collider.gameObject);
+            StartCoroutine(SpawnTrail(trailObject, hit));
+            try
+            {
+
+                Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
+                //print("damageable gameobject: " + hitGameobject);
+
+
+                hitGameobject.TakeDamage(damage * (1 + damageMultiplier), hit.collider);
+                //print(damage * damageMultiplier);
+
+            }
+            catch (System.Exception)
+            {
+
+            }
+
+
+        }
+
+        lastShootTime = Time.time;
+        AddRecoil();
+        currentNumOfBullets -= 1;
+        UpdateParticleSystem();
+
+    }
+
     public void Reload()
     {
-        if (bulletsCarried <= 0)
+        StopAim();
+        int numBullets = player.GetSoulFire();
+        if (numBullets <= 0)
         {
-            bulletsCarried = 0;
+            numBullets = 0;
             return;
         }
-        print((clipSize - currentNumOfBullets) * bulletCost);
-       if ((clipSize - currentNumOfBullets) * bulletCost > bulletsCarried)
+        if (numBullets < bulletCost)
+        {
+            return;
+        }
+       if ((clipSize - currentNumOfBullets) * bulletCost > numBullets)
         {
             print("testing run");
-            currentNumOfBullets += bulletsCarried / bulletCost;
-            bulletsCarried = bulletsCarried % bulletCost;
+            currentNumOfBullets += numBullets / bulletCost;
+            player.SetSoulFire(-numBullets + (numBullets % bulletCost));
         } else
         {
-            bulletsCarried -= (clipSize - currentNumOfBullets) * bulletCost;
+            player.SetSoulFire(-1 * (clipSize - currentNumOfBullets) * bulletCost);
             currentNumOfBullets = clipSize;
         }
 
         canShoot = false;
         isReloading = true;
         startReloadTime = Time.time;
-        playerAnimator.SetTrigger("reloadGun");
-        UpdateHUD();
+        playerAnimator.SetBool("isReloading", true);
+
+        bulletSystem.transform.localScale = Vector3.one;
+
     }
 
-    protected void UpdateHUD()
+    protected void FinishReload()
     {
-        hud.UpdateBulletValues(clipSize, currentNumOfBullets);
+        if (reloadDuration + startReloadTime < Time.time)
+        {
+            playerAnimator.SetBool("isReloading", false);
+            isReloading = false;
+            canShoot = true;
+        }
 
     }
+
+
+    public IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit)
+    {
+        float time = 0;
+        Vector3 startPosition = trail.transform.position;
+
+        while (time < 1)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
+            time += Time.deltaTime / trail.time;
+            yield return null;
+        }
+        //animator.SetBool("isShooting", false);
+        trail.transform.position = hit.point;
+        //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
+        Destroy(trail.gameObject, trail.time);
+
+    }
+
+    protected void UpdateParticleSystem()
+    {
+        bulletSystem.transform.localScale = Vector3.Lerp( Vector3.one * .1f, Vector3.one, (float)currentNumOfBullets / (float)clipSize);
+        
+        
+        
+    }
+
+
+
+    public void SetPlayer(PlayerScript script)
+    {
+        player = script;
+    }
+
+    protected void StartAim()
+    {
+        playerAnimator.SetBool("isAiming", true);
+
+        //player.ChangeCameraZoom(adsZoom);
+    }
+
+    protected void StopAim()
+    {
+        playerAnimator.SetBool("isAiming", false);
+        player.ChangeCameraZoom(1f);
+    }
+
+    private void OnDestroy()
+    {
+        StopAim();
+        if (trailObject != null)
+        {
+            Destroy(trailObject.gameObject);
+
+        }
+
+    }
+
 
 
     public abstract void EquipGun();
-
-    public static void ChangeBulletsCarried(int amount)
-    {
-        
-        bulletsCarried += amount;
-        hud.UpdateBulletValues();
-
-    }
-
-    public static int NumBulletsCarried()
-    {
-        return bulletsCarried;
-    }
 }

@@ -37,7 +37,7 @@ public class BasicEnemyScript : ParentAIScript
                 if (!targetObject.isDead)
                 {
                     
-                    targetObject.takeDamage(attackDamage, hitCollider);
+                    targetObject.TakeDamage(attackDamage, hitCollider);
                     timeLastAttack = Time.time;
                     
                     timeLastAttack = Time.time;
@@ -121,22 +121,22 @@ public class BasicEnemyScript : ParentAIScript
 
 
 
-    public override void death()
+    public override void Death()
     {
         Destroy(gameObject.transform.root.gameObject);
     }
 
-    public override void takeDamage(float damage, Collider hitCollider)
+    public override void TakeDamage(float damage, Collider hitCollider)
     {
         health -= damage;
         
         if (health <= 0)
         {
-            death();
+            Death();
         }
     }
 
-    public override void reachedEgg()
+    public override void ReachedEgg()
     {
         
     }

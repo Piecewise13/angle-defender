@@ -99,7 +99,7 @@ public class BuildingScript : MonoBehaviour
                 if (hit.collider)
                 {
                     if (!isUpgrading) {
-                        if (playerScript.getResourceAmount(ResourceType.Wood) >= buildingCost) {
+                        if (playerScript.GetResourceAmount(ResourceType.Wood) >= buildingCost) {
                             if (hit.collider.tag.Equals(buildingTag))
                             {
 
@@ -118,7 +118,7 @@ public class BuildingScript : MonoBehaviour
                                 if (Input.GetButtonDown("Fire1") && validPlacement)
                                 {
                                     Instantiate(blockArray[blockIndex], blockMarker.transform.position, blockMarker.transform.rotation);
-                                    playerScript.updateResourceAmount(ResourceType.Wood, -buildingCost);
+                                    playerScript.SetResourceAmount(ResourceType.Wood, -buildingCost);
                                     hit.collider.gameObject.SetActive(false);
                                 }
 

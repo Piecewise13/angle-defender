@@ -32,18 +32,18 @@ public class ResourceScript : MonoBehaviour, Damageable
         
     }
 
-    public void takeDamage(float damage, Collider hitCollider)
+    public void TakeDamage(float damage, Collider hitCollider)
     {
         health -= damage;
         model.material.SetFloat("_CrackValue", Mathf.Lerp(1.5f, 0, health / resourceHealth));
         if (health <= 0)
         {
-            death();
+            Death();
 
         }
     }
 
-    public void death()
+    public void Death()
     {
         spawner.removeResource(gameObject);
         dropResource();
@@ -56,5 +56,6 @@ public enum ResourceType
 {
     Wood,
     Iron,
-    Diamond
+    Diamond,
+    Count
 }

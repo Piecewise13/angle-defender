@@ -31,10 +31,10 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     
 
-    public abstract void takeDamage(float damage, Collider hitCollider);   
+    public abstract void TakeDamage(float damage, Collider hitCollider);   
 
-    public abstract void death();
+    public abstract void Death();
 
-    public abstract void reachedEgg();
+    public abstract void ReachedEgg();
 
 }

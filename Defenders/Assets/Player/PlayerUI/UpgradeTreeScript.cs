@@ -59,12 +59,12 @@ public class UpgradeTreeScript : MonoBehaviour
     {
         if (!focusedPerk.unlocked)
         {
-            if (hasEnough(focusedPerk))
+            if (CanAfford(focusedPerk))
             {
                 
-                player.updateResourceAmount(ResourceType.Wood, -focusedPerk.woodCost);
-                player.updateResourceAmount(ResourceType.Iron, -focusedPerk.ironCost);
-                player.updateResourceAmount(ResourceType.Diamond, -focusedPerk.diamondCost);
+                player.SetResourceAmount(ResourceType.Wood, -focusedPerk.woodCost);
+                player.SetResourceAmount(ResourceType.Iron, -focusedPerk.ironCost);
+                player.SetResourceAmount(ResourceType.Diamond, -focusedPerk.diamondCost);
                 focusedPerk.UnlockUpgrade();
             }
             else
@@ -79,11 +79,11 @@ public class UpgradeTreeScript : MonoBehaviour
         }
     }
 
-    private bool hasEnough(ParentPerkScript perk)
+    private bool CanAfford(ParentPerkScript perk)
     {
-        if(player.getResourceAmount(ResourceType.Wood) > perk.woodCost ||
-            player.getResourceAmount(ResourceType.Iron) > perk.ironCost ||
-            player.getResourceAmount(ResourceType.Diamond) > perk.diamondCost)
+        if(player.GetResourceAmount(ResourceType.Wood) >= perk.woodCost &&
+            player.GetResourceAmount(ResourceType.Iron) >= perk.ironCost &&
+            player.GetResourceAmount(ResourceType.Diamond) >= perk.diamondCost)
         {
             return true;
         }
