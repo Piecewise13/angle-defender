@@ -23,6 +23,12 @@ public class ResourceScript : MonoBehaviour, Damageable
     {
         health = resourceHealth;
         spawner = FindObjectOfType<ResourceSpawner>();
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 10f))
+        {
+            transform.position = hit.point;
+            transform.rotation = Quaternion.FromToRotation(transform.up, hit.normal);
+        }
         
     }
 

@@ -130,14 +130,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 50
+  attackDamage: 0
+  playerRange: 0
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  updatePlayerLocDelay: 0
   lungeDist: 20
   maxLungeTime: 2
   maxHeight: 4
   wall:
     serializedVersion: 2
     m_Bits: 512
-  damage: 10
-  attackTime: 2
+  attackDelay: 0
   playerTransform: {fileID: 0}
 --- !u!54 &4200042102207599216
 Rigidbody:
@@ -167,7 +172,7 @@ GameObject:
   - component: {fileID: 4200042103579748169}
   - component: {fileID: 4200042103579748168}
   - component: {fileID: 4200042103579748175}
-  m_Layer: 3
+  m_Layer: 11
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

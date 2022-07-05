@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 773950903832838979}
   - component: {fileID: 6587041332866203739}
   - component: {fileID: 2996492396297954591}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BulletParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4821,7 +4821,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7339140332679707683}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BulletSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4853,7 +4853,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7339140334374079919}
   - component: {fileID: 7339140334374079918}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HandCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4989,10 +4989,45 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -8391222552659086748, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -6733177361254619370, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -5568371526223589888, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -516098083770646512, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 46b412411ad257b419e291e8e5e067c3,
         type: 3}
       propertyPath: m_Name
       value: HandCannon
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5148817236446094103, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8821623529969584324, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46b412411ad257b419e291e8e5e067c3, type: 3}

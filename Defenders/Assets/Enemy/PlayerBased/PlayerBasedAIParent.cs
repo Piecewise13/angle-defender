@@ -6,14 +6,16 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 {
 
     protected PlayerScript player;
+    [SerializeField]protected float playerRange;
+    [SerializeField] protected LayerMask playerMask;
 
 
     private static PlayerScript[] players;
 
     private void Awake()
     {
+        initValues();
         players = FindObjectsOfType<PlayerScript>();
-
     }
 
     
@@ -25,6 +27,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
     }
 
     public abstract void PlayerFound(PlayerScript player);
+    public abstract void PlayerLost(PlayerScript player);
 
     protected PlayerScript ClosestPlayer(Vector3 postion)
     {
@@ -32,7 +35,8 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         float currentDistance = float.MaxValue;
         for (int i = 0; i < players.Length; i++)
         {
-            if (Vector3.Distance(postion, players[i].transform.position) < currentDistance)
+            float distance = Vector3.Distance(postion, players[i].transform.position);
+            if (distance < currentDistance && distance < playerRange)
             {
                 closestIndex = i;
             }

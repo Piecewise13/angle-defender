@@ -39,7 +39,7 @@ public class RepairScript : MonoBehaviour
                 {
                     player = other.GetComponentInParent<PlayerScript>();
                     repair();
-                }
+                } 
             }
         }
     }
@@ -55,10 +55,8 @@ public class RepairScript : MonoBehaviour
             {
                 if (wallDefence.health <= 0)
                 {
-                    print("start");
                     if (startRebuildTime + rebuildDelay < Time.time)
                     {
-                        print("end");
                         wallDefence.Rebuild();
                         wallDefence.health += repairAmount;
                         print(gameObject.name + " health: " + wallDefence.health);
@@ -67,7 +65,7 @@ public class RepairScript : MonoBehaviour
 
                 } else
                 {
-                    if (wallDefence.health > wallDefence.maxHealth)
+                    if (wallDefence.health >= wallDefence.maxHealth)
                     {
                         wallDefence.health = wallDefence.maxHealth;
                         print("rebuilt all the way");
@@ -84,7 +82,7 @@ public class RepairScript : MonoBehaviour
             }
             else
             {
-                print("Can't Affor");
+                print("Can't Afford");
                 //PLAY SOUND
             }
             lastRepairTime = Time.time;

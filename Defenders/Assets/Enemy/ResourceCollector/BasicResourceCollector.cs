@@ -5,19 +5,19 @@ using UnityEngine;
 public class BasicResourceCollector : ParentAIScript
 {
 
+    #region OldVars
     private GameObject targetResource;
+    public ResourceType targetType;
     private Damageable targetScript;
-    
-    
+
+
     public float headDamageMultiplier;
 
     public float resourceCollectionDelay;
     private float lastAttackTime;
     private bool shouldCollect;
-    public float attackDamage;
-    public GameObject resourceBank;
     public ResourceType collectedResource;
-    public float collectedAmount;
+    public int collectedAmount;
 
     public GameObject woodIngot;
     public GameObject ironIngot;
@@ -26,15 +26,22 @@ public class BasicResourceCollector : ParentAIScript
     [SerializeField] private GameObject tool;
     private MeshFilter toolMesh;
 
-     public MeshFilter axeMesh;
-     public MeshFilter pickaxeMesh;
+    public MeshFilter axeMesh;
+    public MeshFilter pickaxeMesh;
 
     private Animator anim;
     float timer;
+    #endregion
+
+
+    static MonsterSpawnScript[] spawns;
+    private int monsterSpawnIndex;
+
+
 
 
     //test var
-    public ResourceType targetType;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -46,17 +53,22 @@ public class BasicResourceCollector : ParentAIScript
         toolMesh = tool.GetComponentInChildren<MeshFilter>();
         anim = GetComponent<Animator>();
         health = maxHealth;
-        assignTarget(targetType);
-
-        
+        spawns = FindObjectsOfType<MonsterSpawnScript>();
+        monsterSpawnIndex = Random.Range(0, spawns.Length);
+        AssignTarget(spawns[monsterSpawnIndex].neededResource);
     }
+
+
+
+
+    #region OldCode
 
     private void Update()
     {
         if (agent.remainingDistance <= 1f && shouldCollect && targetResource != null)
         {
-            
-            anim.SetBool("isCollecting", true);
+
+            anim.SetBool("isCollecting", shouldCollect);
             if (lastAttackTime + resourceCollectionDelay < Time.time)
             {
                 targetScript.TakeDamage(attackDamage, null);
@@ -72,7 +84,7 @@ public class BasicResourceCollector : ParentAIScript
                 if (timer >= 5f)
                 {
 
-                    assignTarget(targetType);
+                    AssignTarget(targetType);
 
                 }
                 timer += Time.deltaTime;
@@ -80,46 +92,22 @@ public class BasicResourceCollector : ParentAIScript
         }
     }
 
-    public GameObject findClosestResource(ResourceType type)
+
+
+    public void AssignTarget(ResourceType type)
     {
-        GameObject currentClosest = null;
-        float currentDistance = Mathf.Infinity;
-
-        
-        foreach (GameObject resource in resourceSpawner.resources)
-        {
-            
-            ResourceScript resourceScript = resource.GetComponentInChildren<ResourceScript>();
-            if (resourceScript.resource.Equals(type))
-            {
-                
-                float distance = Vector3.Distance(transform.position, resource.transform.position);
-                if (currentDistance > distance)
-                {
-                    
-                    currentClosest = resource;
-                    currentDistance = distance;
-                } 
-            }
-        }
-       
-        return currentClosest;
-    }
-
-
-    public void assignTarget(ResourceType type)
-    {
-        
-        shouldCollect = true;
-        timer = 0f;
-        targetResource = findClosestResource(type);
 
         targetType = type;
+        shouldCollect = true;
+        timer = 0f;
+        targetResource = resourceSpawner.GetClostestResourceOfType(transform.position, type);
+
+
         targetScript = targetResource.GetComponentInChildren<Damageable>();
-        agent.SetDestination(targetResource.transform.position);
+        agent.destination = (targetResource.transform.position);
         switch (type)
         {
-            case(ResourceType.Wood):
+            case (ResourceType.Wood):
                 toolMesh.sharedMesh = axeMesh.sharedMesh;
                 break;
             case (ResourceType.Iron):
@@ -129,26 +117,26 @@ public class BasicResourceCollector : ParentAIScript
         }
     }
 
-    public void collectResource(ResourceType type, float amount)
+    public void collectResource(ResourceType type, int amount)
     {
         //spawnresource in bag
         collectedResource = type;
         collectedAmount = amount;
-        shouldCollect = false;
         ReturnToBank();
-        
+
 
         //return to bank
     }
 
     public void ReturnToBank()
     {
-        agent.SetDestination(resourceBank.transform.position);
+        agent.destination = spawns[monsterSpawnIndex].transform.position;
         shouldCollect = false;
-        anim.SetBool("isCollecting", false);
+        anim.SetBool("isCollecting", shouldCollect);
     }
+    #endregion
 
-    
+
 
 
 

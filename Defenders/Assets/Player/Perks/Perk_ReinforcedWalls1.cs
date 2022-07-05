@@ -10,6 +10,7 @@ public class Perk_ReinforcedWalls1 : ParentPerkScript
         WallDefenceScript.cost.Add(ResourceType.Wood, 20);
         WallDefenceScript.cost.Add(ResourceType.Iron, 0);
         WallDefenceScript.cost.Add(ResourceType.Diamond, 0);
+        ParentAIScript.UpdateWalls();
     }
 
     // Start is called before the first frame update

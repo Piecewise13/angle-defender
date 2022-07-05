@@ -7,7 +7,6 @@ public class BasicEnemyScript : ParentAIScript
 {
     public float attackSpeed;
     private float timeLastAttack;
-    public float attackDamage;
 
     private Damageable targetObject;
     private Collider hitCollider;

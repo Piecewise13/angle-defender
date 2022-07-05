@@ -22,17 +22,19 @@ public class IngotScript : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //print(other.gameObject.transform.root.gameObject.tag);
-        if (other.gameObject.transform.root.gameObject.tag.Equals("Player"))
+        if (other.transform.root.gameObject.tag.Equals("Player"))
         {
-            PlayerScript player = other.gameObject.transform.root.gameObject.GetComponent<PlayerScript>();
+            PlayerScript player = other.gameObject.GetComponentInParent<PlayerScript>();
             player.SetResourceAmount(type, amount);
             Destroy(gameObject);
-        } else if (other.gameObject.transform.root.gameObject.tag.Equals("Enemy"))
+        } else if (other.transform.root.gameObject.tag.Equals("Enemy"))
         {
             try
             {
-                BasicResourceCollector resourceCollector = other.gameObject.transform.root.gameObject.GetComponentInChildren<BasicResourceCollector>();
+                BasicResourceCollector resourceCollector = other.gameObject.GetComponentInParent<BasicResourceCollector>();
+
                 resourceCollector.collectResource(type, amount);
+
                 Destroy(gameObject);
             }
             catch { }

@@ -48,17 +48,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a5d0fde0fbf24aa8baec22238bddf09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
-  resourceCollectionDelay: 0.2
+  maxHealth: 100
   attackDamage: 10
-  resourceBank: {fileID: 0}
+  targetType: 0
+  headDamageMultiplier: 1.5
+  resourceCollectionDelay: 0.2
   collectedResource: 0
   collectedAmount: 0
+  woodIngot: {fileID: 65139634805252677, guid: 5a12328b6d04e41eeb8d471ff8b8ec89, type: 3}
+  ironIngot: {fileID: 2660151081540602289, guid: 6c7b7818aa3ed45ec8c6cbd2b4e66408,
+    type: 3}
+  diamondIngot: {fileID: 4669785059525900011, guid: d0ce4a1129d244353aba397d5f0c6b27,
+    type: 3}
   tool: {fileID: 8753985415709229022}
   axeMesh: {fileID: 0}
   pickaxeMesh: {fileID: -5754084199372789682, guid: b51d714af409c4f3696291d15d43dbe6,
     type: 3}
-  targetType: 1
 --- !u!195 &8483953264820259677
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -344,6 +349,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: -3181452503744645242, guid: 18108d6a2374e4321994063a43a27983,
+        type: 3}
+      propertyPath: m_TagString
+      value: Body
+      objectReference: {fileID: 0}
     - target: {fileID: -3060337547385479149, guid: 18108d6a2374e4321994063a43a27983,
         type: 3}
       propertyPath: m_Layer
@@ -394,6 +404,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: -259972160606440404, guid: 18108d6a2374e4321994063a43a27983,
+        type: 3}
+      propertyPath: m_TagString
+      value: Head
+      objectReference: {fileID: 0}
     - target: {fileID: 284106650744130405, guid: 18108d6a2374e4321994063a43a27983,
         type: 3}
       propertyPath: m_Layer
@@ -408,6 +423,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 635547659545568360, guid: 18108d6a2374e4321994063a43a27983,
+        type: 3}
+      propertyPath: m_TagString
+      value: Body
       objectReference: {fileID: 0}
     - target: {fileID: 906860925323602227, guid: 18108d6a2374e4321994063a43a27983,
         type: 3}

@@ -18,7 +18,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     public bool isDead { get; set; }
 
     [SerializeField]private GameObject wallMesh;
-    public static NavMeshSurface navSurface;
     private NavMeshObstacle obstacle;
     
 
@@ -26,8 +25,11 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     void Start()
     {
         health = maxHealth;
-        navSurface = FindObjectOfType<NavMeshSurface>();
         obstacle = GetComponentInParent<NavMeshObstacle>();
+        cost.Clear();
+        cost.Add(ResourceType.Wood, 20);
+        cost.Add(ResourceType.Iron, 0);
+        cost.Add(ResourceType.Diamond, 0);
     }
 
     // Update is called once per frame
@@ -65,7 +67,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
         //print(wallMesh.activeSelf);
         wallMesh.SetActive(false);
-        navSurface.BuildNavMesh();
         obstacle.enabled = false;
         isDead = true;
         
@@ -76,7 +77,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         wallMesh.SetActive(true);
         obstacle.enabled = true;
         isDead = false;
-        navSurface.BuildNavMesh();
     }
 }
 

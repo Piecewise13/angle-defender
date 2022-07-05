@@ -108,20 +108,51 @@ public class ResourceSpawner : MonoBehaviour
         float randomNum = Random.value;
         if (randomNum < diamondChance)
         {
+            return Instantiate(diamondResource, randomPoint, Quaternion.Euler(Vector3.up * Random.Range(0f, 180f)));
 
-            return Instantiate(diamondResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal));
+            
 
 
         }
         else if (randomNum < ironChance)
         {
-            return Instantiate(ironResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal));
+            return Instantiate(ironResource, randomPoint, Quaternion.Euler(Vector3.up * Random.Range(0f, 180f)));
+
         }
         else
         {
-            return (Instantiate(woodResource, randomPoint, Quaternion.FromToRotation(Vector3.right, normal)));
+            
+            return (Instantiate(woodResource, randomPoint, Quaternion.Euler(Vector3.up * Random.Range(0f, 180f))));
         }
 
         
     }
+
+    public GameObject GetClostestResourceOfType(Vector3 refPos, ResourceType type)
+    {
+        GameObject currentClosest = null;
+        float currentDistance = Mathf.Infinity;
+
+
+        foreach (GameObject resource in resources)
+        {
+
+            ResourceScript resourceScript = resource.GetComponentInChildren<ResourceScript>();
+            if (resourceScript.resource.Equals(type))
+            {
+
+                float distance = Vector3.Distance(refPos, resource.transform.position);
+                if (currentDistance > distance)
+                {
+
+                    currentClosest = resource;
+                    currentDistance = distance;
+                }
+            }
+        }
+
+        return currentClosest;
+
+    }
+
 }

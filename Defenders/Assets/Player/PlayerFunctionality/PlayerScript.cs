@@ -32,7 +32,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     /**
      * MOVEMENT VARS
      */
-    #region
+    #region Movment Vars
     private bool canMove = true;
     [SerializeField] private float movementSpeed;
     [SerializeField] private float jumpHeight;
@@ -52,7 +52,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     /**
      * RESOURCE VAR
      */
-    #region
+    #region Resources Vars
     [SerializeField] private int woodAmount;
     [SerializeField] private int ironAmount;
     [SerializeField] private int diamondAmount;
@@ -76,6 +76,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
+        health = maxHealth;
 
     }
 
@@ -206,7 +207,9 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
-        throw new System.NotImplementedException();
+        health -= damage;
+        hudScript.UpdateHealth();
+        lookScript.ShakeCamera(damage);
     }
 
     public void Death() { }
@@ -215,7 +218,8 @@ public class PlayerScript : MonoBehaviour, Damageable
     /*
      * GET AND SET VARS
      */
-    #region
+    #region Get Set Functions
+
     public void SetResourceAmount(ResourceType type, int delta)
     {
         switch (type)

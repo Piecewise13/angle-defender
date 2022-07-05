@@ -18,7 +18,6 @@ public class LungerScript : PlayerBasedAIParent
     public LayerMask wall;
 
     [Header("Damage")]
-    [SerializeField] private float damage;
     [SerializeField] private float attackDelay;
     private float lastAttack;
     private bool isAttacking;
@@ -41,22 +40,13 @@ public class LungerScript : PlayerBasedAIParent
         rb = GetComponentInChildren<Rigidbody>();
         //initValues();
         agent = GetComponent<NavMeshAgent>();
+
+        InvokeRepeating("UpdatePath", 2f, 10f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (updatePlayerLocDelay + lastUpdatePlayerLoc < Time.time)
-        {
-            if (agent.isActiveAndEnabled)
-            {
-                lastUpdatePlayerLoc = Time.time;
-                print("new path");
-                UpdatePath();
-            }
-            
-            
-        }
 
         if (isAttacking)
         {
@@ -64,7 +54,7 @@ public class LungerScript : PlayerBasedAIParent
             if (lastAttack + attackDelay < Time.time)
             {
                 
-                //attackTarget.takeDamage(damage, null);
+                player.TakeDamage(attackDamage, null);
                 
                 lastAttack = Time.time;
                 print("attack");
@@ -73,27 +63,40 @@ public class LungerScript : PlayerBasedAIParent
         }
     }
 
+
     private void UpdatePath()
     {
-        NavMeshPath path = new NavMeshPath();
-        //print(agent);
-        agent.CalculatePath(playerTransform.position, path);
-        if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+        if (agent.isActiveAndEnabled)
         {
-            RaycastHit hit;
-            if (Physics.Linecast(transform.position, egg.transform.position, out hit, wall))
+            NavMeshPath path = new NavMeshPath();
+            //print(agent);
+            agent.CalculatePath(playerTransform.position, path);
+            if (agent.pathStatus != NavMeshPathStatus.PathComplete)
             {
-                agent.destination = hit.transform.position;
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, egg.transform.position, out hit, wall))
+                {
+                    agent.destination = hit.transform.position;
 
+                }
+            } else
+            {
+                agent.destination = playerTransform.position;
             }
-        } else
-        {
-            agent.destination = playerTransform.position;
         }
     }
 
 
+    private void CheckForPlayer()
+    {
+        Collider[] players = Physics.OverlapSphere(transform.position, playerRange, playerMask);
 
+        if (players.Length >= 1)
+        {
+            this.player = players[0].GetComponentInParent<PlayerScript>();
+            PlayerFound(player);
+        }
+    }
     
 
 
@@ -174,6 +177,10 @@ public class LungerScript : PlayerBasedAIParent
         StartCoroutine(lungeAction(playerTransform.position));
 
         
-    }   
-    
+    }
+
+    public override void PlayerLost(PlayerScript player)
+    {
+    }
+
 }

@@ -27,11 +27,11 @@ public class ResourceBank : MonoBehaviour
                 if (enemyScript.collectedAmount > 0)
                 {
                     
-                    enemyScript.collectedAmount = 0f;
+                    enemyScript.collectedAmount = 0;
                     //master.updateResourceAmount(enemyScript.collectedResource, enemyScript.collectedAmount);
                 }
 
-                enemyScript.assignTarget(ResourceType.Wood);
+                enemyScript.AssignTarget(ResourceType.Wood);
 
             }
             catch {
