@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Perk_ReinforcedWalls2 : ParentPerkScript
 {
-    public override void UnlockUpgrade()
+    public override void UnlockUpgrade(PlayerScript player)
     {
         WallDefenceScript.cost.Clear();
         WallDefenceScript.cost.Add(ResourceType.Wood, 40);
@@ -13,11 +13,6 @@ public class Perk_ReinforcedWalls2 : ParentPerkScript
         ParentAIScript.UpdateWalls();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()

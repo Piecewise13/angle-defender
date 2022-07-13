@@ -16,7 +16,7 @@ public class MouseLook : MonoBehaviour
     public CameraShaker shaker;
 
 
-    private bool canLook = true;
+    [SerializeField]private bool canLook = true;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,7 @@ public class MouseLook : MonoBehaviour
         if (canLook) {
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-
+            
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
@@ -52,25 +52,5 @@ public class MouseLook : MonoBehaviour
     public void ShakeCamera(float magnitude)
     {
         shaker.ShakeOnce(magnitude / 5, 4f, .1f, 1);
-    }
-
-    public IEnumerator CameraShake(float magnitude)
-    {
-        Vector3 originalPos = cameraParent.localPosition;
-        magnitude = Mathf.Lerp(.1f, 1f, magnitude / 30f);
-        float elapsed = 0f;
-        while (elapsed < shakeDuration)
-        {
-            float x = Random.Range(-1f, 1f) * magnitude;
-            float y = Random.Range(-1f, 1f) * magnitude;
-
-            cameraParent.localPosition = new Vector3(x, y, originalPos.z);
-
-            elapsed += Time.deltaTime;
-
-            yield return null;
-        }
-
-        cameraParent.localPosition = originalPos;
     }
 }

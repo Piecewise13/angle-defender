@@ -9,7 +9,7 @@ public class Perk_ResourceBuff : ParentPerkScript
 
     private int upgradeInt;
 
-    public override void UnlockUpgrade()
+    public override void UnlockUpgrade(PlayerScript player)
     {
         egg.UpgradeResourceRate();
         upgradeInt++;
@@ -18,15 +18,10 @@ public class Perk_ResourceBuff : ParentPerkScript
         diamondCost = (int)(diamondCost * (Mathf.Pow(upgradeInt, 1.5f) + 1));
         if(upgradeInt == 10)
         {
-            unlocked = true;
+            isUnlocked = true;
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()

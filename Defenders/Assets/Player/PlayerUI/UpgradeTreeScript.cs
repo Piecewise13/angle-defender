@@ -10,9 +10,11 @@ public class UpgradeTreeScript : MonoBehaviour
 
     string[][] perkText;
 
-    //public ParentPerkScript[] perks;
+    private ParentPerkScript[] perks;
 
     private ParentPerkScript focusedPerk;
+
+
 
     private PlayerScript player;
     public EggScript egg;
@@ -34,7 +36,7 @@ public class UpgradeTreeScript : MonoBehaviour
     void Start()
     {
         //perks = FindObjectsOfType<ParentPerkScript>();
-
+        perks = GetComponentsInChildren<ParentPerkScript>();
     }
 
     // Update is called once per frame
@@ -57,7 +59,7 @@ public class UpgradeTreeScript : MonoBehaviour
 
     public void purchaseUpgrade()
     {
-        if (!focusedPerk.unlocked)
+        if (!focusedPerk.isUnlocked)
         {
             if (CanAfford(focusedPerk))
             {
@@ -65,7 +67,8 @@ public class UpgradeTreeScript : MonoBehaviour
                 player.SetResourceAmount(ResourceType.Wood, -focusedPerk.woodCost);
                 player.SetResourceAmount(ResourceType.Iron, -focusedPerk.ironCost);
                 player.SetResourceAmount(ResourceType.Diamond, -focusedPerk.diamondCost);
-                focusedPerk.UnlockUpgrade();
+                focusedPerk.UnlockUpgrade(player);
+                OpenPath(focusedPerk);
             }
             else
             {
@@ -90,6 +93,72 @@ public class UpgradeTreeScript : MonoBehaviour
         return false;
 
     }
+
+    private void OpenPath(ParentPerkScript perk)
+    {
+
+        int perkOffset = 0;
+
+        if (perk.id < 5)
+        {
+            perkOffset = 3;
+            perks[perk.id + perkOffset].SetAvalible();
+
+        }
+        else if (perk.id >= 6 && perk.id < 9)
+        {
+            perkOffset = 3 + (perk.id % 6);
+            perks[perk.id + perkOffset].SetAvalible();
+            perks[perk.id + perkOffset + 1].SetAvalible();
+
+        }
+        else if (perk.id >= 9 && perk.id < 15)
+        {
+            if (perk.id % 2 != 0)
+            {
+                perkOffset = 6;
+                perks[perk.id + 1].SetUnavalible();
+                perks[perk.id + perkOffset].SetAvalible();
+
+            } else
+            {
+                perkOffset = 6;
+                perks[perk.id - 1].SetUnavalible();
+                perks[perk.id + perkOffset].SetAvalible();
+
+            }
+
+        } else if (perk.id >=15)
+        {
+            perkOffset = 5;
+            perks[perk.id + perkOffset].SetAvalible();
+        }
+
+
+        //int perkOffset = 0;
+
+        //if (perk.id < 10)
+        //{
+        //    perkOffset = 3;
+
+        //}
+        //else if(perk.id >= 10 && perk.id < 16)
+        //{
+        //    perkOffset = 3 + (perk.id % 10);
+        //} else if(perk.id >= 16)
+        //{
+        //    perkOffset = 6;
+        //}
+        //for (int i = 0; i < perks.Length; i++)
+        //{
+        //    if (perks[i].id == perk.id - perkOffset)
+        //    {
+        //        return perks[i].isUnlocked;
+        //    }
+        //}
+        //return true;
+    }
+
 
     private void OnEnable()
     {

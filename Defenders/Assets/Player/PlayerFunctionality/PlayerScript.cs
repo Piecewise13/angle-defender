@@ -277,6 +277,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public void SetSoulFireMax(int delta)
     {
         maxSoulFire += delta;
+        hudScript.UpdateSoulFireValues();
     }
 
     public int GetSoulFireMax()

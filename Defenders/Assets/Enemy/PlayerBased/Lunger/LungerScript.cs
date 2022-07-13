@@ -24,11 +24,12 @@ public class LungerScript : PlayerBasedAIParent
     private Damageable attackTarget;
 
     private Rigidbody rb;
+    private Animator anim;
 
     //for testing only
     [SerializeField]private Transform playerTransform;
 
-    private bool isLunge;
+    [SerializeField]private bool isLunge;
     
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class LungerScript : PlayerBasedAIParent
         
         playerTransform = player.transform;
         rb = GetComponentInChildren<Rigidbody>();
+        anim = GetComponentInChildren<Animator>();
         //initValues();
         agent = GetComponent<NavMeshAgent>();
 
@@ -61,6 +63,10 @@ public class LungerScript : PlayerBasedAIParent
 
             }
         }
+        if (agent.isActiveAndEnabled && agent.remainingDistance < 1f)
+        {
+            anim.SetBool("isWalking", false);
+        }
     }
 
 
@@ -83,6 +89,7 @@ public class LungerScript : PlayerBasedAIParent
             {
                 agent.destination = playerTransform.position;
             }
+            anim.SetBool("isWalking", true);
         }
     }
 
@@ -103,7 +110,8 @@ public class LungerScript : PlayerBasedAIParent
 
     IEnumerator lungeAction(Vector3 loc)
     {
-        
+        anim.SetBool("isWalking", false);
+        anim.SetBool("isLunging", true);
         agent.enabled = false;
 
         float distance = Vector3.Distance(transform.position, loc);
@@ -111,29 +119,38 @@ public class LungerScript : PlayerBasedAIParent
 
         transform.LookAt(loc, Vector3.up);
         //anim start lunge
-        yield return new WaitForSeconds(timer);
+        yield return new WaitForSeconds(2.8F);
         //launch
 
         //Vector3 forceVector = transform.position - loc;
         //float force = Mathf.Lerp(0, lungeForce, distance / lungeDist);
         //forceVector += Vector3.up  * -maxHeight;
+        rb.isKinematic = false;
 
         Vector3 forceVector = playerTransform.position - transform.position;
 
         rb.AddForce(forceVector + (Vector3.up * maxHeight), ForceMode.Impulse);
-        
 
 
+        anim.SetBool("isLunging", false);
         yield return new WaitForSeconds(1f);
         
-        agent.enabled = true;
-        isLunge = false;
+        
 
+
+        agent.enabled = true;
+        UpdatePath();
+        rb.isKinematic = true;
+
+
+        yield return new WaitForSeconds(5f);
+        isLunge = false;
         yield return null;
 
 
 
     }
+
 
 
     public override void Death()

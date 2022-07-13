@@ -61,7 +61,6 @@ public class MonsterSpawnScript : MonoBehaviour
         }
     }
 
-    //TODO: FIGURE OUT HOW MUCH OF EACH IS NEEDED AND THEN ASSIGN THAT TO RESOURCE COLLECTOR
 
     private void UpdateResourceAmount(int delta, ResourceType resource)
     {

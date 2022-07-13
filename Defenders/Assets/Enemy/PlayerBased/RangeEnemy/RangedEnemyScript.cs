@@ -31,12 +31,20 @@ public class RangedEnemyScript : PlayerBasedAIParent
     {
         if (isShooting)
         {
-            transform.LookAt(player.transform, transform.up);
-            if (lastShootTime + shootDelay < Time.time)
+            if (player != null)
             {
-                lastShootTime = Time.time;
-                Shoot();
 
+
+                transform.LookAt(player.transform, transform.up);
+                if (lastShootTime + shootDelay < Time.time)
+                {
+                    lastShootTime = Time.time;
+                    Shoot();
+
+                }
+            } else
+            {
+                StopShooting();
             }
         }
     }
@@ -82,7 +90,6 @@ public class RangedEnemyScript : PlayerBasedAIParent
 
     private void Shoot()
     {
-        print("Shoot");
         shootingTarget.TakeDamage(attackDamage, null);
     }
 
