@@ -8,18 +8,37 @@ public class BulletForge : MonoBehaviour
     public PlayerScript player;
     public WeaponInventoryManager inventory;
 
-    private int bulletsProduced;
+    private int playerBulletsProduced;
+    private int turretBulletsProduced;
 
-    private int ironAmount = 10;
+    private int playerIronAmount = 0;
+    private int turretIronAmount;
     public int ironCost;
     public int bulletAmount;
-
-    public GameObject bulletForgeUI;
+    private bool hasIron;
 
     private bool inMenu = false;
 
     [SerializeField] private float bulletProductionDelay;
     private float lastProductionTime;
+
+    //Gameobject Components
+    public BulletForgeUI bulletForgeUI;
+    public ParticleSystem[] eyeFire;
+    public ParticleSystem mouthFire;
+
+    [Space(20)]
+    [Header("Soul Fire Line")]
+    //SoulFire Line Stuff
+    public GameObject[] soulFireLine;
+    public Renderer[] lineMats;
+    public Color activePink;
+    public Color activeBlue;
+    public Color disable;
+
+
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -30,11 +49,20 @@ public class BulletForge : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ironAmount >= ironCost)
+        if (hasIron)
         {
+
             if (bulletProductionDelay + lastProductionTime < Time.time)
             {
-                ProduceBullets();
+                if (playerIronAmount >= ironCost)
+                {
+                    ProducePlayerBullets();
+                }
+                if (turretIronAmount >= ironCost)
+                {
+                    ProduceTurretBullets();
+                }
+
                 lastProductionTime = Time.time;
             }
         }
@@ -44,7 +72,7 @@ public class BulletForge : MonoBehaviour
             if (Input.GetButtonDown("Use"))
             {
                 inMenu = !inMenu;
-                bulletForgeUI.SetActive(inMenu);
+                bulletForgeUI.gameObject.SetActive(inMenu);
                 player.openUIElement(inMenu);
             }
         }
@@ -72,35 +100,153 @@ public class BulletForge : MonoBehaviour
     }
 
 
-    public void ProduceBullets()
+    public void ProducePlayerBullets()
     {
 
-            bulletsProduced += bulletAmount;
-        
+        playerBulletsProduced += bulletAmount;
+        print("PlayerBullets: " + playerBulletsProduced);
+        mouthFire.Play();
+
+        playerIronAmount += -ironCost;
+        bulletForgeUI.UpdateIronIndicator();
+        if (playerIronAmount < ironCost && turretIronAmount < ironCost)
+        {
+            hasIron = false;
+            StopEyeFire();
+        }
     }
+    public void ProduceTurretBullets()
+    {
+
+        TurretScript.bulletsReady += bulletAmount;
+        turretIronAmount += -ironCost;
+        bulletForgeUI.UpdateIronIndicator();
+        if (turretIronAmount < ironCost)
+        {
+
+            StopSoulFireTubes();
+            if (playerIronAmount < ironCost)
+            {
+                hasIron = false;
+                StopEyeFire();
+            }
+
+        }
+    }
+
+
 
     public void ReplenishBullets()
     {
-        if (bulletsProduced > 0)
+        if (playerBulletsProduced > 0)
         {
             
-            player.SetSoulFire(bulletsProduced);
-            bulletsProduced = 0;
+            player.SetSoulFire(playerBulletsProduced);
+            playerBulletsProduced = 0;
+            mouthFire.Stop();
         }
 
     }
 
-    public void ChangeIronAmount(int amount)
+    public void ChangePlayerIronAmount(int amount)
     {
-        ironAmount += amount;
-        inMenu = !inMenu;
-        bulletForgeUI.SetActive(inMenu);
-        player.openUIElement(inMenu);
+        hasIron = true;
+        StartEyeFire();
+
+        playerIronAmount += amount;
+
         player.SetResourceAmount(ResourceType.Iron, -amount);
+    }
+    
+    
+    public void ChangeTurretIronAmount(int amount)
+    {
+
+        hasIron = true;
+        StartEyeFire();
+        turretIronAmount += amount;
+        StartSoulFireTubes();
+        player.SetResourceAmount(ResourceType.Iron, -amount);
+    }
+
+
+    public void CloseMenu()
+    {
+        inMenu = false;
+        bulletForgeUI.gameObject.SetActive(inMenu);
+        player.openUIElement(inMenu);
+    }
+
+    public void OpenMenu()
+    {
+        inMenu = true;
+        bulletForgeUI.gameObject.SetActive(inMenu);
+        player.openUIElement(inMenu);
     }
 
     public void UpgradeForge(int upgradeAmount)
     {
         bulletAmount = Mathf.CeilToInt(bulletAmount * (1 + (upgradeAmount * .1f)));
     }
+
+    public void TurretUnlocked()
+    {
+        StopSoulFireTubes();
+        for (int i = 0; i < soulFireLine.Length; i++)
+        {
+            soulFireLine[i].SetActive(true);
+        }
+    }
+
+    public int GetPlayerIron()
+    {
+        return playerIronAmount;
+    }
+
+    public int GetTurretIron()
+    {
+        return turretIronAmount;
+    }
+
+
+
+    private void StartEyeFire()
+    {
+        for (int i = 0; i < eyeFire.Length; i++)
+        {
+            eyeFire[i].Play();
+        }
+    }
+
+    private void StartSoulFireTubes()
+    {
+        for (int i = 0; i < lineMats.Length; i++)
+        {
+            lineMats[i].material.SetColor("_FireBase", activePink);
+            lineMats[i].material.SetColor("_FireSecondary", activeBlue);
+            lineMats[i].material.SetFloat("_Speed", -.5f);
+        }
+
+    }
+
+    private void StopSoulFireTubes()
+    {
+        for (int i = 0; i < lineMats.Length; i++)
+        {
+            lineMats[i].material.SetColor("_FireBase", disable);
+            lineMats[i].material.SetColor("_FireSecondary", disable);
+            lineMats[i].material.SetFloat("_Speed", 0f);
+        }
+    }
+
+    private void StopEyeFire()
+    {
+        for (int i = 0; i < eyeFire.Length; i++)
+        {
+            eyeFire[i].Stop();
+        }
+    }
+
+
+
 }

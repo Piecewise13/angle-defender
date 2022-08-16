@@ -9,29 +9,39 @@ public class PlayerScript : MonoBehaviour, Damageable
     /*
      * PLAYER COMPONENTS VARS
      */
+    [Header("Component Vars")]
     public CharacterController controller;
     public Camera playerCamera;
     [SerializeField] private Transform groundCheck;
-    private MouseLook lookScript;
+    [HideInInspector]public MouseLook lookScript;
     private WeaponInventoryManager weaponManager;
     public Animator animator;
+    public GameObject deathScreen;
 
+    [Space(20)]
+    [Header("Weapon Vars")]
     /*
      * WEAPON VARS
      */
-    private float defaultFov;
+    private float defaultFov = 90f;
+    private float zoomSpeed = 10f;
+    private float targetFOV;
     [SerializeField] private int soulFire;
     [SerializeField] private int maxSoulFire;
 
     /*
      * HUD SCRIPTS
      */
+    [Space(20)]
+    [Header("HUD Vars")]
     public HUDScript hudScript;
     [SerializeField] private UpgradeTreeScript upgradeTree;
 
     /**
      * MOVEMENT VARS
      */
+    [Space(20)]
+    [Header("Movement Vars")]
     #region Movment Vars
     private bool canMove = true;
     [SerializeField] private float movementSpeed;
@@ -52,18 +62,35 @@ public class PlayerScript : MonoBehaviour, Damageable
     /**
      * RESOURCE VAR
      */
+    [Space(20)]
+    [Header("Resource Vars")]
     #region Resources Vars
+
+
     [SerializeField] private int woodAmount;
     [SerializeField] private int ironAmount;
     [SerializeField] private int diamondAmount;
 
-    public float health { get; set; }
-    public bool isDead { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    #endregion
 
+
+
+    public float health { get; set; }
+    public bool isDead { get; set; }
+
+    [Space(20)]
+    [Header("Player Vars")]
     public float maxHealth;
 
 
-    #endregion
+
+    private float respawnTime = 5f;
+    private float deathCount;
+    [SerializeField] private float respawnSlope;
+    private float deathTime;
+    public Transform spawnPoint;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -131,6 +158,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isFalling", true);
             }
 
+
         }
 
         velocity.y += gravity * Time.deltaTime;
@@ -139,14 +167,21 @@ public class PlayerScript : MonoBehaviour, Damageable
         #endregion
 
 
+        if (isDead)
+        {
+            if (deathTime + respawnTime < Time.time)
+            {
+                Respawn();
+            }
+        }
 
-
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
     }
 
 
     public void ChangeCameraZoom(float amount)
     {
-        playerCamera.fieldOfView = defaultFov / amount;
+        targetFOV = defaultFov / amount;
     }
 
 
@@ -181,11 +216,14 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         if (isOpen)
         {
+            SetAllBoolsFalse();
+            ChangeCameraZoom(1f);
             hudScript.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Confined;
             lookScript.setCanLook(false);
             canMove = false;
             weaponManager.canShoot(false);
+
         }
         else
         {
@@ -207,12 +245,50 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
-        health -= damage;
-        hudScript.UpdateHealth();
-        lookScript.ShakeCamera(damage);
+        if (!isDead)
+        {
+            health -= damage;
+            hudScript.UpdateHealth();
+            lookScript.ShakeCamera(damage);
+            if (health <= 0)
+            {
+                Death();
+            }
+        }
     }
 
-    public void Death() { }
+    public void Death() 
+    {
+        //play death animation
+        deathTime = Time.time;
+
+        respawnTime = respawnSlope * deathCount + 5f;
+        deathCount++;
+        controller.enabled = false;
+        ChangeCameraZoom(1f);
+        SetAllBoolsFalse();
+        isDead = true;
+        canMove = false;
+        canJump = false;
+        soulFire = 0;
+        deathScreen.SetActive(true);
+    }
+
+    public void Respawn()
+    {
+        print("Respawning");
+        //play respawn anim probably a courotine
+        deathScreen.SetActive(false);
+        transform.position = spawnPoint.position;
+        controller.enabled = true;
+        health = maxHealth;
+        isDead = false;
+        canJump = true;
+        canMove = true;
+        hudScript.UpdateHealth();
+        hudScript.UpdateSoulFireValues();
+
+    }
 
 
     /*
@@ -277,12 +353,29 @@ public class PlayerScript : MonoBehaviour, Damageable
     public void SetSoulFireMax(int delta)
     {
         maxSoulFire += delta;
-        hudScript.UpdateSoulFireValues();
+        hudScript.UpdateSoulFireValues(); 
     }
 
     public int GetSoulFireMax()
     {
         return maxSoulFire;
     }
+
+    public float GetRespawnTime()
+    {
+        return respawnTime;
+    }
+
+    private void SetAllBoolsFalse()
+    {
+        foreach (var item in animator.parameters)
+        {
+            if(item.type == AnimatorControllerParameterType.Bool)
+            {
+                animator.SetBool(item.name, false);
+            }
+        }
+    }
+
     #endregion
 }

@@ -33,14 +33,21 @@ public class HUDScript : MonoBehaviour
     private float previousSoulFire;
 
 
+    [Header("Egg Vars")]
+    public  Slider eggHealthSlider;
+
+    public static EggScript egg;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerScript>();
+        player = GetComponentInParent<PlayerScript>();
+        egg = FindObjectOfType<EggScript>();
         UpdateResourceValues();
         UpdateSoulFireValues();
         UpdateHealth();
+        UpdateEggValues();
     }
 
     // Update is called once per frame
@@ -68,6 +75,12 @@ public class HUDScript : MonoBehaviour
         woodText.text = player.GetResourceAmount(ResourceType.Wood).ToString();
         ironText.text = player.GetResourceAmount(ResourceType.Iron).ToString();
         diamondText.text = player.GetResourceAmount(ResourceType.Diamond).ToString();
+    }
+
+
+    public void UpdateEggValues()
+    {
+        eggHealthSlider.value = egg.health / egg.maxHealth;
     }
 
 

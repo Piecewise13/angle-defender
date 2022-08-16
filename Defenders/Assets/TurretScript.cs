@@ -6,6 +6,7 @@ public class TurretScript : MonoBehaviour
 {
 
     public GameObject turret;
+    private ParticleSystem particles;
     private Animator anim;
     
     //bullet trail
@@ -21,6 +22,7 @@ public class TurretScript : MonoBehaviour
     private float lastSearchTime;
 
     private bool isShooting;
+    public static int bulletsReady;
 
     [Header("TURRET STATS")]
     [SerializeField]private float targetRange;
@@ -31,7 +33,9 @@ public class TurretScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();   
+        anim = GetComponent<Animator>();
+        particles = GetComponentInChildren<ParticleSystem>();
+        particles.Stop();
     }
 
 
@@ -40,10 +44,20 @@ public class TurretScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (target != null)
         {
-            anim.SetBool("isShooting", isShooting);
-            turret.transform.rotation = Quaternion.LookRotation((target.transform.position - turret.transform.position).normalized);
+            if (bulletsReady > 0)
+            {
+                print("YESSS BULLETS");
+                anim.SetBool("isShooting", isShooting);
+                turret.transform.rotation = Quaternion.LookRotation((target.transform.position - turret.transform.position).normalized);
+            } else
+            {
+                print("NOOOOO BULLETS");
+                particles.Stop();
+            }
+
         }
         else
         {
@@ -88,7 +102,6 @@ public class TurretScript : MonoBehaviour
         
         target = foundEnemy[current].GetComponentInParent<ParentAIScript>();
         isShooting = true;
-        print(target);
 
 
     }
@@ -102,9 +115,19 @@ public class TurretScript : MonoBehaviour
 
     public void Shoot()
     {
-        target.TakeDamage(damage, null);
-        trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-        StartCoroutine(SpawnTrail(trailObject, target.transform.position));
+        if (bulletsReady > 0)
+        {
+            particles.Play();
+            target.TakeDamage(damage, null);
+            trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
+            StartCoroutine(SpawnTrail(trailObject, target.transform.position));
+            bulletsReady--;
+        } else
+        {
+            particles.Stop();
+        }
+
+
     }
 
     public IEnumerator SpawnTrail(TrailRenderer trail, Vector3 point)

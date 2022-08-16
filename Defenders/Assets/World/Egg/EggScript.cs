@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EggScript : MonoBehaviour
+public class EggScript : MonoBehaviour, Damageable
 {
 
     private bool isOpen = false;
     private bool playerInTrigger = false;
     public PlayerScript player;
+    public HUDScript[] playerHuds;
     public GameObject upgradeTree;
-
-    private float eggHealth;
     public float maxHealth;
 
     public GameObject woodIngot;
@@ -27,12 +26,14 @@ public class EggScript : MonoBehaviour
 
     private int upgradeNumber;
 
+    public float health { get; set; }
+    public bool isDead { get; set; }
 
-    // Start is called before the first frame update
-    void Start()
+// Start is called before the first frame update
+void Start()
     {
-        eggHealth = maxHealth;
-
+        health = maxHealth;
+        playerHuds = FindObjectsOfType<HUDScript>();
     }
 
     // Update is called once per frame
@@ -110,15 +111,12 @@ public class EggScript : MonoBehaviour
         {
             player = other.gameObject.GetComponentInParent<PlayerScript>();
             playerInTrigger = true;
-        } else if (other.gameObject.tag.Equals("Enemy"))
+        } else
         {
-            ParentAIScript enemyScript = GetComponent<ParentAIScript>();
+            ParentAIScript enemyScript = other.transform.root.gameObject.GetComponentInChildren<ParentAIScript>();
+
+            TakeDamage(enemyScript.health / 2, null);
             enemyScript.ReachedEgg();
-            eggHealth -= enemyScript.health;
-            if (eggHealth <= 0)
-            {
-                eggDeath(); 
-            }
         }
     }
 
@@ -131,9 +129,22 @@ public class EggScript : MonoBehaviour
     }
 
 
-    private void eggDeath()
+    public void TakeDamage(float damage, Collider hitCollider)
     {
+        health -= damage;
+        foreach (var item in playerHuds)
+        {
+            item.UpdateEggValues();
+        }
 
+        if (health <= 0f)
+        {
+            Death();
+        }
     }
 
+    public void Death()
+    {
+        print("GET FUCKED BITCH YOU LOST LIKE A PUSSY FUCKER");
+    }
 }

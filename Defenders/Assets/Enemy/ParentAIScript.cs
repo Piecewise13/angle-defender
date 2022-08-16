@@ -22,7 +22,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
 
     // Start is called before the first frame update
-    protected void initValues()
+    public void Start()
     {
         health = maxHealth;
         resourceSpawner = FindObjectOfType<ResourceSpawner>();
@@ -70,6 +70,10 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     public abstract void Death();
 
-    public abstract void ReachedEgg();
+    public void ReachedEgg() {
+        print("Reached Egg");
+        Destroy(gameObject);
+        //START A COUROTINE TO MAKE COOL EFFECTS AND SHIT
+    }
 
 }

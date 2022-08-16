@@ -10,6 +10,9 @@ public class MouseLook : MonoBehaviour
     public Transform cameraParent;
     private float xRotation;
     public float mouseSensitivity;
+    public float aimSensitivty;
+
+    public bool bUseAimSens;
 
     public float shakeDuration;
 
@@ -29,14 +32,28 @@ public class MouseLook : MonoBehaviour
     void Update()
     {
         if (canLook) {
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-            
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            if (bUseAimSens)
+            {
+                float mouseX = Input.GetAxis("Mouse X") * aimSensitivty * Time.deltaTime;
+                float mouseY = Input.GetAxis("Mouse Y") * aimSensitivty * Time.deltaTime;
 
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.Rotate(Vector3.up * mouseX);
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                playerBody.Rotate(Vector3.up * mouseX);
+
+            } else {
+                float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+                float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                playerBody.Rotate(Vector3.up * mouseX);
+            }
+
 
 
 

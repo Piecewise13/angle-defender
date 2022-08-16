@@ -40,7 +40,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
 
     [SerializeField]protected int bulletCost;
     public AnimatorOverrideController gunAnims;
-    protected static float reloadDuration = 2.5f;
+    [SerializeField] protected float reloadDuration;
     protected bool isReloading;
     protected float startReloadTime;
     protected ParticleSystem bulletSystem;
@@ -142,7 +142,6 @@ public abstract class BasicWeaponScript : MonoBehaviour
         }
        if ((clipSize - currentNumOfBullets) * bulletCost > numBullets)
         {
-            print("testing run");
             currentNumOfBullets += numBullets / bulletCost;
             player.SetSoulFire(-numBullets + (numBullets % bulletCost));
         } else
@@ -215,6 +214,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     protected void StopAim()
     {
         playerAnimator.SetBool("isAiming", false);
+        player.lookScript.bUseAimSens = false;
         player.ChangeCameraZoom(1f);
     }
 

@@ -38,7 +38,6 @@ public class MonsterSpawnScript : MonoBehaviour
             //print("checked");
             try
             {
-                print("trying");
                 currentResourceCollector = other.gameObject.GetComponentInParent<BasicResourceCollector>();
 
 
@@ -70,7 +69,6 @@ public class MonsterSpawnScript : MonoBehaviour
 
             case ResourceType.Wood:
                 woodAmount += delta;
-                print("wood: " + woodAmount);
                 if (woodAmount >= woodCost)
                 {
                     neededResource = ResourceType.Iron;
@@ -79,7 +77,7 @@ public class MonsterSpawnScript : MonoBehaviour
                 break;
             case ResourceType.Iron:
                 ironAmount += delta;
-                print("iron: " + ironAmount);
+
                 if (ironAmount >= ironCost)
                 {
                     neededResource = ResourceType.Diamond;
@@ -87,7 +85,7 @@ public class MonsterSpawnScript : MonoBehaviour
                 break;
             case ResourceType.Diamond:
                 diamondAmount += delta;
-                print("diamond: " + diamondAmount);
+
                 if (diamondAmount >= diamondCost)
                 {
                     CheckIfSpawn();

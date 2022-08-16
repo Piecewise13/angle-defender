@@ -44,10 +44,10 @@ public class BasicResourceCollector : ParentAIScript
     
 
     // Start is called before the first frame update
-    void Start()
+    new void Start()
     {
-        
-        initValues();
+
+        base.Start();
 
 
         toolMesh = tool.GetComponentInChildren<MeshFilter>();
@@ -165,10 +165,6 @@ public class BasicResourceCollector : ParentAIScript
     }
 
 
-    public override void ReachedEgg()
-    {
-        throw new System.NotImplementedException();
-    }
 
     public override void TakeDamage(float damage, Collider hitCollider)
     {

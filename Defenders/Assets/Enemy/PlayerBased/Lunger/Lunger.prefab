@@ -131,19 +131,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 0
-  playerRange: 0
+  playerRange: 500
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
-  updatePlayerLocDelay: 0
+    m_Bits: 8
+  updatePlayerLocDelay: 5
   lungeDist: 20
   maxLungeTime: 2
   maxHeight: 4
   wall:
     serializedVersion: 2
     m_Bits: 512
-  attackDelay: 0
+  attackDelay: 2
   playerTransform: {fileID: 0}
+  isLunge: 0
 --- !u!54 &4200042102207599216
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -156,7 +157,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0

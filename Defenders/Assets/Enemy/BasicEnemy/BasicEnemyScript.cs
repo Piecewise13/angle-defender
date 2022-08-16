@@ -16,9 +16,9 @@ public class BasicEnemyScript : ParentAIScript
     private bool shouldAttack;
 
 
-    void Start()
+    new void Start()
     {
-        initValues();
+        base.Start();
 
         findNewTarget();
         health = maxHealth;
@@ -133,10 +133,5 @@ public class BasicEnemyScript : ParentAIScript
         {
             Death();
         }
-    }
-
-    public override void ReachedEgg()
-    {
-        
     }
 }

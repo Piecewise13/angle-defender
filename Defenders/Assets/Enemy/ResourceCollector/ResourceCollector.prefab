@@ -61,7 +61,8 @@ MonoBehaviour:
   diamondIngot: {fileID: 4669785059525900011, guid: d0ce4a1129d244353aba397d5f0c6b27,
     type: 3}
   tool: {fileID: 8753985415709229022}
-  axeMesh: {fileID: 0}
+  axeMesh: {fileID: -5754084199372789682, guid: b51d714af409c4f3696291d15d43dbe6,
+    type: 3}
   pickaxeMesh: {fileID: -5754084199372789682, guid: b51d714af409c4f3696291d15d43dbe6,
     type: 3}
 --- !u!195 &8483953264820259677
@@ -74,7 +75,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 6
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -84,7 +85,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 9
   m_ObstacleAvoidanceType: 4
 --- !u!95 &8483953264820259666
 Animator:
@@ -118,10 +119,10 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
+  m_CollisionDetection: 0
 --- !u!1001 &8483953263270511247
 PrefabInstance:
   m_ObjectHideFlags: 0

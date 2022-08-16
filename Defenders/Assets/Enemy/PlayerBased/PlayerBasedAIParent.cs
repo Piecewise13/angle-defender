@@ -12,13 +12,13 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 
     private static PlayerScript[] players;
 
-    private void Awake()
+    public new void Start()
     {
-        initValues();
+        base.Start();
         players = FindObjectsOfType<PlayerScript>();
     }
 
-    
+
 
     // Update is called once per frame
     void Update()
@@ -31,15 +31,21 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 
     protected PlayerScript ClosestPlayer(Vector3 postion)
     {
-        int closestIndex = 0;
+        int closestIndex = -1;
         float currentDistance = float.MaxValue;
         for (int i = 0; i < players.Length; i++)
         {
-            float distance = Vector3.Distance(postion, players[i].transform.position);
-            if (distance < currentDistance && distance < playerRange)
-            {
-                closestIndex = i;
+            if (!players[i].isDead) {
+                float distance = Vector3.Distance(postion, players[i].transform.position);
+                if (distance < currentDistance && distance < playerRange)
+                {
+                    closestIndex = i;
+                }
             }
+        }
+        if (closestIndex == -1)
+        {
+            return null;
         }
         return players[closestIndex];
     }

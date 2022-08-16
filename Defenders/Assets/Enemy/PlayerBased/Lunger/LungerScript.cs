@@ -6,8 +6,6 @@ using UnityEngine.AI;
 public class LungerScript : PlayerBasedAIParent
 {
 
-    public float updatePlayerLocDelay;
-    private float lastUpdatePlayerLoc;
 
     [Header("Lunge Vars")]
     [SerializeField] private float lungeDist;
@@ -26,18 +24,15 @@ public class LungerScript : PlayerBasedAIParent
     private Rigidbody rb;
     private Animator anim;
 
-    //for testing only
-    [SerializeField]private Transform playerTransform;
-
     [SerializeField]private bool isLunge;
     
     // Start is called before the first frame update
-    void Start()
+    new void Start()
     {
         health = maxHealth;
         player = ClosestPlayer(transform.position);
         
-        playerTransform = player.transform;
+        //playerTransform = player.transform;
         rb = GetComponentInChildren<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         //initValues();
@@ -63,8 +58,10 @@ public class LungerScript : PlayerBasedAIParent
 
             }
         }
-        if (agent.isActiveAndEnabled && agent.remainingDistance < 1f)
+        if (agent.isActiveAndEnabled && agent.remainingDistance < 1f && agent.hasPath)
         {
+            
+
             anim.SetBool("isWalking", false);
         }
     }
@@ -76,8 +73,11 @@ public class LungerScript : PlayerBasedAIParent
         {
             NavMeshPath path = new NavMeshPath();
             //print(agent);
-            agent.CalculatePath(playerTransform.position, path);
-            if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+            agent.CalculatePath(player.transform.position, path);
+            if (agent.pathStatus == NavMeshPathStatus.PathComplete)
+            {
+                agent.destination = player.transform.position;
+            } else
             {
                 RaycastHit hit;
                 if (Physics.Linecast(transform.position, egg.transform.position, out hit, wall))
@@ -85,23 +85,10 @@ public class LungerScript : PlayerBasedAIParent
                     agent.destination = hit.transform.position;
 
                 }
-            } else
-            {
-                agent.destination = playerTransform.position;
+
             }
+
             anim.SetBool("isWalking", true);
-        }
-    }
-
-
-    private void CheckForPlayer()
-    {
-        Collider[] players = Physics.OverlapSphere(transform.position, playerRange, playerMask);
-
-        if (players.Length >= 1)
-        {
-            this.player = players[0].GetComponentInParent<PlayerScript>();
-            PlayerFound(player);
         }
     }
     
@@ -110,6 +97,7 @@ public class LungerScript : PlayerBasedAIParent
 
     IEnumerator lungeAction(Vector3 loc)
     {
+
         anim.SetBool("isWalking", false);
         anim.SetBool("isLunging", true);
         agent.enabled = false;
@@ -117,7 +105,7 @@ public class LungerScript : PlayerBasedAIParent
         float distance = Vector3.Distance(transform.position, loc);
         float timer = Mathf.Lerp(0f, maxLungeTime, distance / lungeDist);
 
-        transform.LookAt(loc, Vector3.up);
+        transform.LookAt(player.transform.position, Vector3.up);
         //anim start lunge
         yield return new WaitForSeconds(2.8F);
         //launch
@@ -125,9 +113,10 @@ public class LungerScript : PlayerBasedAIParent
         //Vector3 forceVector = transform.position - loc;
         //float force = Mathf.Lerp(0, lungeForce, distance / lungeDist);
         //forceVector += Vector3.up  * -maxHeight;
+        transform.LookAt(player.transform.position, Vector3.up);
         rb.isKinematic = false;
 
-        Vector3 forceVector = playerTransform.position - transform.position;
+        Vector3 forceVector = player.transform.position - transform.position;
 
         rb.AddForce(forceVector + (Vector3.up * maxHeight), ForceMode.Impulse);
 
@@ -158,11 +147,6 @@ public class LungerScript : PlayerBasedAIParent
         Destroy(gameObject);
     }
 
-    public override void ReachedEgg()
-    {
-        throw new System.NotImplementedException();
-    }
-
     public override void TakeDamage(float damage, Collider hitCollider)
     {
         health -= damage;
@@ -190,8 +174,7 @@ public class LungerScript : PlayerBasedAIParent
             return;
         this.player = player;
         isLunge = true;
-        playerTransform = player.transform;
-        StartCoroutine(lungeAction(playerTransform.position));
+        StartCoroutine(lungeAction(player.transform.position));
 
         
     }

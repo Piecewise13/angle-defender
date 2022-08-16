@@ -23,7 +23,6 @@ public class PlayerCheck : MonoBehaviour
     {
         if (other.tag.Equals("Player"))
         {
-            
             aiScript.PlayerFound(other.GetComponentInParent<PlayerScript>());
         }
     }
@@ -32,6 +31,7 @@ public class PlayerCheck : MonoBehaviour
     {
         if (other.tag.Equals("Player"))
         {
+            print("lost him damn");
             aiScript.PlayerLost(other.GetComponentInParent<PlayerScript>());
         }
     }

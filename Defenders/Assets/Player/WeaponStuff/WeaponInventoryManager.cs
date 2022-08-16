@@ -87,6 +87,7 @@ public class WeaponInventoryManager : MonoBehaviour
         weaponIndex = weaponTier - 1;
         Destroy(weapons[weaponIndex]);
         weapons[weaponIndex] = Instantiate(gun, weaponRoot.transform);
+        weapons[weaponIndex].transform.localPosition = Vector3.zero;
 
         //print("length: " + weapons.Length);
         changeGun(weaponIndex);

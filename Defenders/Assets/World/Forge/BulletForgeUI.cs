@@ -19,13 +19,19 @@ public class BulletForgeUI : MonoBehaviour
 
     public TMP_Text currentIron;
     public TMP_Text sliderMaxValue;
-    public TMP_Text depositButton;
+    public TMP_Text depositText;
+
+    public TMP_Text playerIronIndicator;
+    public TMP_Text turretIronIndicator;
+
+    public GameObject restrictAccess;
+    public Button turretButton;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -36,34 +42,62 @@ public class BulletForgeUI : MonoBehaviour
 
     public void sliderChange()
     {
-        updateDeposit(Mathf.CeilToInt(ironAmount * slider.value));
+        UpdateDepositAmount(Mathf.CeilToInt(ironAmount * slider.value));
     }
 
     public void percentButton(float percent)
     {
         buttonPercent = percent;
-        updateDeposit(Mathf.CeilToInt(ironAmount * percent));
+        UpdateDepositAmount(Mathf.CeilToInt(ironAmount * percent));
     }
 
-    private void updateDeposit(int amount)
+    private void UpdateDepositAmount(int amount)
     {
-        depositButton.text = "Deposit: " + amount.ToString();
+        depositText.text = "Deposit: " + amount.ToString();
         depositAmount = amount;
 
     }
 
-    public void deposit()
+    public void DepositPlayer()
     {
-        forge.ChangeIronAmount(depositAmount);
-        depositAmount = 0;
+        forge.ChangePlayerIronAmount(depositAmount);
+        UpdateDepositAmount(0);
+        UpdateIronIndicator();
+    }
+
+    public void DepositTurret()
+    {
+        forge.ChangeTurretIronAmount(depositAmount);
+        UpdateDepositAmount(0);
+        UpdateIronIndicator();
+
+    }
+
+    public void CloseForge()
+    {
+        forge.CloseMenu();
+    }
+
+
+    public void UpdateIronIndicator()
+    {
+        playerIronIndicator.text = "Iron Left: " + forge.GetPlayerIron();
+        turretIronIndicator.text = "Iron Left: " + forge.GetTurretIron();
+    }
+
+    public void TurretUnlocked()
+    {
+        restrictAccess.SetActive(false);
+        turretButton.interactable = true;
+        forge.TurretUnlocked();
     }
 
 
     public void OnEnable()
     {
-        ironAmount = ((int)forge.player.GetResourceAmount(ResourceType.Iron));
+        ironAmount = (forge.player.GetResourceAmount(ResourceType.Iron));
         currentIron.text = ironAmount.ToString();
         sliderMaxValue.text = ironAmount.ToString();
-
+        UpdateIronIndicator();
     }
 }

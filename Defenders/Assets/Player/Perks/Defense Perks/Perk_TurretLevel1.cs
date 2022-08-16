@@ -6,6 +6,7 @@ public class Perk_TurretLevel1 : ParentPerkScript
 {
 
     public TurretScript[] turrets;
+    public BulletForgeUI forgeUI;
 
 
     public override void UnlockUpgrade(PlayerScript player)
@@ -16,6 +17,7 @@ public class Perk_TurretLevel1 : ParentPerkScript
             turret.gameObject.SetActive(true);
         }
         isUnlocked = true;
+        forgeUI.TurretUnlocked();
     }
 
     // Start is called before the first frame update
