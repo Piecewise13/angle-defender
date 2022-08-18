@@ -6,7 +6,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 {
 
     protected PlayerScript player;
-    [SerializeField]protected float playerRange;
+    [SerializeField] protected float playerRange;
     [SerializeField] protected LayerMask playerMask;
 
 
@@ -18,7 +18,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         players = FindObjectsOfType<PlayerScript>();
     }
 
-
+    
 
     // Update is called once per frame
     void Update()

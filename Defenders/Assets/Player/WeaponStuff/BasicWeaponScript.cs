@@ -100,7 +100,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
         {
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
             //print("hit gameobject: " + hit.collider.gameObject);
-            StartCoroutine(SpawnTrail(trailObject, hit));
+            StartCoroutine(SpawnTrail(trailObject, hit.point));
             try
             {
 
@@ -119,6 +119,14 @@ public abstract class BasicWeaponScript : MonoBehaviour
 
 
         }
+        else
+        {
+
+            trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
+            //print("hit gameobject: " + hit.collider.gameObject);
+            StartCoroutine(SpawnTrail(trailObject, playerCamera.transform.position + playerCamera.transform.forward * 500f ));
+        }
+
 
         lastShootTime = Time.time;
         AddRecoil();
@@ -171,19 +179,19 @@ public abstract class BasicWeaponScript : MonoBehaviour
     }
 
 
-    public IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit)
+    public IEnumerator SpawnTrail(TrailRenderer trail, Vector3 point)
     {
         float time = 0;
         Vector3 startPosition = trail.transform.position;
 
         while (time < 1)
         {
-            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
+            trail.transform.position = Vector3.Lerp(startPosition, point, time);
             time += Time.deltaTime / trail.time;
             yield return null;
         }
         //animator.SetBool("isShooting", false);
-        trail.transform.position = hit.point;
+        trail.transform.position = point;
         //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(trail.gameObject, trail.time);
 

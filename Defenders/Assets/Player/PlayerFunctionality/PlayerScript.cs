@@ -23,9 +23,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     /*
      * WEAPON VARS
      */
-    private float defaultFov = 90f;
+    private float defaultFov = 60f;
     private float zoomSpeed = 10f;
-    private float targetFOV;
+    private float targetFOV = 60f;
     [SerializeField] private int soulFire;
     [SerializeField] private int maxSoulFire;
 
@@ -259,6 +259,10 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     public void Death() 
     {
+        if (isDead)
+        {
+            return;
+        }
         //play death animation
         deathTime = Time.time;
 

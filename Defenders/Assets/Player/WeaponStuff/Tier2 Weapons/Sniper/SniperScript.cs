@@ -92,7 +92,7 @@ public class SniperScript : BasicWeaponScript
         {
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
             //print("hit gameobject: " + hit.collider.gameObject);
-            StartCoroutine(SpawnTrail(trailObject, hit));
+            StartCoroutine(SpawnTrail(trailObject, hit.point));
             try
             {
 
