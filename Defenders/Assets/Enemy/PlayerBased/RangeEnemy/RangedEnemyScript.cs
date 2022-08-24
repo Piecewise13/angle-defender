@@ -7,168 +7,144 @@ public class RangedEnemyScript : PlayerBasedAIParent
 {
 
 
+    public float searchTime;
+    private float lastSearchTime;
 
-    private bool isShooting;
-    [SerializeField] private float shootDelay;
+    [SerializeField] private float shootDistance;
+
+    public float shootTime;
     private float lastShootTime;
-    private bool isShootingWall;
-    public LayerMask wall;
-    public LayerMask notPlayer;
 
-    private Damageable shootingTarget;
-    private GameObject shootingTargetGO;
-    WallDefenceScript targetWall;
+    private GameObject shootingTarget;
+    private bool isShooting;
+
+
+    public GameObject fireball;
+    public Transform fireballSpawn;
+
+    private Animator anim;
 
     // Start is called before the first frame update
     new void Start()
     {
 
         base.Start();
-        InvokeRepeating("UpdatePath", 2f, 2f);
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isShooting)
+        if (searchTime + lastSearchTime < Time.time)
         {
-            if (shootingTarget != null)
+            if (!isShooting)
             {
+                UpdatePath();
+            }
 
-                transform.LookAt(shootingTargetGO.transform, Vector3.up);
-                if (lastShootTime + shootDelay < Time.time)
+
+            lastSearchTime = Time.time;
+        }
+
+        if (agent.hasPath)
+        {
+            if (agent.remainingDistance < shootDistance)
+            {
+                if (shootTime + lastShootTime < Time.time)
                 {
-
-                    if (Physics.Linecast(transform.position, shootingTargetGO.transform.position, notPlayer) && !isShootingWall)
+                    if (!isShooting)
                     {
-                        print("i cant see him");
-                        UpdatePath();
-                        lastShootTime = Time.time;
-                        return;
+                        StartShooting();
                     }
-                    
+                    agent.isStopped = true;
+                    transform.LookAt(shootingTarget.transform.position);
 
-                    lastShootTime = Time.time;
-                    Shoot();
 
                 }
-            } else
-            {
-                StopShooting();
             }
         }
     }
 
     private void UpdatePath()
     {
-        NavMeshPath path = new NavMeshPath();
-        agent.CalculatePath(egg.transform.position, path);
-        if (path.status != NavMeshPathStatus.PathComplete)
+        if (agent.isActiveAndEnabled)
         {
-            targetWall = GetClosestWall(transform.position);
-            print(targetWall);
 
-            agent.destination = targetWall.transform.position;
-
-            if (agent.remainingDistance < 20f && agent.hasPath)
+            player = ClosestPlayer();
+            if (player == null)
             {
-
-                StartShooting((Damageable)targetWall);
-                shootingTargetGO = targetWall.gameObject;
-                isShootingWall = true;
-            }
-        }
-        else
-        {
-            StopShooting();
-            agent.destination = egg.transform.position;
-            return;
-        }
-
-        player = ClosestPlayer(transform.position);
-
-        if (player != null)
-        {
-            
-            agent.CalculatePath(player.transform.position, path);
-            if (path.status == NavMeshPathStatus.PathComplete)
-            {
-                if (isShootingWall)
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
                 {
-                    StopShooting();
+                    agent.destination = hit.transform.position;
+                    shootingTarget = hit.transform.gameObject;
                 }
-                agent.destination = player.transform.position;
-                print("Moving to player");
-                if (Physics.CheckSphere(transform.position, 20f, player.gameObject.layer))
+                else
                 {
-                    StartShooting((Damageable)player);
-                    shootingTargetGO = player.gameObject;
-                    
+                    agent.destination = egg.transform.position;
+                    shootingTarget = egg;
                 }
                 return;
             }
+
+            NavMeshPath path = new NavMeshPath();
+            //print(agent);
+            agent.CalculatePath(player.transform.position, path);
+            if (agent.pathStatus == NavMeshPathStatus.PathComplete)
+            {
+                agent.destination = player.transform.position;
+                shootingTarget = player.gameObject;
+            }
+            else
+            {
+                RaycastHit hit;
+                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
+                {
+                    agent.destination = hit.transform.position;
+                    shootingTarget = hit.transform.gameObject;
+                }
+
+            }
+            anim.SetBool("isWalking", true);
         }
 
-
-            
     }
 
-    private void Shoot()
+    public void Shoot()
     {
-        if (shootingTarget.isDead)
-        {
-            shootingTarget = null;
-            shootingTargetGO = null;
-            return;
-        }
-        shootingTarget.TakeDamage(attackDamage, null);
+        Instantiate(fireball, fireballSpawn.transform.position, fireballSpawn.transform.rotation).GetComponent<FireBall>().target = shootingTarget.transform;
+        StopShooting();
+        
     }
 
-    private void StartShooting(Damageable target)
+    private void StartShooting()
     {
+        anim.SetTrigger("Fire");
         isShooting = true;
-        agent.isStopped = true;
-        shootingTarget = target;
+
 
     }
 
     private void StopShooting()
     {
-        shootingTarget = null;
-        shootingTargetGO = null;
-        isShootingWall = false;
-        agent.isStopped = false;
+        lastShootTime = Time.time;
+        lastSearchTime = Time.time;
         isShooting = false;
     }
 
 
-    public override void Death()
-    {
-        Destroy(gameObject);
-    }
-
     public override void PlayerFound(PlayerScript player)
     {
 
-            StartShooting((Damageable)player);
-            shootingTargetGO = player.gameObject;
 
 
     }
     public override void PlayerLost(PlayerScript player)
     {
-        StopShooting();
+
     }
 
 
-    public override void TakeDamage(float damage, Collider hitCollider)
-    {
-        health -= damage;
-        if (health <= 0)
-        {
-            Death();
-        }
-    }
 
 
 }

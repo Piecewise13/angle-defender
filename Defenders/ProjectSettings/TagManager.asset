@@ -4,13 +4,14 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Floor
   - Block
   - Wall
   - Resource
   - Enemy
   - Head
   - Body
+  - Ground
+  - Monster
   layers:
   - Default
   - TransparentFX

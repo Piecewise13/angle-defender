@@ -25,10 +25,11 @@ public class MinaMonsterScript : PlayerBasedAIParent
     private bool isRushing = false;
     private float rushSpeed;
     private Vector3 rushTarget;
+    public GameObject rushTrigger;
 
 
 
-
+    private bool canAttack = true;
     public float attackTime;
     private float lastAttackTime;
 
@@ -45,12 +46,13 @@ public class MinaMonsterScript : PlayerBasedAIParent
         player = ClosestPlayer(transform.position);
         anim = GetComponentInChildren<Animator>();
         lastAttackTime = Time.time;
+        rushTrigger.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (attackTime + lastAttackTime < Time.time && !isRushing)
+        if (attackTime + lastAttackTime < Time.time && !isRushing && canAttack)
         {
             Attack();
         }
@@ -67,66 +69,76 @@ public class MinaMonsterScript : PlayerBasedAIParent
 
     private void Attack()
     {
-
+        agent.isStopped = true;
         float pValue = Random.value;
-        RaycastHit hit;
-        if (Physics.Linecast(transform.position + Vector3.up * 10f, player.transform.position, out hit, playerMask))
+
+
+
+        print("p value: " + pValue);
+        if (pValue <= 1f/3f)
         {
-            print(hit.collider.gameObject);
-            lastAttackTime = Time.time - attackTime / 2;
-            return;
+            RaycastHit hit;
+            if (Physics.Linecast(transform.position, player.transform.position, out hit, playerMask))
+            {
+                print(hit.collider.gameObject);
+                lastAttackTime = Time.time - attackTime / 2;
+                return;
 
-        }
+            }
+            print("throwing axe");
+            StartCoroutine(LookAtPoint(player.transform.position, 1f));
 
-        rushTarget = transform.position + (player.transform.position -  transform.position).normalized * (Vector3.Distance(player.transform.position, transform.position) + 40f);
-        print(("rush: " + rushTarget + " player: " + player.transform.position));
-        if (!agent.SetDestination(rushTarget))
-        {
-            print("didn't works");
-            return;
-        }
-        StartCoroutine(LookAtPoint(rushTarget, 1f));
-        anim.SetBool("isRushing", true);
-
-
-
-        if (pValue <= 1/3)
-        {
-            //if (Physics.Linecast(transform.position, player.transform.position, playerMask))
-            //{
-
-            //    lastAttackTime = Time.time - attackTime / 2;
-            //    return;
-
-            //}
-
-            //StartCoroutine(LookAtPoint(player.transform.position, 1f));
-
-            //anim.SetTrigger("throwAxe");
+            anim.SetTrigger("throwAxe");
+            canAttack = false;
 
 
             //axe
-        } else if (pValue >= 2/3)
+        } else if (pValue > 2f/3f)
         {
 
+            print("Rock Slam");
+            magicParticles.Play();
 
-            //magicParticles.Play();
+            anim.SetTrigger("rockSlam");
+            for (int i = 0; i < numOfRocks; i++)
+            {
 
-            //anim.SetTrigger("rockSlam");
-            //for (int i = 0; i < numOfRocks; i++)
-            //{
-            //    Vector3 spawnPos = transform.position + (Quaternion.Euler(0f, i * (360 / numOfRocks), 0f) * transform.forward) * rockSpawnDistance;
-            //    SlamRockScript rockScript = Instantiate(rockPrefab, spawnPos + Vector3.down * 5, Quaternion.Euler(Vector3.zero)).GetComponent<SlamRockScript>();
-            //    rockScript.SetMinaPos(transform.position);
-            //}
-        } else
+                Vector3 spawnPos = transform.position + (Quaternion.Euler(0f, i * (360 / numOfRocks), 0f) * transform.forward) * rockSpawnDistance;
+                SlamRockScript rockScript = Instantiate(rockPrefab, spawnPos + Vector3.down * 5, Quaternion.Euler(Vector3.zero)).GetComponent<SlamRockScript>();
+                rockScript.SetMinaPos(transform.position);
+            }
+            canAttack = false;
+        }
+        else
         {
 
+            RaycastHit hit;
+            if (Physics.Linecast(transform.position + Vector3.up * 10f, player.transform.position, out hit, playerMask))
+            {
+                print(hit.collider.gameObject);
+                lastAttackTime = Time.time - attackTime / 2;
+                return;
 
+            }
 
+            rushTarget = transform.position + (player.transform.position - transform.position).normalized * (Vector3.Distance(player.transform.position, transform.position) + 40f);
+            print(("rush: " + rushTarget + " player: " + player.transform.position));
+
+            NavMeshPath path = new NavMeshPath();
+            agent.CalculatePath(rushTarget, path);
+            if (agent.pathStatus != NavMeshPathStatus.PathComplete)
+            {
+                print("didn't works");
+                return;
+            }
+            print("Rushing");
+            StartCoroutine(LookAtPoint(rushTarget, 1f));
+            anim.SetBool("isRushing", true);
+            canAttack = false;
 
         }
-        lastAttackTime = Time.time;
+
+
 
 
     }
@@ -159,6 +171,9 @@ public class MinaMonsterScript : PlayerBasedAIParent
     {
         print("grabbing new axe");
         axeObject.SetActive(true);
+        canAttack = true;
+        lastAttackTime = Time.time;
+        MoveToPlayer();
     }
 
     public void RocksStartMove()
@@ -169,6 +184,10 @@ public class MinaMonsterScript : PlayerBasedAIParent
     public void SlamRocks()
     {
         SlamRockScript.shouldSlam = true;
+        canAttack = true;
+        lastAttackTime = Time.time;
+        magicParticles.Stop();
+        MoveToPlayer();
     }
 
 
@@ -177,10 +196,11 @@ public class MinaMonsterScript : PlayerBasedAIParent
         TrackParticlesPlay(true);
         rushTarget = transform.position + (player.transform.position - transform.position).normalized * (Vector3.Distance(player.transform.position, transform.position) + 40f);
         StartCoroutine(LookAtPoint(rushTarget, .5f));
-        agent.SetDestination(rushTarget);
+        agent.destination =  (rushTarget);
         agent.isStopped = true;
 
-        isRushing = true;
+
+        canAttack = false;
 
         print(("rush: " + rushTarget + " player: " + player.transform.position));
 
@@ -188,6 +208,8 @@ public class MinaMonsterScript : PlayerBasedAIParent
 
     public void Rush()
     {
+        rushTrigger.SetActive(true);
+        isRushing = true;
         agent.isStopped = false;
         agent.acceleration = 40f;
         agent.speed = 100f;
@@ -196,10 +218,22 @@ public class MinaMonsterScript : PlayerBasedAIParent
     public void EndRush()
     {
         print("rush ended");
+        rushTrigger.SetActive(false);
         anim.SetBool("isRushing", false);
         agent.speed = 10f;
         agent.acceleration = 8f;
+        MoveToPlayer();
         TrackParticlesPlay(false);
+        isRushing = false;
+        canAttack = true;
+        lastAttackTime = Time.time;
+    }
+
+    private void MoveToPlayer()
+    {
+        agent.isStopped = false;
+        player = ClosestPlayer();
+        agent.destination = player.transform.position;
     }
 
     private void TrackParticlesPlay(bool play)
@@ -227,16 +261,6 @@ public class MinaMonsterScript : PlayerBasedAIParent
     }
 
     public override void PlayerLost(PlayerScript player)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void TakeDamage(float damage, Collider hitCollider)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void Death()
     {
         throw new System.NotImplementedException();
     }

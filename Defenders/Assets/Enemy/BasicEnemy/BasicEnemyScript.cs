@@ -118,20 +118,4 @@ public class BasicEnemyScript : ParentAIScript
         findNewTarget();
     }
 
-
-
-    public override void Death()
-    {
-        Destroy(gameObject.transform.root.gameObject);
-    }
-
-    public override void TakeDamage(float damage, Collider hitCollider)
-    {
-        health -= damage;
-        
-        if (health <= 0)
-        {
-            Death();
-        }
-    }
 }

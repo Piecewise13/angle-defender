@@ -44,19 +44,53 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("Movement Vars")]
     #region Movment Vars
     private bool canMove = true;
-    [SerializeField] private float movementSpeed;
+    [SerializeField] private float defaultMovementSpeed;
+    private float movementSpeedVar = 10f;
     [SerializeField] private float jumpHeight;
     private float forwardValue;
     private float sideValue;
     private bool canJump;
 
     private Vector3 moveDir;
-    private float gravity = -9.81f;
+    private float  gravity = -9.81f;
     private Vector3 velocity;
     private bool isGrounded;
 
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
+
+    [Space(10)]
+    //Wall Kick Vars
+    [SerializeField] private float wallKickDistance;
+    [SerializeField] private float wallKickHeight;
+    private bool canWallKick = true;
+    private bool movementUnlocked = true;
+    public LayerMask movementLayer;
+
+
+    [Space(10)]
+    //Dash Vars
+    [SerializeField] private float dashTime;
+    private float startDashTime;
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private int dashCost;
+    private bool canDash = true;
+    private bool isDashing;
+    private Vector3 initForward;
+
+
+    [Space(10)]
+    //ABH
+    [SerializeField] private int tickMax;
+    [SerializeField] private float abhSpeed;
+    [SerializeField] private int abhCount;
+    private bool canABH;
+    private int tickCounter;
+    private bool shouldADH;
+
+
+
+
     #endregion
 
     /**
@@ -95,6 +129,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     // Start is called before the first frame update
     void Start()
     {
+
         lookScript = GetComponentInChildren<MouseLook>();
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
@@ -103,6 +138,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
+        movementSpeedVar = defaultMovementSpeed;
         health = maxHealth;
 
     }
@@ -121,6 +157,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
             velocity.y = -2f;
             canJump = true;
+            canWallKick = true;
             animator.SetBool("isFalling", false);
         }
 
@@ -128,6 +165,11 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
             animator.SetBool("isFalling", true);
         }
+
+
+
+
+
 
 
 
@@ -146,11 +188,55 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isWalking", false);
                 
             }
-            controller.Move(moveDir * movementSpeed * Time.deltaTime);
+
+            if (movementUnlocked)
+            {
+                if (!isGrounded && canWallKick)
+                {
+                    if (Input.GetButtonDown("Jump"))
+                    {
+                        print("wall jump");
+                        RaycastHit hit;
+
+                        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, wallKickDistance, movementLayer))
+                        {
+                            velocity.y = wallKickHeight;
+                            canWallKick = false;
+                        }
+                    }
+                }
+
+                if (Input.GetButtonDown("Dash"))
+                {
+                    if (!isDashing && soulFire >= dashCost)
+                    {
+                        print("dashing");
+                        isDashing = true;
+                        SetSoulFire(-dashCost);
+                        startDashTime = Time.time;
+                        initForward = transform.forward;
+                    }
+                }
+            }
+
+
 
             if (Input.GetButtonDown("Jump") && canJump)
             {
+                if (shouldADH)
+                {
 
+
+                    movementSpeedVar = (movementSpeedVar * 1.1f);
+                    abhCount++;
+                    
+
+                }
+                else
+                {
+                    movementSpeedVar = defaultMovementSpeed;
+                }
+                tickCounter = 0;
                 canJump = false;
                 velocity.y = jumpHeight;
                 
@@ -158,8 +244,30 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isFalling", true);
             }
 
+            if (isDashing)
+            {
+                if (dashTime + startDashTime >  Time.time)
+                {
+                    print("should be actually dashing");
+                    controller.Move(initForward * dashSpeed * Time.deltaTime);
+                } else
+                {
+                    isDashing = false;
+                }
+                
+            } else
+            {
+                controller.Move(moveDir * movementSpeedVar * Time.deltaTime);
+            }
+
+
+
+
 
         }
+
+
+
 
         velocity.y += gravity * Time.deltaTime;
 
@@ -177,6 +285,48 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
     }
+
+    public void FixedUpdate()
+    {
+        if (forwardValue == -1f)
+        {
+            if (!isGrounded && !canJump )
+            {
+                canABH = true;
+                tickCounter = 0;
+            } else
+
+
+            if (canABH)
+            {
+                if (isGrounded)
+                {
+                    if (tickCounter > tickMax)
+                    {
+                        print("lost abh");
+                        movementSpeedVar = defaultMovementSpeed;
+                        shouldADH = false;
+                        canABH = false;
+                        tickCounter = 0;
+                        abhCount = 1;
+                    } else
+                    {
+
+                        shouldADH = true;
+                        tickCounter++;
+                    }
+                }
+
+            }
+
+        } else
+        {
+            shouldADH = false;
+            movementSpeedVar = defaultMovementSpeed;
+        }
+    }
+
+
 
 
     public void ChangeCameraZoom(float amount)

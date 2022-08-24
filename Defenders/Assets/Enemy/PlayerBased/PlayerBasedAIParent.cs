@@ -50,4 +50,26 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         return players[closestIndex];
     }
 
+    protected PlayerScript ClosestPlayer()
+    {
+        int closestIndex = -1;
+        float currentDistance = float.MaxValue;
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (!players[i].isDead)
+            {
+                float distance = Vector3.Distance(transform.position, players[i].transform.position);
+                if (distance < currentDistance && distance < playerRange)
+                {
+                    closestIndex = i;
+                }
+            }
+        }
+        if (closestIndex == -1)
+        {
+            return null;
+        }
+        return players[closestIndex];
+    }
+
 }

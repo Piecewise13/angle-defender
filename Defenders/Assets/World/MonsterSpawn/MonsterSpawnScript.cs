@@ -13,6 +13,24 @@ public class MonsterSpawnScript : MonoBehaviour
     [SerializeField] private int ironCost;
     [SerializeField] private int diamondCost;
 
+
+    private int soulFire;
+    [SerializeField] private int soulFireNeeded;
+    [SerializeField] private float tickDuration;
+    private float lastTick;
+    private bool bHasPlayer = false;
+    [SerializeField] private int soulFireCost;
+    public float shaderMax;
+    public float shaderMin;
+
+    public Renderer[] meter;
+
+
+    [SerializeField] private List<GameObject> monsters = new List<GameObject>();
+    public Transform spawnPoint;
+
+    private PlayerScript player;
+
     public ResourceType neededResource = ResourceType.Wood;
 
 
@@ -22,13 +40,32 @@ public class MonsterSpawnScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        UpdateMeter();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (bHasPlayer)
+        {
+            if (tickDuration + lastTick < Time.time)
+            {
+
+
+                if (player.GetSoulFire() >= soulFireCost)
+                {
+                    soulFire += soulFireCost;
+                    player.SetSoulFire(-soulFireCost);
+                    UpdateMeter();
+                    if (soulFire >= soulFireNeeded)
+                    {
+                        Spawn();
+                    }
+                    
+                }
+                lastTick = Time.time;
+            }
+        }   
     }
     public void OnTriggerEnter(Collider other)
     {
@@ -57,6 +94,33 @@ public class MonsterSpawnScript : MonoBehaviour
                 print("failed");
                 return;
             }
+        } else if (other.transform.root.gameObject.tag.Equals("Player"))
+        {
+            player = other.GetComponentInParent<PlayerScript>();
+            bHasPlayer = true;
+
+        }
+
+
+        
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.transform.root.gameObject.tag.Equals("Player"))
+        {
+            player = null;
+            bHasPlayer = false;
+
+        }
+    }
+
+    private void UpdateMeter()
+    {
+
+        for (int i = 0; i < meter.Length; i++)
+        { 
+            meter[i].material.SetFloat("_Origin", Mathf.Lerp(shaderMin, shaderMax, (float)soulFire / (float)soulFireNeeded));
         }
     }
 
@@ -120,6 +184,12 @@ public class MonsterSpawnScript : MonoBehaviour
 
     public void Spawn()
     {
+
+        int index = Random.Range(0, monsters.Count);
+        Instantiate(monsters[index], spawnPoint.position, spawnPoint.rotation);
+        monsters.RemoveAt(index);
+
+
         Destroy(currentResourceCollector);
         print("Spawn");
     }

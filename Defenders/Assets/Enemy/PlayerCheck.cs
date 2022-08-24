@@ -21,7 +21,7 @@ public class PlayerCheck : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag.Equals("Player"))
+        if (other.transform.root.tag.Equals("Player"))
         {
             aiScript.PlayerFound(other.GetComponentInParent<PlayerScript>());
         }
@@ -29,7 +29,7 @@ public class PlayerCheck : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag.Equals("Player"))
+        if (other.transform.root.tag.Equals("Player"))
         {
             print("lost him damn");
             aiScript.PlayerLost(other.GetComponentInParent<PlayerScript>());

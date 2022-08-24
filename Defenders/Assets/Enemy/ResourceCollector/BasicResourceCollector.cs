@@ -140,7 +140,7 @@ public class BasicResourceCollector : ParentAIScript
 
 
 
-    public override void Death()
+    public new void Death()
     {
         if (collectedAmount > 0)
         {
@@ -166,7 +166,7 @@ public class BasicResourceCollector : ParentAIScript
 
 
 
-    public override void TakeDamage(float damage, Collider hitCollider)
+    public new void TakeDamage(float damage, Collider hitCollider)
     {
         
         if (hitCollider.gameObject.tag.Equals("Head"))

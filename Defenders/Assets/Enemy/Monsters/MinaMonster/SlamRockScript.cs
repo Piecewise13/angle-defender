@@ -17,7 +17,7 @@ public class SlamRockScript : MonoBehaviour
     [SerializeField] private float slamSpeed;
     public LayerMask slamLayer;
 
-    private SphereCollider collider;
+    private SphereCollider sphereCollider;
 
     public static bool bShouldMove = false;
     public static bool shouldSlam = false;
@@ -25,20 +25,22 @@ public class SlamRockScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        bShouldMove = false;
+        shouldSlam = false;
         spawnPos = transform.position;
 
         movementDirection = (spawnPos - minaPos).normalized;
 
         speed = Random.Range(minSpeed, maxSpeed);
-        collider = GetComponent<SphereCollider>();
-        collider.enabled = false;
+        sphereCollider = GetComponent<SphereCollider>();
+        sphereCollider.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         if (shouldSlam) {
-            collider.enabled = true;
+            sphereCollider.enabled = true;
             transform.Translate(Vector3.down * slamSpeed * Time.deltaTime);
             return;
         }
@@ -55,7 +57,6 @@ public class SlamRockScript : MonoBehaviour
     {
         
         Collider[] players = Physics.OverlapSphere(transform.position, 10f, slamLayer);
-        print("length: " + players.Length);
         if (players.Length > 0)
         {
             foreach (var item in players)

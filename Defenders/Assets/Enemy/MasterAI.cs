@@ -32,7 +32,6 @@ public class MasterAI : MonoBehaviour
             {
                 if (enemy.lastSpawnTime + enemy.spawnTime < Time.time)
                 {
-                    print("Spawning the boyz");
                     Instantiate(enemy.prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
                     enemy.lastSpawnTime = Time.time;
                 }

@@ -17,7 +17,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public static WallDefenceScript[] walls;
 
     public float health { get; set; }
-    public bool isDead { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public bool isDead { get ; set ; }
 
 
 
@@ -66,9 +66,19 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     }
 
 
-    public abstract void TakeDamage(float damage, Collider hitCollider);   
+    public virtual void TakeDamage(float damage, Collider hitCollider)
+    {
+        health -= damage;
+        if (health <= 0f)
+        {
+            Death();
+        }
+    } 
 
-    public abstract void Death();
+    public virtual void Death()
+    {
+        Destroy(gameObject);
+    }
 
     public void ReachedEgg() {
         print("Reached Egg");
