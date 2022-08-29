@@ -33,6 +33,7 @@ public class EggScript : MonoBehaviour, Damageable
 void Start()
     {
         health = maxHealth;
+        print(health);
         playerHuds = FindObjectsOfType<HUDScript>();
     }
 
@@ -91,7 +92,7 @@ void Start()
 
 
         //Vector3.up
-        ingot.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-2,2), 10f, Random.Range(-2, 2)), ForceMode.Impulse);
+        ingot.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-3,3), 10f, Random.Range(-3, 3)), ForceMode.Impulse);
     }
 
     public void UpgradeResourceRate()

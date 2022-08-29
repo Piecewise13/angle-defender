@@ -5359,6 +5359,12 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!4 &57763344 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+    type: 3}
+  m_PrefabInstance: {fileID: 776603430691500698}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &62505850
 GameObject:
   m_ObjectHideFlags: 0
@@ -5697,7 +5703,7 @@ MonoBehaviour:
   diamondIngot: {fileID: 4669785059525900011, guid: d0ce4a1129d244353aba397d5f0c6b27,
     type: 3}
   ingotSpawnPoint: {fileID: 1977166726}
-  resourceSpawnRate: 10
+  resourceSpawnRate: 2
 --- !u!4 &115195855 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4ff4f825404b9bc429bc821c2f17c919,
@@ -6597,7 +6603,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3.9
+      scalar: 3.13
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -7143,7 +7149,7 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 4
-    angle: 12.708949
+    angle: 16.77432
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -7229,7 +7235,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.05876013
+      value: 0.19555199
       mode: 0
       spread: 0
       speed:
@@ -7794,7 +7800,7 @@ ParticleSystem:
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 17733
+        ctime0: 6168
         ctime1: 56283
         ctime2: 56283
         ctime3: 56283
@@ -21391,6 +21397,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821403615}
   m_CullTransparentMesh: 1
+--- !u!1 &843926299
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843926300}
+  - component: {fileID: 843926302}
+  - component: {fileID: 843926301}
+  m_Layer: 10
+  m_Name: DashTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &843926300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 1.189}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 57763344}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &843926301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 225a2d7b85a3c88498a9ba7b57ef1bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &843926302
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.15, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &852688966
 GameObject:
   m_ObjectHideFlags: 0
@@ -24673,7 +24737,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Movement+
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -24700,10 +24764,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 18
   m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -27891,8 +27955,9 @@ GameObject:
   - component: {fileID: 1538470315}
   - component: {fileID: 1538470314}
   - component: {fileID: 1538470317}
+  - component: {fileID: 1538470318}
   m_Layer: 0
-  m_Name: Button (3)
+  m_Name: PlayerMovementUngrades
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28034,6 +28099,27 @@ MonoBehaviour:
   ironCost: 0
   diamondCost: 0
   perkButton: {fileID: 0}
+--- !u!114 &1538470318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1538470312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99c4a76c7dd6b5b4694c3b3bca0fe988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 5
+  isUnlocked: 0
+  isAvailale: 0
+  perkName: Get Some Pep
+  perkDescription: Unlocks new movement abilites that are decently cracked
+  woodCost: 100
+  ironCost: 60
+  diamondCost: 30
+  perkButton: {fileID: 1538470314}
 --- !u!1 &1544490948
 GameObject:
   m_ObjectHideFlags: 0
@@ -36592,7 +36678,7 @@ MonoBehaviour:
   woodCost: 50
   ironCost: 200
   diamondCost: 20
-  perkButton: {fileID: 0}
+  perkButton: {fileID: 2036993044}
   fireAmount: 500
 --- !u!1 &2037006749
 GameObject:
@@ -38104,6 +38190,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 776603430181723999, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 776603430181723999, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
@@ -38149,7 +38240,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 776603430368175700, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 776603430368175700, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 776603430368175700, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 776603430375001828, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
@@ -38294,6 +38395,11 @@ PrefabInstance:
       objectReference: {fileID: 424466630}
     - target: {fileID: 776603430620036330, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
+      propertyPath: dashTrigger
+      value: 
+      objectReference: {fileID: 843926299}
+    - target: {fileID: 776603430620036330, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
       propertyPath: upgradeTree
       value: 
       objectReference: {fileID: 1044156674}
@@ -38315,27 +38421,27 @@ PrefabInstance:
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 101.7
+      value: -177
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.95673466
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.29096186
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
@@ -38345,7 +38451,7 @@ PrefabInstance:
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -326.169
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 776603430620036341, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
@@ -38697,6 +38803,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 776603432188544380, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 776603432188544381, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -38721,6 +38832,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 776603432188544383, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
+        type: 3}
+      propertyPath: m_Name
+      value: EggHealthSlider
       objectReference: {fileID: 0}
     - target: {fileID: 776603432221821601, guid: 2554ffb9d67fa1549880cd60d5cbb8ad,
         type: 3}

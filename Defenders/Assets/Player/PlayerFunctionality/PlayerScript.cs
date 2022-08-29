@@ -74,6 +74,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     private float startDashTime;
     [SerializeField] private float dashSpeed;
     [SerializeField] private int dashCost;
+    public GameObject dashTrigger;
     private bool canDash = true;
     private bool isDashing;
     private Vector3 initForward;
@@ -139,6 +140,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
         movementSpeedVar = defaultMovementSpeed;
+        dashTrigger.SetActive(false);
         health = maxHealth;
 
     }
@@ -210,7 +212,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                 {
                     if (!isDashing && soulFire >= dashCost)
                     {
-                        print("dashing");
+                        dashTrigger.SetActive(true);
                         isDashing = true;
                         SetSoulFire(-dashCost);
                         startDashTime = Time.time;
@@ -252,6 +254,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                     controller.Move(initForward * dashSpeed * Time.deltaTime);
                 } else
                 {
+                    dashTrigger.SetActive(false);
                     isDashing = false;
                 }
                 
@@ -442,6 +445,11 @@ public class PlayerScript : MonoBehaviour, Damageable
         hudScript.UpdateHealth();
         hudScript.UpdateSoulFireValues();
 
+    }
+
+    public void UnlockMovement()
+    {
+        movementUnlocked = true;
     }
 
 

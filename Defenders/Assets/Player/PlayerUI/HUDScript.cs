@@ -42,6 +42,7 @@ public class HUDScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         player = GetComponentInParent<PlayerScript>();
         egg = FindObjectOfType<EggScript>();
         UpdateResourceValues();
@@ -80,6 +81,8 @@ public class HUDScript : MonoBehaviour
 
     public void UpdateEggValues()
     {
+        print("updating");
+        print(egg.maxHealth);
         eggHealthSlider.value = egg.health / egg.maxHealth;
     }
 
