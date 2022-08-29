@@ -12,9 +12,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("Component Vars")]
     public CharacterController controller;
     public Camera playerCamera;
-    [SerializeField] private Transform groundCheck;
+    [SerializeField] protected Transform groundCheck;
     [HideInInspector]public MouseLook lookScript;
-    private WeaponInventoryManager weaponManager;
+    protected WeaponInventoryManager weaponManager;
     public Animator animator;
     public GameObject deathScreen;
 
@@ -23,11 +23,11 @@ public class PlayerScript : MonoBehaviour, Damageable
     /*
      * WEAPON VARS
      */
-    private float defaultFov = 60f;
-    private float zoomSpeed = 10f;
-    private float targetFOV = 60f;
-    [SerializeField] private int soulFire;
-    [SerializeField] private int maxSoulFire;
+    protected float defaultFov = 60f;
+    protected float zoomSpeed = 10f;
+    protected float targetFOV = 60f;
+    [SerializeField] protected int soulFire;
+    [SerializeField] protected int maxSoulFire;
 
     /*
      * HUD SCRIPTS
@@ -35,7 +35,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Space(20)]
     [Header("HUD Vars")]
     public HUDScript hudScript;
-    [SerializeField] private UpgradeTreeScript upgradeTree;
+    [SerializeField] protected UpgradeTreeScript upgradeTree;
 
     /**
      * MOVEMENT VARS
@@ -43,51 +43,54 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Space(20)]
     [Header("Movement Vars")]
     #region Movment Vars
-    private bool canMove = true;
-    [SerializeField] private float defaultMovementSpeed;
-    private float movementSpeedVar = 10f;
-    [SerializeField] private float jumpHeight;
-    private float forwardValue;
-    private float sideValue;
-    private bool canJump;
+    protected bool canMove = true;
+    [SerializeField] protected float defaultMovementSpeed;
+    protected float movementSpeedVar = 10f;
+    [SerializeField] protected float jumpHeight;
+    protected float forwardValue;
+    protected float sideValue;
+    protected bool canJump;
 
-    private Vector3 moveDir;
-    private float  gravity = -9.81f;
-    private Vector3 velocity;
-    private bool isGrounded;
+    protected Vector3 moveDir;
+    protected float  gravity = -9.81f;
+    protected Vector3 velocity;
+    protected bool isGrounded;
 
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
     [Space(10)]
     //Wall Kick Vars
-    [SerializeField] private float wallKickDistance;
-    [SerializeField] private float wallKickHeight;
-    private bool canWallKick = true;
-    private bool movementUnlocked = true;
+    [SerializeField] protected float wallKickDistance;
+    [SerializeField] protected float wallKickHeight;
+    protected bool canWallKick = true;
+    protected bool movementUnlocked = true;
     public LayerMask movementLayer;
 
 
     [Space(10)]
     //Dash Vars
-    [SerializeField] private float dashTime;
-    private float startDashTime;
-    [SerializeField] private float dashSpeed;
-    [SerializeField] private int dashCost;
-    public GameObject dashTrigger;
-    private bool canDash = true;
-    private bool isDashing;
-    private Vector3 initForward;
+    [SerializeField] protected float dashTime;
+    protected float startDashTime;
+    [SerializeField] protected float dashSpeed;
+    [SerializeField] protected int dashCost;
+    protected bool canDash = true;
+    protected bool isDashing;
+    protected Vector3 initForward;
 
 
     [Space(10)]
     //ABH
-    [SerializeField] private int tickMax;
-    [SerializeField] private float abhSpeed;
-    [SerializeField] private int abhCount;
-    private bool canABH;
-    private int tickCounter;
-    private bool shouldADH;
+    [SerializeField] protected int tickMax;
+    [SerializeField] protected float abhSpeed;
+    [SerializeField] protected int abhCount;
+    protected bool canABH;
+    protected int tickCounter;
+    protected bool shouldADH;
+
+    protected bool firstPerkUnlocked = false;
+    protected bool secondPerkUnlocked = false;
+    protected bool thirdPerkUnlocked = false;
 
 
 
@@ -102,9 +105,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     #region Resources Vars
 
 
-    [SerializeField] private int woodAmount;
-    [SerializeField] private int ironAmount;
-    [SerializeField] private int diamondAmount;
+    [SerializeField] protected int woodAmount;
+    [SerializeField] protected int ironAmount;
+    [SerializeField] protected int diamondAmount;
 
     #endregion
 
@@ -119,16 +122,16 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
 
-    private float respawnTime = 5f;
-    private float deathCount;
-    [SerializeField] private float respawnSlope;
-    private float deathTime;
+    protected float respawnTime = 5f;
+    protected float deathCount;
+    [SerializeField] protected float respawnSlope;
+    protected float deathTime;
     public Transform spawnPoint;
 
 
 
     // Start is called before the first frame update
-    void Start()
+    protected void Start()
     {
 
         lookScript = GetComponentInChildren<MouseLook>();
@@ -146,13 +149,13 @@ public class PlayerScript : MonoBehaviour, Damageable
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
         /**
          * MOVEMENT REGION
          */
         #region
-        
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -188,7 +191,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             } else
             {
                 animator.SetBool("isWalking", false);
-                
+
             }
 
             if (movementUnlocked)
@@ -231,7 +234,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
                     movementSpeedVar = (movementSpeedVar * 1.1f);
                     abhCount++;
-                    
+
 
                 }
                 else
@@ -241,7 +244,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                 tickCounter = 0;
                 canJump = false;
                 velocity.y = jumpHeight;
-                
+
                 animator.SetTrigger("isJumping");
                 animator.SetBool("isFalling", true);
             }
@@ -257,16 +260,11 @@ public class PlayerScript : MonoBehaviour, Damageable
                     dashTrigger.SetActive(false);
                     isDashing = false;
                 }
-                
+
             } else
             {
                 controller.Move(moveDir * movementSpeedVar * Time.deltaTime);
             }
-
-
-
-
-
         }
 
 
@@ -410,7 +408,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
-    public void Death() 
+    public void Death()
     {
         if (isDead)
         {
@@ -450,6 +448,22 @@ public class PlayerScript : MonoBehaviour, Damageable
     public void UnlockMovement()
     {
         movementUnlocked = true;
+    }
+
+
+    public virtual void UnlockFirstUpgrade()
+    {
+    }
+
+
+    public virtual void UnlockSecondUpgrade()
+    {
+
+    }
+
+    public virtual void UnlockUlt()
+    {
+
     }
 
 
@@ -515,7 +529,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public void SetSoulFireMax(int delta)
     {
         maxSoulFire += delta;
-        hudScript.UpdateSoulFireValues(); 
+        hudScript.UpdateSoulFireValues();
     }
 
     public int GetSoulFireMax()
@@ -528,7 +542,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         return respawnTime;
     }
 
-    private void SetAllBoolsFalse()
+    protected void SetAllBoolsFalse()
     {
         foreach (var item in animator.parameters)
         {
