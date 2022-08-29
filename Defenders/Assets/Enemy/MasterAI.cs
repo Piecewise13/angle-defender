@@ -7,6 +7,8 @@ public class MasterAI : MonoBehaviour
 
     public EnemySpawnData[] enemys;
 
+    
+
     public Transform[] spawnPoints;
 
 

@@ -232,7 +232,7 @@ public class MinaMonsterScript : PlayerBasedAIParent
     private void MoveToPlayer()
     {
         agent.isStopped = false;
-        player = ClosestPlayer();
+        player = GetClosestPlayer();
         agent.destination = player.transform.position;
     }
 

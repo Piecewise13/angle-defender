@@ -50,4 +50,10 @@ public static class Extns
         Vector2 b = unto.xz();
         return Vector2.Distance(a, b);
     }
+
+    public static Vector3 xz3(this Vector3 vv)
+    {
+        return new Vector3(vv.x, 0f, vv.z);
+    }
+
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class PlayerBasedAIParent : ParentAIScript
@@ -50,7 +48,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         return players[closestIndex];
     }
 
-    protected PlayerScript ClosestPlayer()
+    protected PlayerScript GetClosestPlayer()
     {
         int closestIndex = -1;
         float currentDistance = float.MaxValue;

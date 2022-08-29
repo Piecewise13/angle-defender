@@ -70,7 +70,7 @@ public class RangedEnemyScript : PlayerBasedAIParent
         if (agent.isActiveAndEnabled)
         {
 
-            player = ClosestPlayer();
+            player = GetClosestPlayer();
             if (player == null)
             {
                 RaycastHit hit;
