@@ -66,6 +66,7 @@ public class HUDScript : MonoBehaviour
 
     public void UpdateHealth()
     {
+        print(player.health / player.maxHealth);
         healthSlider.value = player.health / player.maxHealth;
     }
 
@@ -81,8 +82,7 @@ public class HUDScript : MonoBehaviour
 
     public void UpdateEggValues()
     {
-        print("updating");
-        print(egg.maxHealth);
+
         eggHealthSlider.value = egg.health / egg.maxHealth;
     }
 

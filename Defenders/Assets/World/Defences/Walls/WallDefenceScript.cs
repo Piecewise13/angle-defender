@@ -43,11 +43,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
 
 
-    public void takeDamage(float damage)
-    {
-        health -= damage;
-    }
-
     public void TakeDamage(float damage, Collider hitCollider)
     {
         if (!isDead)

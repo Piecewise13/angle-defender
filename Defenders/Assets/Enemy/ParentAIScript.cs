@@ -59,6 +59,24 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         return walls[closestIndex];
     }
 
+    public WallDefenceScript GetClosestWall()
+    {
+        print(walls.Length);
+        int closestIndex = 0;
+        float distance = float.MaxValue;
+        for (int i = 0; i < walls.Length; i++)
+        {
+            float currentDist = Vector3.Distance(transform.position, walls[i].transform.position);
+            if (currentDist < distance)
+            {
+
+                closestIndex = i;
+                distance = currentDist;
+            }
+        }
+        return walls[closestIndex];
+    }
+
 
     public static void UpdateWalls()
     {

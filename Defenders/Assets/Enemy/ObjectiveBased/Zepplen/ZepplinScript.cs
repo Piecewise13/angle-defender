@@ -26,7 +26,7 @@ public class ZepplinScript : ParentAIScript
     private bool isDescending;
     [SerializeField] private float speed;
     private float initY;
-    private float descentTime;
+    public float initHeight;
 
 
 
@@ -43,6 +43,7 @@ public class ZepplinScript : ParentAIScript
     new void Start()
     {
         base.Start();
+        transform.position = transform.position + Vector3.up * initHeight;
         var lookPos = egg.transform.position - transform.position;
         lookPos.y = 0;
         transform.rotation = Quaternion.LookRotation(lookPos, Vector3.up);

@@ -59,7 +59,17 @@ public class PlayerScript : MonoBehaviour, Damageable
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+
     [Space(10)]
+    [Header("Sonic Attack")]
+    public float sonicEffectTime;
+    public float sonicMovementSpeed;
+    private bool isSonicEffect;
+    private float startSonicEffectTime;
+
+
+    [Space(10)]
+    [Header("Wall Kick")]
     //Wall Kick Vars
     [SerializeField] protected float wallKickDistance;
     [SerializeField] protected float wallKickHeight;
@@ -69,6 +79,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
     [Space(10)]
+    [Header("Dash Vars")]
     //Dash Vars
     [SerializeField] protected float dashTime;
     protected float startDashTime;
@@ -77,9 +88,11 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected bool canDash = true;
     protected bool isDashing;
     protected Vector3 initForward;
+    public GameObject dashTrigger;
 
 
     [Space(10)]
+    [Header("ABH Vars")]
     //ABH
     [SerializeField] protected int tickMax;
     [SerializeField] protected float abhSpeed;
@@ -145,6 +158,8 @@ public class PlayerScript : MonoBehaviour, Damageable
         movementSpeedVar = defaultMovementSpeed;
         dashTrigger.SetActive(false);
         health = maxHealth;
+        hudScript.UpdateHealth();
+        hudScript.UpdateEggValues();
 
     }
 
@@ -174,7 +189,15 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
 
-
+        if (isSonicEffect)
+        {
+            if (sonicEffectTime + startSonicEffectTime < Time.time)
+            {
+                isSonicEffect = false;
+                movementSpeedVar = defaultMovementSpeed;
+            }
+            movementSpeedVar = sonicMovementSpeed;
+        }
 
 
 
@@ -330,10 +353,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
 
-    public void ChangeCameraZoom(float amount)
-    {
-        targetFOV = defaultFov / amount;
-    }
 
 
 
@@ -363,36 +382,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     //    }
     //}
 
-    public void openUIElement(bool isOpen)
-    {
-        if (isOpen)
-        {
-            SetAllBoolsFalse();
-            ChangeCameraZoom(1f);
-            hudScript.gameObject.SetActive(false);
-            Cursor.lockState = CursorLockMode.Confined;
-            lookScript.setCanLook(false);
-            canMove = false;
-            weaponManager.canShoot(false);
-
-        }
-        else
-        {
-            hudScript.gameObject.SetActive(true);
-            Cursor.lockState = CursorLockMode.Locked;
-            lookScript.setCanLook(true);
-            canMove = true;
-
-            weaponManager.canShoot(true);
-        }
-    }
 
 
 
-    public void ChangeWeaponAnimationOverride(AnimatorOverrideController overrideController)
-    {
-        animator.runtimeAnimatorController = overrideController;
-    }
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
@@ -464,6 +456,49 @@ public class PlayerScript : MonoBehaviour, Damageable
     public virtual void UnlockUlt()
     {
 
+    }
+
+    public void SonicAttackEffect()
+    {
+        print("hit be effect");
+        isSonicEffect = true;
+        startSonicEffectTime = Time.time;
+    }
+
+
+    public void ChangeWeaponAnimationOverride(AnimatorOverrideController overrideController)
+    {
+        animator.runtimeAnimatorController = overrideController;
+    }
+
+    public void ChangeCameraZoom(float amount)
+    {
+        targetFOV = defaultFov / amount;
+    }
+
+
+    public void openUIElement(bool isOpen)
+    {
+        if (isOpen)
+        {
+            SetAllBoolsFalse();
+            ChangeCameraZoom(1f);
+            hudScript.gameObject.SetActive(false);
+            Cursor.lockState = CursorLockMode.Confined;
+            lookScript.setCanLook(false);
+            canMove = false;
+            weaponManager.canShoot(false);
+
+        }
+        else
+        {
+            hudScript.gameObject.SetActive(true);
+            Cursor.lockState = CursorLockMode.Locked;
+            lookScript.setCanLook(true);
+            canMove = true;
+
+            weaponManager.canShoot(true);
+        }
     }
 
 

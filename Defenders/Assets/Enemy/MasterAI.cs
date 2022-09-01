@@ -6,6 +6,12 @@ public class MasterAI : MonoBehaviour
 {
 
     public EnemySpawnData[] enemys;
+    [SerializeField] private float difficulty;
+    float initSpawnRate;
+    float firstTierTime;
+
+    int waveNum = 5;
+    
 
     
 
@@ -18,11 +24,10 @@ public class MasterAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        initSpawnRate = 20f * (1f - (.5f * difficulty));
+        firstTierTime = 10f - (5f * difficulty);
+        waveTime = SpawnRate();
         spawnPoints = GetComponentsInChildren<Transform>();
-        for (int i = 0; i < enemys.Length; i++)
-        {
-            enemys[i].spawnTime = Random.Range(enemys[i].spawnTimeMin, enemys[i].spawnTimeMax);
-        }
     }
 
     // Update is called once per frame
@@ -30,16 +35,40 @@ public class MasterAI : MonoBehaviour
     {
         if (lastWaveTime + waveTime < Time.time)
         {
-            foreach (EnemySpawnData enemy in enemys)
+            for (int i = 0; i < 5; i++)
             {
-                if (enemy.lastSpawnTime + enemy.spawnTime < Time.time)
+                int index = Random.Range(0, enemys.Length);
+                if (enemys[index].tier == 2)
                 {
-                    Instantiate(enemy.prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
-                    enemy.lastSpawnTime = Time.time;
+                    if (Time.timeSinceLevelLoad/60 > firstTierTime)
+                    {
+                        print(Time.timeSinceLevelLoad / 60 + ", " + firstTierTime);
+                        Instantiate(enemys[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+                    }
+                } else
+                {
+                    print(enemys[index].prefab);
+                    Instantiate(enemys[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
                 }
+
+
+
             }
+            lastWaveTime = Time.time;
+            waveTime = SpawnRate();
         }
     }
+
+
+    private float SpawnRate()
+    {
+
+
+        return Mathf.Pow((1 - difficulty), (Time.timeSinceLevelLoad/60f) / initSpawnRate * 3 * difficulty) * initSpawnRate;
+    }
+
+
+
 
 
 }
@@ -47,9 +76,6 @@ public class MasterAI : MonoBehaviour
 public class EnemySpawnData
 {
     [SerializeField] public GameObject prefab;
-    [SerializeField] public float spawnTimeMin;
-    [SerializeField] public float spawnTimeMax;
-    [HideInInspector] public float spawnTime;
-    [HideInInspector] public float lastSpawnTime;
+    [SerializeField] public int tier;
 
 }

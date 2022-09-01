@@ -25,20 +25,28 @@ public class LungerScript : PlayerBasedAIParent
     private Animator anim;
 
     [SerializeField]private bool isLunge;
+    private bool hasPlayer;
+    public float lungeTime;
+    public float startLungeTime;
+
+    public float lungeWaitTime;
+    private float lastLungeAttackTime;
+
+
+    public float searchTime;
+    private float lastSearchTime;
+
     
     // Start is called before the first frame update
     new void Start()
     {
+        base.Start();
         health = maxHealth;
-        player = ClosestPlayer(transform.position);
+        player = GetClosestPlayer();
         
         //playerTransform = player.transform;
         rb = GetComponentInChildren<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
-        //initValues();
-        agent = GetComponent<NavMeshAgent>();
-
-        InvokeRepeating("UpdatePath", 2f, 10f);
     }
 
     // Update is called once per frame
@@ -58,12 +66,40 @@ public class LungerScript : PlayerBasedAIParent
 
             }
         }
-        if (agent.isActiveAndEnabled && agent.remainingDistance < 1f && agent.hasPath)
-        {
-            
 
-            anim.SetBool("isWalking", false);
+        if (searchTime + lastSearchTime < Time.time)
+        {
+            UpdatePath();
         }
+
+
+        if (agent.hasPath)
+        {
+            if (hasPlayer)
+            {
+                if (agent.remainingDistance < lungeDist)
+                {
+                    if (lastLungeAttackTime + lungeWaitTime < Time.time)
+                    {
+                        print(agent.remainingDistance);
+                        StartLunge();
+                    }
+
+                }
+
+            }
+        }
+
+
+        if (isLunge)
+        {
+            if (startLungeTime + lungeTime < Time.time)
+            {
+                EndLunge();
+
+            }
+        }
+
     }
 
 
@@ -71,73 +107,34 @@ public class LungerScript : PlayerBasedAIParent
     {
         if (agent.isActiveAndEnabled)
         {
+            player = GetClosestPlayer();
+
             NavMeshPath path = new NavMeshPath();
             //print(agent);
             agent.CalculatePath(player.transform.position, path);
             if (agent.pathStatus == NavMeshPathStatus.PathComplete)
             {
+                print("has pl;ayer");
                 agent.destination = player.transform.position;
-            } else
+                hasPlayer = true;
+            }
+            else
             {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, egg.transform.position, out hit, wall))
+                agent.CalculatePath(egg.transform.position, path);
+                if (agent.pathStatus == NavMeshPathStatus.PathComplete)
                 {
-                    agent.destination = hit.transform.position;
-
+                    agent.destination = egg.transform.position;
+                }
+                else
+                {
+                    agent.destination = GetClosestWall().transform.position;
                 }
 
             }
 
             anim.SetBool("isWalking", true);
         }
-    }
-    
-
-
-
-    IEnumerator lungeAction(Vector3 loc)
-    {
-
-        anim.SetBool("isWalking", false);
-        anim.SetBool("isLunging", true);
-        agent.enabled = false;
-
-        float distance = Vector3.Distance(transform.position, loc);
-        float timer = Mathf.Lerp(0f, maxLungeTime, distance / lungeDist);
-
-        transform.LookAt(player.transform.position, Vector3.up);
-        //anim start lunge
-        yield return new WaitForSeconds(2.8F);
-        //launch
-
-        //Vector3 forceVector = transform.position - loc;
-        //float force = Mathf.Lerp(0, lungeForce, distance / lungeDist);
-        //forceVector += Vector3.up  * -maxHeight;
-        transform.LookAt(player.transform.position, Vector3.up);
-        rb.isKinematic = false;
-
-        Vector3 forceVector = player.transform.position - transform.position;
-
-        rb.AddForce(forceVector + (Vector3.up * maxHeight), ForceMode.Impulse);
-
-
-        anim.SetBool("isLunging", false);
-        yield return new WaitForSeconds(1f);
-        
-        
-
-
-        agent.enabled = true;
-        UpdatePath();
-        rb.isKinematic = true;
-
-
-        yield return new WaitForSeconds(5f);
-        isLunge = false;
-        yield return null;
-
-
-
+        lastSearchTime = Time.time;
     }
 
 
@@ -153,20 +150,72 @@ public class LungerScript : PlayerBasedAIParent
         isAttacking = false;
     }
 
-
-    public override void PlayerFound(PlayerScript player)
+    public void StartLunge()
     {
-        if (isLunge)
-            return;
-        this.player = player;
-        isLunge = true;
-        StartCoroutine(lungeAction(player.transform.position));
-
-        
+        agent.enabled = false;
+        hasPlayer = false;
+        anim.SetBool("isWalking", false);
+        anim.SetTrigger("isLunge");
+        LookAtPoint(player.transform.position, 1f);
     }
+
+    public void Lunge()
+    {
+        startLungeTime = Time.time;
+        print("lunge that bitch");
+        isLunge = true;
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        float timer = Mathf.Lerp(0f, maxLungeTime, distance / lungeDist);
+        transform.LookAt(player.transform.position, Vector3.up);
+
+        rb.isKinematic = false;
+
+        Vector3 forceVector = player.transform.position - transform.position;
+
+        rb.AddForce(forceVector + (Vector3.up * maxHeight), ForceMode.Impulse);
+
+    }
+
+    public void EndLunge()
+    {
+        rb.isKinematic = false;
+        isLunge = false;
+        agent.enabled = true;
+        UpdatePath();
+
+    }
+
+    public IEnumerator LookAtPoint(Vector3 point, float dur)
+    {
+        Quaternion start = transform.rotation;
+        Quaternion end = Quaternion.LookRotation(point - transform.position);
+        float t = 0f;
+        while (t < dur)
+        {
+            transform.rotation = Quaternion.Slerp(start, end, t / dur);
+            yield return null;
+            t += Time.deltaTime;
+        }
+    }
+
+
+
+
+
+    //public override void PlayerFound(PlayerScript player)
+    //{
+    //    if (isLunge)
+    //        return;
+    //    this.player = player;
+    //    isLunge = true;
+    //    StartCoroutine(lungeAction(player.transform.position));
+    //}
 
     public override void PlayerLost(PlayerScript player)
     {
     }
 
+    public override void PlayerFound(PlayerScript player)
+    {
+    }
 }

@@ -5,13 +5,17 @@ using UnityEngine;
 public class RocketLauncher : BasicWeaponScript
 {
 
-    public GameObject rocket;
+    public GameObject rocketPrefab;
     public Transform rocketSpawn;
     
 
     public override void EquipGun()
     {
-        throw new System.NotImplementedException();
+        setUp = true;
+        canShoot = false;
+        transform.localPosition = Vector3.zero;
+
+        //print(transform.localPosition);
     }
 
 
@@ -25,13 +29,15 @@ public class RocketLauncher : BasicWeaponScript
                 RaycastHit hit;
                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layer))
                 {
-                    Transform test = bulletSpawnPoint.transform;
-                    test.transform.LookAt(hit.point);
-                    Instantiate(rocket, bulletSpawnPoint.transform.position, test.rotation);
+                    RocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<RocketScript>();
+                    script.destination = hit.point;
+
                     //print("test");
                 } else
                 {
-                    Instantiate(rocket, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation);
+                    RocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<RocketScript>();
+                    script.destination = bulletSpawnPoint.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * 1000f;
+
                 }
                 
                 

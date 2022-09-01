@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 769c38d12a61f2744b472d0a892e2abc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1500
+  maxHealth: 1000
   attackDamage: 0
   hangerPrefab: {fileID: 5940262310254289350, guid: 15f1f1ddbee4cb74da66ff5944b63a16,
     type: 3}
@@ -91,6 +91,7 @@ MonoBehaviour:
   distThreshold: 50
   checkTime: 1.5
   speed: 2
+  initHeight: 80
 --- !u!195 &9217645385300307176
 NavMeshAgent:
   m_ObjectHideFlags: 0

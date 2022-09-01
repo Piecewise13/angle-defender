@@ -135,7 +135,6 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 8
-  updatePlayerLocDelay: 5
   lungeDist: 20
   maxLungeTime: 2
   maxHeight: 4
@@ -143,7 +142,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   attackDelay: 2
-  playerTransform: {fileID: 0}
   isLunge: 0
 --- !u!54 &4200042102207599216
 Rigidbody:
@@ -743,6 +741,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8344062370861849573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2653242655391762350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3864cf09dd68ed409ed75761f7761ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &3430026095812549908 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e04e653d62165ef429cab34f10a5517e,

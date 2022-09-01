@@ -48,7 +48,7 @@ MonoBehaviour:
   woodCost: 10
   ironCost: 10
   diamondCost: 10
-  soulFireNeeded: 200
+  soulFireNeeded: 2000
   tickDuration: 1
   soulFireCost: 20
   shaderMax: 33
@@ -62,6 +62,7 @@ MonoBehaviour:
   - {fileID: 1285123393729696020}
   monsters:
   - {fileID: 6397587233430079426, guid: 247f463cf66a5e04293419ddba114429, type: 3}
+  - {fileID: 4167105199208382502, guid: b8e0da8f70e3095408cf8fbf7bf5c20b, type: 3}
   spawnPoint: {fileID: 4363044007483171020}
   neededResource: 0
 --- !u!135 &5089341311012594779
@@ -100,14 +101,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 177272260898775337}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 1.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8586392695285013989}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &6645956139989546185
 GameObject:
   m_ObjectHideFlags: 0
