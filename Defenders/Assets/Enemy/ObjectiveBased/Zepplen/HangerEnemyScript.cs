@@ -54,44 +54,28 @@ public class HangerEnemyScript : PlayerBasedAIParent
     void UpdatePath()
     {
 
-
-        if (agent.isActiveAndEnabled)
+        lastSearchTime = Time.time;
+        agent.SetPath(path);
+        anim.SetBool("isWalking", true);
+        //figure out if there is a path to player
+        player = GetClosestPlayer();
+        if (player != null)
         {
-
-            player = GetClosestPlayer();
-            if (player == null)
+            agent.CalculatePath(player.transform.position, path);
+            if (path.status == NavMeshPathStatus.PathComplete)
             {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
-                {
-                    agent.destination = hit.transform.position;
 
-                } else
-                {
-                    agent.destination = egg.transform.position;
-                }
                 return;
             }
-
-            NavMeshPath path = new NavMeshPath();
-            //print(agent);
-            agent.CalculatePath(player.transform.position, path);
-            if (agent.pathStatus == NavMeshPathStatus.PathComplete)
-            {
-                agent.destination = player.transform.position;
-            }
-            else
-            {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
-                {
-                    agent.destination = hit.transform.position;
-
-                }
-
-            }
-            anim.SetBool("isWalking", true);
         }
+
+        agent.CalculatePath(egg.transform.position, path);
+        if (path.status == NavMeshPathStatus.PathComplete)
+        {
+            return;
+        }
+        targetWall = GetRandomWall();
+        agent.CalculatePath(targetWall.transform.position, path);
 
     }
 

@@ -17,6 +17,7 @@ public class RangedEnemyScript : PlayerBasedAIParent
 
     private GameObject shootingTarget;
     private bool isShooting;
+    private bool shouldShoot;
 
 
     public GameObject fireball;
@@ -35,79 +36,73 @@ public class RangedEnemyScript : PlayerBasedAIParent
     // Update is called once per frame
     void Update()
     {
-        if (searchTime + lastSearchTime < Time.time)
+
+        if (!isShooting)
         {
-            if (!isShooting)
+            if (searchTime + lastSearchTime < Time.time)
             {
+
                 UpdatePath();
             }
 
-
-            lastSearchTime = Time.time;
-        }
-
-        if (agent.hasPath)
-        {
-            if (agent.remainingDistance < shootDistance)
+            if (agent.hasPath)
             {
-                if (shootTime + lastShootTime < Time.time)
+                if (shouldShoot)
                 {
-                    if (!isShooting)
+                    if (agent.remainingDistance < shootDistance)
                     {
-                        StartShooting();
+                        if (shootTime + lastShootTime < Time.time)
+                        {
+                            if (!isShooting)
+                            {
+                                StartShooting();
+                            }
+                            transform.LookAt(shootingTarget.transform.position);
+
+
+                        }
                     }
-                    agent.isStopped = true;
-                    transform.LookAt(shootingTarget.transform.position);
-
-
                 }
+
             }
         }
+
     }
 
     private void UpdatePath()
     {
-        if (agent.isActiveAndEnabled)
-        {
 
-            player = GetClosestPlayer();
-            if (player == null)
+
+        /*
+         * 
+         * THIS WORKS BUT ALSO MIGHT NOT BE VERY EFFICENT. TEST WITH SHITTY COMPUTERS TO MAKE SURE ITS THE BEST WAY
+         */
+        lastSearchTime = Time.time;
+        agent.SetPath(path);
+        anim.SetBool("isWalking", true);
+        //figure out if there is a path to player
+        player = GetClosestPlayer();
+        if (player != null)
+        {
+            agent.CalculatePath(player.transform.position, path);
+            if (path.status == NavMeshPathStatus.PathComplete)
             {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
-                {
-                    agent.destination = hit.transform.position;
-                    shootingTarget = hit.transform.gameObject;
-                }
-                else
-                {
-                    agent.destination = egg.transform.position;
-                    shootingTarget = egg;
-                }
+
+                shootingTarget = player.gameObject;
+                shouldShoot = true;
                 return;
             }
-
-            NavMeshPath path = new NavMeshPath();
-            //print(agent);
-            agent.CalculatePath(player.transform.position, path);
-            if (agent.pathStatus == NavMeshPathStatus.PathComplete)
-            {
-                agent.destination = player.transform.position;
-                shootingTarget = player.gameObject;
-            }
-            else
-            {
-                RaycastHit hit;
-                if (Physics.Linecast(transform.position, egg.transform.position, out hit, LayerMask.NameToLayer("Defense")))
-                {
-                    agent.destination = hit.transform.position;
-                    shootingTarget = hit.transform.gameObject;
-                }
-
-            }
-            anim.SetBool("isWalking", true);
         }
 
+        agent.CalculatePath(egg.transform.position, path);
+        if (path.status == NavMeshPathStatus.PathComplete)
+        {
+            shouldShoot = false;
+            return;
+        }
+        targetWall = GetRandomWall();
+        agent.CalculatePath(targetWall.transform.position, path);
+        shouldShoot = true;
     }
 
     public void Shoot()
@@ -120,6 +115,7 @@ public class RangedEnemyScript : PlayerBasedAIParent
     private void StartShooting()
     {
         anim.SetTrigger("Fire");
+        agent.isStopped = true;
         isShooting = true;
 
 
@@ -127,8 +123,8 @@ public class RangedEnemyScript : PlayerBasedAIParent
 
     private void StopShooting()
     {
+        agent.isStopped = false;
         lastShootTime = Time.time;
-        lastSearchTime = Time.time;
         isShooting = false;
     }
 

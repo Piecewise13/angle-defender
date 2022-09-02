@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 10
-  playerRange: 20
+  playerRange: 200
   playerMask:
     serializedVersion: 2
     m_Bits: 8

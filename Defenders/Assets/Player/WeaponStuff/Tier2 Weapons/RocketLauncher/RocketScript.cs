@@ -27,7 +27,6 @@ public class RocketScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("hit");
         Collider[] hits = Physics.OverlapSphere(transform.position, radius, layerToHit);
         foreach (var item in hits)
         {

@@ -42,12 +42,11 @@ public class MasterAI : MonoBehaviour
                 {
                     if (Time.timeSinceLevelLoad/60 > firstTierTime)
                     {
-                        print(Time.timeSinceLevelLoad / 60 + ", " + firstTierTime);
                         Instantiate(enemys[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
                     }
                 } else
                 {
-                    print(enemys[index].prefab);
+
                     Instantiate(enemys[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
                 }
 

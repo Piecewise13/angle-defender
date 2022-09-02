@@ -9,7 +9,7 @@ public class BulletForgeUI : MonoBehaviour
 
     public BulletForge forge;
     
-    private int ironAmount;
+    private int woodAmount;
     private int depositAmount;
 
 
@@ -17,12 +17,12 @@ public class BulletForgeUI : MonoBehaviour
     private float buttonPercent;
 
 
-    public TMP_Text currentIron;
+    public TMP_Text currentWood;
     public TMP_Text sliderMaxValue;
     public TMP_Text depositText;
 
-    public TMP_Text playerIronIndicator;
-    public TMP_Text turretIronIndicator;
+    public TMP_Text playerWoodIndicator;
+    public TMP_Text turretWoodIndicator;
 
     public GameObject restrictAccess;
     public Button turretButton;
@@ -42,13 +42,13 @@ public class BulletForgeUI : MonoBehaviour
 
     public void sliderChange()
     {
-        UpdateDepositAmount(Mathf.CeilToInt(ironAmount * slider.value));
+        UpdateDepositAmount(Mathf.CeilToInt(woodAmount * slider.value));
     }
 
     public void percentButton(float percent)
     {
         buttonPercent = percent;
-        UpdateDepositAmount(Mathf.CeilToInt(ironAmount * percent));
+        UpdateDepositAmount(Mathf.CeilToInt(woodAmount * percent));
     }
 
     private void UpdateDepositAmount(int amount)
@@ -60,16 +60,16 @@ public class BulletForgeUI : MonoBehaviour
 
     public void DepositPlayer()
     {
-        forge.ChangePlayerIronAmount(depositAmount);
+        forge.ChangePlayerWoodAmount(depositAmount);
         UpdateDepositAmount(0);
-        UpdateIronIndicator();
+        UpdateWoodIndicator();
     }
 
     public void DepositTurret()
     {
-        forge.ChangeTurretIronAmount(depositAmount);
+        forge.ChangeTurretWoodAmount(depositAmount);
         UpdateDepositAmount(0);
-        UpdateIronIndicator();
+        UpdateWoodIndicator();
 
     }
 
@@ -79,10 +79,10 @@ public class BulletForgeUI : MonoBehaviour
     }
 
 
-    public void UpdateIronIndicator()
+    public void UpdateWoodIndicator()
     {
-        playerIronIndicator.text = "Iron Left: " + forge.GetPlayerIron();
-        turretIronIndicator.text = "Iron Left: " + forge.GetTurretIron();
+        playerWoodIndicator.text = "Wood Left: " + forge.GetPlayerWood();
+        turretWoodIndicator.text = "Wood Left: " + forge.GetTurretWood();
     }
 
     public void TurretUnlocked()
@@ -95,9 +95,14 @@ public class BulletForgeUI : MonoBehaviour
 
     public void OnEnable()
     {
-        ironAmount = (forge.player.GetResourceAmount(ResourceType.Iron));
-        currentIron.text = ironAmount.ToString();
-        sliderMaxValue.text = ironAmount.ToString();
-        UpdateIronIndicator();
+        if (forge.player == null)
+        {
+            return;
+        }
+        print(forge.player);
+        woodAmount = (forge.player.GetResourceAmount(ResourceType.Wood));
+        currentWood.text = woodAmount.ToString();
+        sliderMaxValue.text = woodAmount.ToString();
+        UpdateWoodIndicator();
     }
 }

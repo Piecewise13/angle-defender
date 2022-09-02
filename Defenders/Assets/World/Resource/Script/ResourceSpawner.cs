@@ -11,6 +11,7 @@ public class ResourceSpawner : MonoBehaviour
 
     float timer;
     public float timeTilSpawn;
+    private float lastSpawnTime;
 
     public float startingSpawnAmount;
 
@@ -45,15 +46,11 @@ public class ResourceSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (timer >= timeTilSpawn)
+        if (timeTilSpawn + lastSpawnTime < Time.time)
         {
             resources.Add(spawnResource());
-            timer = 0f;
+            lastSpawnTime = Time.time;
             
-        }
-        else
-        {
-            timer += Time.deltaTime;
         }
     }
 
@@ -99,7 +96,7 @@ public class ResourceSpawner : MonoBehaviour
         Vector3 randomPoint;
         Vector3 normal;
 
-        while (!RandomPoint(Vector3.zero, range, out randomPoint, out normal))
+        while (!RandomPoint(transform.position, range, out randomPoint, out normal))
         {
             
         }
@@ -109,7 +106,6 @@ public class ResourceSpawner : MonoBehaviour
         if (randomNum < diamondChance)
         {
             return Instantiate(diamondResource, randomPoint, Quaternion.Euler(Vector3.up * Random.Range(0f, 180f)));
-
             
 
 

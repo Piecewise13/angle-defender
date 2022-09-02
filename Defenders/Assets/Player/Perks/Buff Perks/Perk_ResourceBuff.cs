@@ -9,6 +9,12 @@ public class Perk_ResourceBuff : ParentPerkScript
 
     private int upgradeInt;
 
+    new void Start()
+    {
+        base.Start();
+        SetAvalible();
+    }
+
     public override void UnlockUpgrade(PlayerScript player)
     {
         egg.UpgradeResourceRate();

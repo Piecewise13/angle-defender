@@ -51,7 +51,7 @@ MonoBehaviour:
   damage: 10
   layer:
     serializedVersion: 2
-    m_Bits: 2769
+    m_Bits: 2257
   bulletTrail: {fileID: 2440538135499922666, guid: 0e204fa6881014167b7c6bffc22ae9cb,
     type: 3}
   bulletSpawnPoint: {fileID: 9218556060212924031}

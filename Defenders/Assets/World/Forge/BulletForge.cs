@@ -11,11 +11,11 @@ public class BulletForge : MonoBehaviour
     private int playerBulletsProduced;
     private int turretBulletsProduced;
 
-    private int playerIronAmount = 0;
-    private int turretIronAmount;
-    public int ironCost;
+    private int playerWoodAmount = 0;
+    private int turretWoodAmount;
+    public int woodCost;
     public int bulletAmount;
-    private bool hasIron;
+    private bool hasWood;
 
     private bool inMenu = false;
 
@@ -49,16 +49,16 @@ public class BulletForge : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (hasIron)
+        if (hasWood)
         {
 
             if (bulletProductionDelay + lastProductionTime < Time.time)
             {
-                if (playerIronAmount >= ironCost)
+                if (playerWoodAmount >= woodCost)
                 {
                     ProducePlayerBullets();
                 }
-                if (turretIronAmount >= ironCost)
+                if (turretWoodAmount >= woodCost)
                 {
                     ProduceTurretBullets();
                 }
@@ -107,11 +107,11 @@ public class BulletForge : MonoBehaviour
         print("PlayerBullets: " + playerBulletsProduced);
         mouthFire.Play();
 
-        playerIronAmount += -ironCost;
-        bulletForgeUI.UpdateIronIndicator();
-        if (playerIronAmount < ironCost && turretIronAmount < ironCost)
+        playerWoodAmount += -woodCost;
+        bulletForgeUI.UpdateWoodIndicator();
+        if (playerWoodAmount < woodCost && turretWoodAmount < woodCost)
         {
-            hasIron = false;
+            hasWood = false;
             StopEyeFire();
         }
     }
@@ -119,15 +119,15 @@ public class BulletForge : MonoBehaviour
     {
 
         TurretScript.bulletsReady += bulletAmount;
-        turretIronAmount += -ironCost;
-        bulletForgeUI.UpdateIronIndicator();
-        if (turretIronAmount < ironCost)
+        turretWoodAmount += -woodCost;
+        bulletForgeUI.UpdateWoodIndicator();
+        if (turretWoodAmount < woodCost)
         {
 
             StopSoulFireTubes();
-            if (playerIronAmount < ironCost)
+            if (playerWoodAmount < woodCost)
             {
-                hasIron = false;
+                hasWood = false;
                 StopEyeFire();
             }
 
@@ -148,25 +148,25 @@ public class BulletForge : MonoBehaviour
 
     }
 
-    public void ChangePlayerIronAmount(int amount)
+    public void ChangePlayerWoodAmount(int amount)
     {
-        hasIron = true;
+        hasWood = true;
         StartEyeFire();
 
-        playerIronAmount += amount;
+        playerWoodAmount += amount;
 
-        player.SetResourceAmount(ResourceType.Iron, -amount);
+        player.SetResourceAmount(ResourceType.Wood, -amount);
     }
     
     
-    public void ChangeTurretIronAmount(int amount)
+    public void ChangeTurretWoodAmount(int amount)
     {
 
-        hasIron = true;
+        hasWood = true;
         StartEyeFire();
-        turretIronAmount += amount;
+        turretWoodAmount += amount;
         StartSoulFireTubes();
-        player.SetResourceAmount(ResourceType.Iron, -amount);
+        player.SetResourceAmount(ResourceType.Wood, -amount);
     }
 
 
@@ -191,21 +191,21 @@ public class BulletForge : MonoBehaviour
 
     public void TurretUnlocked()
     {
-        StopSoulFireTubes();
         for (int i = 0; i < soulFireLine.Length; i++)
         {
             soulFireLine[i].SetActive(true);
         }
+        StopSoulFireTubes();
     }
 
-    public int GetPlayerIron()
+    public int GetPlayerWood()
     {
-        return playerIronAmount;
+        return playerWoodAmount;
     }
 
-    public int GetTurretIron()
+    public int GetTurretWood()
     {
-        return turretIronAmount;
+        return turretWoodAmount;
     }
 
 

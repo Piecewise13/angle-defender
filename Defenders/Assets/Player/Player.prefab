@@ -1,5 +1,63 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &843926299
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843926300}
+  - component: {fileID: 843926302}
+  - component: {fileID: 843926301}
+  m_Layer: 10
+  m_Name: DashTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &843926300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 1.189}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 776603430620036341}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &843926302
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.15, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &843926301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843926299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 225a2d7b85a3c88498a9ba7b57ef1bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &776603430181723998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,6 +1123,7 @@ Transform:
   - {fileID: 776603432014623888}
   - {fileID: 776603431880785911}
   - {fileID: 776603431739791682}
+  - {fileID: 843926300}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -376.969, z: 0}
@@ -1109,25 +1168,28 @@ MonoBehaviour:
   hudScript: {fileID: 776603431880785908}
   upgradeTree: {fileID: 0}
   defaultMovementSpeed: 10
-  jumpHeight: 7
+  jumpHeight: 10
   groundDistance: 0.4
   groundMask:
     serializedVersion: 2
     m_Bits: 2753
+  sonicEffectTime: 10
+  sonicMovementSpeed: 3
   wallKickDistance: 3
   wallKickHeight: 5
   movementLayer:
     serializedVersion: 2
     m_Bits: 641
-  dashDistance: 0
-  dashSpeed: 0
-  dashCost: 0
-  tickMax: 50
+  dashTime: 0.5
+  dashSpeed: 75
+  dashCost: 50
+  dashTrigger: {fileID: 843926299}
+  tickMax: 25
   abhSpeed: 10
   abhCount: 1
-  woodAmount: 500
-  ironAmount: 500
-  diamondAmount: 500
+  woodAmount: 0
+  ironAmount: 0
+  diamondAmount: 0
   maxHealth: 100
   respawnSlope: 5
   spawnPoint: {fileID: 0}
@@ -3963,7 +4025,7 @@ GameObject:
   - component: {fileID: 776603432188544381}
   - component: {fileID: 776603432188544380}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: EggHealthSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4039,7 +4101,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

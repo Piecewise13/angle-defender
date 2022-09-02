@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,6 +11,8 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     protected static ResourceSpawner resourceSpawner;
     [SerializeField] protected float maxHealth;
     [SerializeField] protected float attackDamage;
+    protected WallDefenceScript targetWall;
+    protected NavMeshPath path;
 
     public static WallDefenceScript[] walls;
 
@@ -32,15 +32,11 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         agent = GetComponent<NavMeshAgent>();
 
         walls = FindObjectsOfType<WallDefenceScript>();
-
+        path = new NavMeshPath();
 
     }
 
-    public WallDefenceScript GetRandomWall()
-    {
-        int index = (int)(Random.value * walls.Length);
-        return walls[index];
-    }
+
 
     public WallDefenceScript GetClosestWall(Vector3 refPos)
     {
@@ -59,22 +55,29 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         return walls[closestIndex];
     }
 
-    public WallDefenceScript GetClosestWall()
+    public WallDefenceScript GetRandomWall()
     {
-        print(walls.Length);
-        int closestIndex = 0;
-        float distance = float.MaxValue;
-        for (int i = 0; i < walls.Length; i++)
+        if (targetWall != null)
         {
-            float currentDist = Vector3.Distance(transform.position, walls[i].transform.position);
-            if (currentDist < distance)
-            {
-
-                closestIndex = i;
-                distance = currentDist;
-            }
+            return targetWall;
         }
-        return walls[closestIndex];
+
+        return walls[Random.Range(0, walls.Length)];
+
+
+        //int closestIndex = 0;
+        //float distance = float.MaxValue;
+        //for (int i = 0; i < walls.Length; i++)
+        //{
+        //    float currentDist = Vector3.Distance(transform.position, walls[i].transform.position);
+        //    if (currentDist < distance)
+        //    {
+
+        //        closestIndex = i;
+        //        distance = currentDist;
+        //    }
+        //}
+        //return walls[closestIndex];
     }
 
 

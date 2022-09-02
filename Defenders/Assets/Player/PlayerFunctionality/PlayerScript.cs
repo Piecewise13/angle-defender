@@ -74,7 +74,6 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected float wallKickDistance;
     [SerializeField] protected float wallKickHeight;
     protected bool canWallKick = true;
-    protected bool movementUnlocked = true;
     public LayerMask movementLayer;
 
 
@@ -217,7 +216,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
             }
 
-            if (movementUnlocked)
+            if (firstPerkUnlocked)
             {
                 if (!isGrounded && canWallKick)
                 {
@@ -437,14 +436,9 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     }
 
-    public void UnlockMovement()
-    {
-        movementUnlocked = true;
-    }
-
-
     public virtual void UnlockFirstUpgrade()
     {
+        firstPerkUnlocked = true;
     }
 
 

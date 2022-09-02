@@ -6,8 +6,11 @@ public class FireBall : MonoBehaviour
 {
 
     
-    public Transform target;
-
+    [HideInInspector]public Transform target;
+    public GameObject explosion;
+    public float radius;
+    public float damage;
+    public LayerMask layerToHit;
 
     private Vector3 initPos;
     float time;
@@ -24,7 +27,7 @@ public class FireBall : MonoBehaviour
         initPos = transform.position;
         distance = Vector3.Distance((transform.position), (target.position + ((transform.position - target.position).normalized) * initPos.y ));
         initVelo = Mathf.Sqrt((gravity * distance)/(Mathf.Sin(2 * angle)));
-        print(initVelo);
+
 
     }
 
@@ -34,4 +37,24 @@ public class FireBall : MonoBehaviour
         transform.position = initPos + (transform.forward * initVelo * time * Mathf.Cos(angle)) + (transform.up * ((initVelo * time * Mathf.Sin(angle)) - (.5f * gravity * time * time)));
         time += Time.deltaTime;
     }
+
+    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        print("explossssssssssionnnnn");
+        Collider[] hits = Physics.OverlapSphere(transform.position, radius, layerToHit);
+        foreach (var item in hits)
+        {
+            try
+            {
+                item.GetComponentInParent<Damageable>().TakeDamage(damage, item);
+            }
+            catch { }
+        }
+
+        Instantiate(explosion, transform.position, Quaternion.Euler(Vector3.zero));
+        Destroy(gameObject);
+    }
+
 }

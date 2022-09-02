@@ -9,8 +9,14 @@ public class LungerScript : PlayerBasedAIParent
 
     [Header("Lunge Vars")]
     [SerializeField] private float lungeDist;
-    [SerializeField] private float maxLungeTime;
-    [SerializeField] private float maxHeight;
+    [SerializeField] private bool isLunge;
+    private bool hasPlayer;
+    public float lungeTime;
+    public float lungeSpeed;
+    public float startLungeTime;
+    private Vector3 lungeTarget;
+    public float lungeWaitTime;
+    private float lastLungeAttackTime;
 
 
     public LayerMask wall;
@@ -24,13 +30,7 @@ public class LungerScript : PlayerBasedAIParent
     private Rigidbody rb;
     private Animator anim;
 
-    [SerializeField]private bool isLunge;
-    private bool hasPlayer;
-    public float lungeTime;
-    public float startLungeTime;
 
-    public float lungeWaitTime;
-    private float lastLungeAttackTime;
 
 
     public float searchTime;
@@ -55,12 +55,12 @@ public class LungerScript : PlayerBasedAIParent
 
         if (isAttacking)
         {
-            
+            agent.isStopped = true;
             if (lastAttack + attackDelay < Time.time)
             {
                 
-                player.TakeDamage(attackDamage, null);
-                
+                attackTarget.TakeDamage(attackDamage, null);
+                lastLungeAttackTime = Time.time;
                 lastAttack = Time.time;
                 print("attack");
 
@@ -93,11 +93,12 @@ public class LungerScript : PlayerBasedAIParent
 
         if (isLunge)
         {
-            if (startLungeTime + lungeTime < Time.time)
+            float distance = Vector3.Distance(transform.position, lungeTarget);
+            if (distance < 1f)
             {
                 EndLunge();
-
             }
+            transform.position = Vector3.MoveTowards(transform.position, lungeTarget, lungeSpeed * Time.deltaTime);
         }
 
     }
@@ -105,36 +106,28 @@ public class LungerScript : PlayerBasedAIParent
 
     private void UpdatePath()
     {
-        if (agent.isActiveAndEnabled)
-        {
-            player = GetClosestPlayer();
-
-            NavMeshPath path = new NavMeshPath();
-            //print(agent);
-            agent.CalculatePath(player.transform.position, path);
-            if (agent.pathStatus == NavMeshPathStatus.PathComplete)
-            {
-                print("has pl;ayer");
-                agent.destination = player.transform.position;
-                hasPlayer = true;
-            }
-            else
-            {
-                agent.CalculatePath(egg.transform.position, path);
-                if (agent.pathStatus == NavMeshPathStatus.PathComplete)
-                {
-                    agent.destination = egg.transform.position;
-                }
-                else
-                {
-                    agent.destination = GetClosestWall().transform.position;
-                }
-
-            }
-
-            anim.SetBool("isWalking", true);
-        }
         lastSearchTime = Time.time;
+        agent.SetPath(path);
+        anim.SetBool("isWalking", true);
+        //figure out if there is a path to player
+        player = GetClosestPlayer();
+        if (player != null)
+        {
+            agent.CalculatePath(player.transform.position, path);
+            if (path.status == NavMeshPathStatus.PathComplete)
+            {
+                hasPlayer = true;
+                return;
+            }
+        }
+
+        agent.CalculatePath(egg.transform.position, path);
+        if (path.status == NavMeshPathStatus.PathComplete)
+        {
+            return;
+        }
+        targetWall = GetRandomWall();
+        agent.CalculatePath(targetWall.transform.position, path);
     }
 
 
@@ -147,7 +140,9 @@ public class LungerScript : PlayerBasedAIParent
 
     public void StopAttacking()
     {
+        attackTarget = null;
         isAttacking = false;
+        agent.isStopped = false;
     }
 
     public void StartLunge()
@@ -155,32 +150,27 @@ public class LungerScript : PlayerBasedAIParent
         agent.enabled = false;
         hasPlayer = false;
         anim.SetBool("isWalking", false);
-        anim.SetTrigger("isLunge");
+        anim.SetBool("isLunge", true);
+        
         LookAtPoint(player.transform.position, 1f);
     }
 
     public void Lunge()
     {
+        print("start lunging");
         startLungeTime = Time.time;
-        print("lunge that bitch");
+        lungeTarget = player.transform.position;
         isLunge = true;
-        float distance = Vector3.Distance(transform.position, player.transform.position);
-        float timer = Mathf.Lerp(0f, maxLungeTime, distance / lungeDist);
-        transform.LookAt(player.transform.position, Vector3.up);
-
-        rb.isKinematic = false;
-
-        Vector3 forceVector = player.transform.position - transform.position;
-
-        rb.AddForce(forceVector + (Vector3.up * maxHeight), ForceMode.Impulse);
+        transform.LookAt(lungeTarget, Vector3.up);
 
     }
 
     public void EndLunge()
     {
-        rb.isKinematic = false;
         isLunge = false;
         agent.enabled = true;
+        lastLungeAttackTime = Time.time;
+        anim.SetBool("isLunge", false);
         UpdatePath();
 
     }

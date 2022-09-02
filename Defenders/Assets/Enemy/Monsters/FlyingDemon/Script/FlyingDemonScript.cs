@@ -64,7 +64,6 @@ public class FlyingDemonScript : PlayerBasedAIParent
     public float wallAttackDistance;
     private bool shouldBeWallAttack;
     private bool isWallAttack;
-    private WallDefenceScript wallTarget;
     private Vector3 wallInitPos;
     [SerializeField] private float wallDamage;
 
@@ -278,9 +277,9 @@ public class FlyingDemonScript : PlayerBasedAIParent
         }
         else
         {
-            wallTarget = GetClosestWall();
+            targetWall = GetRandomWall();
             EndCircle();
-            SetNewMoveGoal((wallTarget.transform.position - (Extns.xz3(wallTarget.transform.position) - Extns.xz3(transform.position)).normalized * wallAttackDistance) + (Vector3.up * wallAttackHeight));
+            SetNewMoveGoal((targetWall.transform.position - (Extns.xz3(targetWall.transform.position) - Extns.xz3(transform.position)).normalized * wallAttackDistance) + (Vector3.up * wallAttackHeight));
             shouldBeWallAttack = true;
             canAttack = false;
         }
@@ -291,16 +290,16 @@ public class FlyingDemonScript : PlayerBasedAIParent
 
     public void StartWallAttack()
     {
-        SetNewMoveGoal(wallTarget.transform.position);
+        SetNewMoveGoal(targetWall.transform.position);
         wallInitPos = transform.position;
-        StartCoroutine(LookAtPoint(wallTarget.transform.position, 1f));
+        StartCoroutine(LookAtPoint(targetWall.transform.position, 1f));
         shouldMove = false;
     }
 
     public void WallAttack()
     {
         print("stat attacking");
-        SetNewMoveGoal(wallTarget.transform.position + (Vector3.up * 5f));
+        SetNewMoveGoal(targetWall.transform.position + (Vector3.up * 5f));
         moveSpeed = wallAttackSpeed;
         shouldMove = true;
         isWallAttack = true;
@@ -309,10 +308,10 @@ public class FlyingDemonScript : PlayerBasedAIParent
 
     public void EndWallAttack()
     {
-        wallTarget.TakeDamage(wallDamage, null);
+        targetWall.TakeDamage(wallDamage, null);
         anim.SetBool("isWallAttack", false);
         print("end attack");
-        SetNewMoveGoal((wallTarget.transform.position + (Extns.xz3(wallTarget.transform.position) - Extns.xz3(wallInitPos)).normalized * wallAttackDistance / 2f) + (Vector3.up * wallAttackHeight));
+        SetNewMoveGoal((targetWall.transform.position + (Extns.xz3(targetWall.transform.position) - Extns.xz3(wallInitPos)).normalized * wallAttackDistance / 2f) + (Vector3.up * wallAttackHeight));
         canAttack = true;
         isWallAttack = false;
         lastAttackTime = Time.time;
