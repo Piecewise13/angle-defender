@@ -63,6 +63,7 @@ public class BulletForgeUI : MonoBehaviour
         forge.ChangePlayerWoodAmount(depositAmount);
         UpdateDepositAmount(0);
         UpdateWoodIndicator();
+        UpdateWoodValues();
     }
 
     public void DepositTurret()
@@ -70,7 +71,7 @@ public class BulletForgeUI : MonoBehaviour
         forge.ChangeTurretWoodAmount(depositAmount);
         UpdateDepositAmount(0);
         UpdateWoodIndicator();
-
+        UpdateWoodValues();
     }
 
     public void CloseForge()
@@ -92,6 +93,15 @@ public class BulletForgeUI : MonoBehaviour
         forge.TurretUnlocked();
     }
 
+    public void UpdateWoodValues()
+    {
+        print(forge.player);
+        woodAmount = (forge.player.GetResourceAmount(ResourceType.Wood));
+        currentWood.text = woodAmount.ToString();
+        sliderMaxValue.text = woodAmount.ToString();
+        UpdateWoodIndicator();
+    }
+
 
     public void OnEnable()
     {
@@ -99,10 +109,6 @@ public class BulletForgeUI : MonoBehaviour
         {
             return;
         }
-        print(forge.player);
-        woodAmount = (forge.player.GetResourceAmount(ResourceType.Wood));
-        currentWood.text = woodAmount.ToString();
-        sliderMaxValue.text = woodAmount.ToString();
-        UpdateWoodIndicator();
+        UpdateWoodValues();
     }
 }

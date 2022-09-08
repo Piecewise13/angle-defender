@@ -46,6 +46,7 @@ public class RocketLauncher : BasicWeaponScript
                 //spawn stuff
 
                 AddRecoil();
+                player.SetSoulFire(-bulletCost);
             }
 
         }

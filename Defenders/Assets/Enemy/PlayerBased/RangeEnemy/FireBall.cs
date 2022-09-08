@@ -42,13 +42,13 @@ public class FireBall : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("explossssssssssionnnnn");
         Collider[] hits = Physics.OverlapSphere(transform.position, radius, layerToHit);
         foreach (var item in hits)
         {
             try
             {
                 item.GetComponentInParent<Damageable>().TakeDamage(damage, item);
+                print(item);
             }
             catch { }
         }

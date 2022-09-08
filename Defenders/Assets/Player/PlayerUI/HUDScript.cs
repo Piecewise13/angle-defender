@@ -48,7 +48,6 @@ public class HUDScript : MonoBehaviour
         UpdateResourceValues();
         UpdateSoulFireValues();
         UpdateHealth();
-        UpdateEggValues();
     }
 
     // Update is called once per frame

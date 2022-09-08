@@ -35,6 +35,7 @@ public class MinaMonsterScript : PlayerBasedAIParent
 
 
     private Animator anim;
+    private PlayerDataMangerScript playerData;
 
 
 
@@ -47,6 +48,7 @@ public class MinaMonsterScript : PlayerBasedAIParent
         anim = GetComponentInChildren<Animator>();
         lastAttackTime = Time.time;
         rushTrigger.SetActive(false);
+        playerData = FindObjectOfType<PlayerDataMangerScript>();
     }
 
     // Update is called once per frame
@@ -71,21 +73,19 @@ public class MinaMonsterScript : PlayerBasedAIParent
     {
         agent.isStopped = true;
         float pValue = Random.value;
-
-
-
         print("p value: " + pValue);
-        if (pValue <= 1f/3f)
+        if (pValue <= 1f / 3f)
         {
+            print("throwing axe");
             RaycastHit hit;
-            if (Physics.Linecast(transform.position, player.transform.position, out hit, playerMask))
+            if (Physics.Linecast(transform.position + Vector3.up * 10, player.transform.position, out hit, playerMask))
             {
                 print(hit.collider.gameObject);
                 lastAttackTime = Time.time - attackTime / 2;
                 return;
 
             }
-            print("throwing axe");
+
             StartCoroutine(LookAtPoint(player.transform.position, 1f));
 
             anim.SetTrigger("throwAxe");
@@ -93,13 +93,10 @@ public class MinaMonsterScript : PlayerBasedAIParent
 
 
             //axe
-        } else if (pValue > 2f/3f)
+        }
+        else if (pValue > 2f / 3f)
         {
-
             print("Rock Slam");
-            magicParticles.Play();
-
-            anim.SetTrigger("rockSlam");
             for (int i = 0; i < numOfRocks; i++)
             {
 
@@ -108,10 +105,14 @@ public class MinaMonsterScript : PlayerBasedAIParent
                 rockScript.SetMinaPos(transform.position);
             }
             canAttack = false;
+
+            magicParticles.Play();
+
+            anim.SetTrigger("rockSlam");
         }
         else
         {
-
+            print("Rushing");
             RaycastHit hit;
             if (Physics.Linecast(transform.position + Vector3.up * 10f, player.transform.position, out hit, playerMask))
             {
@@ -131,7 +132,7 @@ public class MinaMonsterScript : PlayerBasedAIParent
                 print("didn't works");
                 return;
             }
-            print("Rushing");
+
             StartCoroutine(LookAtPoint(rushTarget, 1f));
             anim.SetBool("isRushing", true);
             canAttack = false;
@@ -252,7 +253,14 @@ public class MinaMonsterScript : PlayerBasedAIParent
             }
         }
     }
+    
 
+    public override void Death()
+    {
+        print("minamonster death");
+        playerData.MonsterKilled();
+        Destroy(gameObject);
+    }
 
 
     public override void PlayerFound(PlayerScript player)

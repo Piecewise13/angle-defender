@@ -48,7 +48,7 @@ MonoBehaviour:
   woodCost: 10
   ironCost: 10
   diamondCost: 10
-  soulFireNeeded: 2000
+  soulFireNeeded: 1000
   tickDuration: 1
   soulFireCost: 20
   shaderMax: 33

@@ -59,7 +59,6 @@ public class RepairScript : MonoBehaviour
                     {
                         wallDefence.Rebuild();
                         wallDefence.health += repairAmount;
-                        print(gameObject.name + " health: " + wallDefence.health);
                         ChargePlayer();
                     }
 
@@ -68,12 +67,12 @@ public class RepairScript : MonoBehaviour
                     if (wallDefence.health >= wallDefence.maxHealth)
                     {
                         wallDefence.health = wallDefence.maxHealth;
-                        print("rebuilt all the way");
+
                     }
                     else
                     {
                         wallDefence.health += repairAmount;
-                        print(gameObject.name + " health: " + wallDefence.health);
+
                         ChargePlayer();
                     }
                 }

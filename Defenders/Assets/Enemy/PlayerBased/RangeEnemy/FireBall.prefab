@@ -50,7 +50,7 @@ MonoBehaviour:
   target: {fileID: 0}
   explosion: {fileID: 566445529151324334, guid: f2e7e7c37b049ec4f9418a5b6f7fcd7a,
     type: 3}
-  radius: 5
+  radius: 4
   damage: 30
   layerToHit:
     serializedVersion: 2

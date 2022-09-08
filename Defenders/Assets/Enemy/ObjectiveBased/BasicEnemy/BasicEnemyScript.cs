@@ -8,6 +8,7 @@ public class BasicEnemyScript : ParentAIScript
     public float attackTime;
     private float timeLastAttack;
     private Damageable attackTarget;
+    private GameObject atttackTargetGO;
 
     private Collider hitCollider;
     public LayerMask wall;
@@ -19,6 +20,7 @@ public class BasicEnemyScript : ParentAIScript
 
     
     private bool shouldAttack = false;
+    private bool canAttack = false;
 
     private Animator anim;
 
@@ -34,56 +36,96 @@ public class BasicEnemyScript : ParentAIScript
 
     private void Update()
     {
-        if (shouldSearch)
+
+        if (!agent.isStopped)
         {
-            if (lastSearchTime + searchTime < Time.time)
+            if (agent.hasPath)
+            {
+                if (shouldAttack)
+                {
+                    if (Vector3.Distance(transform.position, targetWall.transform.position) < 2f)
+                    {
+                        StartAttack();
+                    }
+                }
+            }
+            else
             {
                 UpdatePath();
+            }
 
-            }
         }
-        if (shouldAttack)
+
+
+
+        if (canAttack)
         {
-            if (attackTime + timeLastAttack < Time.time)
+            if (attackTarget != null)
             {
-                anim.SetTrigger("Attack");
-                print(attackTarget);
-                attackTarget.TakeDamage(attackDamage, null);
-                timeLastAttack = Time.time;
+                if (attackTarget.isDead)
+                {
+                    EndAttack();
+                }
+                if (attackTime + timeLastAttack < Time.time)
+                {
+                    transform.LookAt(agent.destination);
+                    anim.SetTrigger("Attack");
+                    attackTarget.TakeDamage(attackDamage, null);
+                    timeLastAttack = Time.time;
+                }
+            } else
+            {
+                EndAttack();
             }
+
         }
     }
 
     void UpdatePath()
     {
-
         lastSearchTime = Time.time;
-        agent.SetPath(path);
+
         anim.SetBool("isWalking", true);
         //figure out if there is a path to player
 
         agent.CalculatePath(egg.transform.position, path);
         if (path.status == NavMeshPathStatus.PathComplete)
         {
+            shouldAttack = false;
+            agent.SetPath(path);
             return;
         }
+        shouldAttack = true;
         targetWall = GetRandomWall();
-        agent.CalculatePath(targetWall.transform.position, path);
+        atttackTargetGO = targetWall.gameObject;
+        attackTarget = targetWall;
+        if (!agent.hasPath)
+        {
+            agent.destination = targetWall.transform.position;
+        }
+
 
     }
 
-    public void StartAttack(Damageable attackTarget)
+    void StartAttack()
     {
-        shouldAttack = true;
-        shouldSearch = false;
-        this.attackTarget = attackTarget;
+
+        transform.LookAt(targetWall.transform.position);
+        attackTarget = targetWall;
         anim.SetBool("isWalking", false);
+        agent.isStopped = true;
+        canAttack = true;
+        print("start attack");
     }
 
     public void EndAttack()
     {
+
+        attackTarget = null;
         shouldAttack = false;
-        shouldSearch = true;
+        canAttack = false;
+        agent.isStopped = false;
+        UpdatePath();
     }
 
 }

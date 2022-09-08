@@ -58,7 +58,7 @@ NavMeshAgent:
   m_Height: 2.23
   m_BaseOffset: 0
   m_WalkableMask: 13
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!114 &3330682168605720998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +77,7 @@ MonoBehaviour:
   wall:
     serializedVersion: 2
     m_Bits: 512
-  searchTime: 2
+  searchTime: 10
 --- !u!54 &3330682168605720999
 Rigidbody:
   m_ObjectHideFlags: 0

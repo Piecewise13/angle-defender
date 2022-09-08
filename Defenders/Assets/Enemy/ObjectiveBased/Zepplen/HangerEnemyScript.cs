@@ -55,7 +55,7 @@ public class HangerEnemyScript : PlayerBasedAIParent
     {
 
         lastSearchTime = Time.time;
-        agent.SetPath(path);
+
         anim.SetBool("isWalking", true);
         //figure out if there is a path to player
         player = GetClosestPlayer();
@@ -64,7 +64,7 @@ public class HangerEnemyScript : PlayerBasedAIParent
             agent.CalculatePath(player.transform.position, path);
             if (path.status == NavMeshPathStatus.PathComplete)
             {
-
+                agent.SetPath(path);
                 return;
             }
         }
@@ -72,11 +72,13 @@ public class HangerEnemyScript : PlayerBasedAIParent
         agent.CalculatePath(egg.transform.position, path);
         if (path.status == NavMeshPathStatus.PathComplete)
         {
+            agent.SetPath(path);
             return;
         }
         targetWall = GetRandomWall();
-        agent.CalculatePath(targetWall.transform.position, path);
 
+        //agent.CalculatePath(targetWall.transform.position, path);
+        agent.destination = targetWall.transform.position;
     }
 
 

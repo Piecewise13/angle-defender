@@ -11,7 +11,7 @@ public class BasicAttackScript : MonoBehaviour
     {
         if (!other.transform.root.tag.Equals("Enemy"))
         {
-            main.StartAttack(other.GetComponentInParent<Damageable>());
+            //main.StartAttack(other.GetComponentInParent<Damageable>());
         }
     }
 

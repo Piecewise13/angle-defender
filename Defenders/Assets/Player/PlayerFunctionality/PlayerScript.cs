@@ -94,7 +94,6 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("ABH Vars")]
     //ABH
     [SerializeField] protected int tickMax;
-    [SerializeField] protected float abhSpeed;
     [SerializeField] protected int abhCount;
     protected bool canABH;
     protected int tickCounter;
@@ -132,8 +131,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("Player Vars")]
     public float maxHealth;
 
-
-
+    [Space(20)]
+    [Header("Death Vars")]
+    [SerializeField] protected Camera deathCam;
     protected float respawnTime = 5f;
     protected float deathCount;
     [SerializeField] protected float respawnSlope;
@@ -158,7 +158,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         dashTrigger.SetActive(false);
         health = maxHealth;
         hudScript.UpdateHealth();
-        hudScript.UpdateEggValues();
 
     }
 
@@ -254,7 +253,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                 {
 
 
-                    movementSpeedVar = (movementSpeedVar * 1.1f);
+                    movementSpeedVar = (movementSpeedVar * 1.2f);
                     abhCount++;
 
 
@@ -349,42 +348,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
-
-
-
-
-
-
-
-
-    //public void upgradeTreeOpen(bool isOpen)
-    //{
-
-
-    //    if (isOpen)
-    //    {
-    //        hudScript.gameObject.SetActive(false);
-    //        upgradeTree.gameObject.SetActive(true);
-    //        Cursor.lockState = CursorLockMode.Confined;
-    //        lookScript.setCanLook(false);
-    //        canMove = false;
-    //        weaponManager.canShoot(false);
-    //    }
-    //    else
-    //    {
-    //        hudScript.gameObject.SetActive(true);
-    //        upgradeTree.gameObject.SetActive(false);
-    //        Cursor.lockState = CursorLockMode.Locked;
-    //        lookScript.setCanLook(true);
-    //        canMove = true;
-    //        weaponManager.canShoot(true);
-    //    }
-    //}
-
-
-
-
-
     public void TakeDamage(float damage, Collider hitCollider)
     {
         if (!isDead)
@@ -417,12 +380,22 @@ public class PlayerScript : MonoBehaviour, Damageable
         canMove = false;
         canJump = false;
         soulFire = 0;
+        animator.SetBool("isDead", true);
+        //deathCam.enabled = true;
+        //playerCamera.enabled = false;
+
+        deathCam.gameObject.SetActive(true);
+        playerCamera.gameObject.SetActive(false);
         deathScreen.SetActive(true);
     }
 
     public void Respawn()
     {
-        print("Respawning");
+        animator.SetBool("isDead", false);
+        deathCam.gameObject.SetActive(false);
+        playerCamera.gameObject.SetActive(true);
+        //playerCamera.enabled = true;
+        //deathCam.enabled = false;
         //play respawn anim probably a courotine
         deathScreen.SetActive(false);
         transform.position = spawnPoint.position;

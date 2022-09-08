@@ -13,7 +13,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
 
 
-    public float health { get; set; }
+    [SerializeField] public float health { get; set; }
     public float maxHealth;
     public bool isDead { get; set; }
 
@@ -45,6 +45,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
+        print(gameObject + " taking damage: " + damage);
         if (!isDead)
         {
             health -= damage;

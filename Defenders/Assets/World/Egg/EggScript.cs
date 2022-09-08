@@ -11,6 +11,8 @@ public class EggScript : MonoBehaviour, Damageable
     public HUDScript[] playerHuds;
     public GameObject upgradeTree;
     public float maxHealth;
+    private PlayerDataMangerScript playerData;
+
 
     public GameObject woodIngot;
     public GameObject ironIngot;
@@ -35,6 +37,7 @@ void Start()
         health = maxHealth;
         print(health);
         playerHuds = FindObjectsOfType<HUDScript>();
+        playerData = FindObjectOfType<PlayerDataMangerScript>();
     }
 
     // Update is called once per frame
@@ -146,6 +149,6 @@ void Start()
 
     public void Death()
     {
-        print("GET FUCKED BITCH YOU LOST LIKE A PUSSY FUCKER");
+        playerData.GameLost();
     }
 }

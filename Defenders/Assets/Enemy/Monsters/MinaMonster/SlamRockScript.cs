@@ -21,6 +21,10 @@ public class SlamRockScript : MonoBehaviour
 
     public static bool bShouldMove = false;
     public static bool shouldSlam = false;
+    public GameObject rock;
+    public float damage;
+    public GameObject slamParticle;
+
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +33,9 @@ public class SlamRockScript : MonoBehaviour
         shouldSlam = false;
         spawnPos = transform.position;
 
-        movementDirection = (spawnPos - minaPos).normalized;
+        movementDirection = (Extns.xz3(spawnPos) - Extns.xz3(minaPos)).normalized;
+        rock.transform.rotation = Random.rotation;
+
 
         speed = Random.Range(minSpeed, maxSpeed);
         sphereCollider = GetComponent<SphereCollider>();
@@ -62,9 +68,10 @@ public class SlamRockScript : MonoBehaviour
             foreach (var item in players)
             {
                 PlayerScript player = item.GetComponentInParent<PlayerScript>();
-                player.Death();
+                player.TakeDamage(damage, null);
             }
         }
+        Instantiate(slamParticle, transform.position, Quaternion.Euler(Vector3.zero));
         Destroy(gameObject);
     }
 

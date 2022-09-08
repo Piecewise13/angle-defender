@@ -49,12 +49,11 @@ public class TurretScript : MonoBehaviour
         {
             if (bulletsReady > 0)
             {
-                print("YESSS BULLETS");
                 anim.SetBool("isShooting", isShooting);
                 turret.transform.rotation = Quaternion.LookRotation((target.transform.position - turret.transform.position).normalized);
             } else
             {
-                print("NOOOOO BULLETS");
+
                 particles.Stop();
             }
 

@@ -7,6 +7,7 @@ public class FlyingDemonScript : PlayerBasedAIParent
 {
     [Header("Misc Vars")]
     public Animator anim;
+    private PlayerDataMangerScript playerData;
 
     private bool canAttack = true;
     [SerializeField] private float attackTime;
@@ -77,6 +78,7 @@ public class FlyingDemonScript : PlayerBasedAIParent
         shouldMove = true;
         anim = GetComponentInChildren<Animator>();
         StartCircle();
+        playerData = FindObjectOfType<PlayerDataMangerScript>();
     }
     // Update is called once per frame
     void Update()
@@ -391,6 +393,11 @@ public class FlyingDemonScript : PlayerBasedAIParent
         StartCircle();
     }
 
+    public new void Death()
+    {
+        playerData.MonsterKilled();
+        Destroy(gameObject);
+    }
 
 
     public override void PlayerFound(PlayerScript player)

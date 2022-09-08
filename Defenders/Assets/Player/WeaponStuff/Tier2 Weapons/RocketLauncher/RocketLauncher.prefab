@@ -83,7 +83,7 @@ MonoBehaviour:
     m_Bits: 2753
   bulletTrail: {fileID: 0}
   bulletSpawnPoint: {fileID: 2400987801437930235}
-  shootDelay: 1
+  shootDelay: 3
   weaponSetUpTime: 0.5
   adsZoom: 0
   cameraRotator: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   snappiness: 4
   returnSpeed: 2
   clipSize: 0
-  bulletCost: 0
+  bulletCost: 40
   gunAnims: {fileID: 22100000, guid: 1976d9f09439a87498812904b968e4aa, type: 2}
   reloadDuration: 2
   rocketPrefab: {fileID: 995391954510499669, guid: 7a0db6cc8a91e49a9883e471bc84542f,

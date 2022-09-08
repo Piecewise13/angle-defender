@@ -81,7 +81,6 @@ public class LungerScript : PlayerBasedAIParent
                 {
                     if (lastLungeAttackTime + lungeWaitTime < Time.time)
                     {
-                        print(agent.remainingDistance);
                         StartLunge();
                     }
 
@@ -107,7 +106,7 @@ public class LungerScript : PlayerBasedAIParent
     private void UpdatePath()
     {
         lastSearchTime = Time.time;
-        agent.SetPath(path);
+
         anim.SetBool("isWalking", true);
         //figure out if there is a path to player
         player = GetClosestPlayer();
@@ -116,6 +115,7 @@ public class LungerScript : PlayerBasedAIParent
             agent.CalculatePath(player.transform.position, path);
             if (path.status == NavMeshPathStatus.PathComplete)
             {
+                agent.SetPath(path);
                 hasPlayer = true;
                 return;
             }
@@ -124,10 +124,11 @@ public class LungerScript : PlayerBasedAIParent
         agent.CalculatePath(egg.transform.position, path);
         if (path.status == NavMeshPathStatus.PathComplete)
         {
+            agent.SetPath(path);
             return;
         }
         targetWall = GetRandomWall();
-        agent.CalculatePath(targetWall.transform.position, path);
+        agent.destination = targetWall.transform.position;
     }
 
 

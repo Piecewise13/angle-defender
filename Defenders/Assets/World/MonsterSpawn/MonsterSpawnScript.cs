@@ -72,28 +72,28 @@ public class MonsterSpawnScript : MonoBehaviour
         //print("enter");
         if (other.transform.root.gameObject.tag.Equals("Enemy"))
         {
-            //print("checked");
-            try
-            {
-                currentResourceCollector = other.gameObject.GetComponentInParent<BasicResourceCollector>();
+            ////print("checked");
+            //try
+            //{
+            //    currentResourceCollector = other.gameObject.GetComponentInParent<BasicResourceCollector>();
 
 
-                if (currentResourceCollector.collectedAmount > 0)
-                {
-                    UpdateResourceAmount(currentResourceCollector.collectedAmount, currentResourceCollector.collectedResource);
-                    currentResourceCollector.collectedAmount = 0;
+            //    if (currentResourceCollector.collectedAmount > 0)
+            //    {
+            //        UpdateResourceAmount(currentResourceCollector.collectedAmount, currentResourceCollector.collectedResource);
+            //        currentResourceCollector.collectedAmount = 0;
                     
-                    //master.updateResourceAmount(enemyScript.collectedResource, enemyScript.collectedAmount);
-                }
+            //        //master.updateResourceAmount(enemyScript.collectedResource, enemyScript.collectedAmount);
+            //    }
 
-                currentResourceCollector.AssignTarget(neededResource);
+            //    currentResourceCollector.AssignTarget(neededResource);
 
-            }
-            catch
-            {
-                print("failed");
-                return;
-            }
+            //}
+            //catch
+            //{
+            //    print("failed");
+            //    return;
+            //}
         } else if (other.transform.root.gameObject.tag.Equals("Player"))
         {
             player = other.GetComponentInParent<PlayerScript>();
