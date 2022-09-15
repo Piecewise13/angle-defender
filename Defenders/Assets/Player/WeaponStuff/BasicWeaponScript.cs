@@ -6,18 +6,24 @@ public abstract class BasicWeaponScript : MonoBehaviour
 {
 
     //Damage
+    [Space(20)]
+    [Header("Damage Vars")]
     public float damage;
     public static float damageMultiplier = 1;
     public LayerMask layer;
 
     
 
-    //Bullet Tracer 
+    //Bullet Tracer
+    [Space(20)]
+    [Header("Bullet Tracer Vars")]
     public TrailRenderer bulletTrail;
     public GameObject bulletSpawnPoint;
     protected TrailRenderer trailObject;
 
     //Shoot Speed Stuff
+    [Space(20)]
+    [Header("Shooting Vars")]
     public float shootDelay;
     protected float lastShootTime;
     [SerializeField] protected float weaponSetUpTime;
@@ -26,6 +32,8 @@ public abstract class BasicWeaponScript : MonoBehaviour
     [SerializeField] protected float adsZoom;
 
     //Recoil Vars
+    [Space(20)]
+    [Header("Recoil Vars")]
     protected Camera playerCamera;
     public GameObject cameraRotator;
     [SerializeField] protected Vector3 recoilAmount;
@@ -35,6 +43,8 @@ public abstract class BasicWeaponScript : MonoBehaviour
     [SerializeField] protected float returnSpeed;
 
     //Reload and Bullet Stuff
+    [Space(20)]
+    [Header("Bullet Vars")]
     public int clipSize;
     protected int currentNumOfBullets;
 
@@ -45,6 +55,9 @@ public abstract class BasicWeaponScript : MonoBehaviour
     protected float startReloadTime;
     protected ParticleSystem bulletSystem;
 
+    [Space(20)]
+    [Header("Component Vars")]
+    public Sprite weaponIcon;
     protected static HUDScript hud;
     protected Animator playerAnimator;
     protected PlayerScript player;

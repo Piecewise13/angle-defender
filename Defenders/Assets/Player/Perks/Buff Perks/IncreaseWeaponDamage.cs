@@ -9,7 +9,7 @@ public class IncreaseWeaponDamage : ParentPerkScript
 
     public override void UnlockUpgrade(PlayerScript player)
     {
-        BasicWeaponScript.damageMultiplier = 1.25f;
+        BasicWeaponScript.damageMultiplier = 1.1f;
     }
 
 

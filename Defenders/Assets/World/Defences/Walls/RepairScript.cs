@@ -59,7 +59,7 @@ public class RepairScript : MonoBehaviour
                     {
                         wallDefence.Rebuild();
                         wallDefence.health += repairAmount;
-                        ChargePlayer();
+                        wallDefence.ChangeWallObject();
                     }
 
                 } else
@@ -67,11 +67,13 @@ public class RepairScript : MonoBehaviour
                     if (wallDefence.health >= wallDefence.maxHealth)
                     {
                         wallDefence.health = wallDefence.maxHealth;
+                        wallDefence.ChangeWallObject();
 
                     }
                     else
                     {
                         wallDefence.health += repairAmount;
+                        wallDefence.ChangeWallObject();
 
                         ChargePlayer();
                     }
@@ -94,7 +96,6 @@ public class RepairScript : MonoBehaviour
 
         for (int i = 0; i < (int)ResourceType.Count; i++)
         {
-            print(i + ", " + (ResourceType)i);
             if (player.GetResourceAmount((ResourceType)i) < WallDefenceScript.cost[(ResourceType)i])
             {
                 

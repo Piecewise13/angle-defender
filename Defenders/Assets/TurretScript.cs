@@ -50,7 +50,7 @@ public class TurretScript : MonoBehaviour
             if (bulletsReady > 0)
             {
                 anim.SetBool("isShooting", isShooting);
-                turret.transform.rotation = Quaternion.LookRotation((target.transform.position - turret.transform.position).normalized);
+                turret.transform.rotation = Quaternion.LookRotation(((target.transform.position + (Vector3.up * 2f)) - turret.transform.position).normalized);
             } else
             {
 
@@ -119,7 +119,7 @@ public class TurretScript : MonoBehaviour
             particles.Play();
             target.TakeDamage(damage, null);
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-            StartCoroutine(SpawnTrail(trailObject, target.transform.position));
+            StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up  * 1.5f));
             bulletsReady--;
         } else
         {

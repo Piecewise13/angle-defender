@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 5662646137841834420}
   - component: {fileID: 2546179592862812908}
   - component: {fileID: 12615311793765446}
+  - component: {fileID: 2479556934726717190}
   m_Layer: 9
   m_Name: WoodWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5662646137841834420
 Transform:
@@ -30,8 +31,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5269066240264684537}
   - {fileID: 5662646139162404277}
+  - {fileID: 1676296616430472312}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -64,8 +65,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  lowMatVal: 0
+  highMatVal: 0
+  wallObjects:
+  - {fileID: 38687963538205134, guid: fcf4452782d0d444681fd2ca74503811, type: 3}
+  - {fileID: 6479637341855314667, guid: 87941329da24ed34db84cfa1c13f5b8d, type: 3}
+  - {fileID: 6763072685182898619, guid: 7b961ff4ffd91a84ab005c89b2fd015a, type: 3}
+  - {fileID: 2540033220467164620, guid: 5bfdac38ab0d40f4ba6732915ef94bcf, type: 3}
+  - {fileID: 8619841031184315181, guid: bd9afa146bf03d34dbad32564ca4d60b, type: 3}
+  - {fileID: 3772595009651051540, guid: 1efea9f76b9c209408d24c9eb651d016, type: 3}
   maxHealth: 300
-  wallMesh: {fileID: 4779633639489706307}
+  wallHolder: {fileID: 8050227339879629343}
+  wallObject: {fileID: 7409103878687189832}
+  collide: {fileID: 2479556934726717190}
+--- !u!65 &2479556934726717190
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662646137841834423}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 5.07, z: 10}
+  m_Center: {x: 0, y: 2.7, z: 0}
 --- !u!1 &5662646139162404278
 GameObject:
   m_ObjectHideFlags: 0
@@ -82,7 +107,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5662646139162404277
 Transform:
@@ -97,7 +122,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5662646137841834420}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &5662646139162404276
 BoxCollider:
@@ -110,7 +135,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.9, y: 4.94, z: 9.26}
+  m_Size: {x: 6.62, y: 5.12, z: 10}
   m_Center: {x: 0, y: 2.61, z: 0}
 --- !u!114 &5198593173862758000
 MonoBehaviour:
@@ -127,13 +152,45 @@ MonoBehaviour:
   timeDelay: 1
   rebuildDelay: 2
   cost: 10
-  repairAmount: 50
---- !u!1001 &5662646138973955090
+  repairAmount: 30
+--- !u!1 &8050227339879629343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1676296616430472312}
+  m_Layer: 9
+  m_Name: WallObjectHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1676296616430472312
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8050227339879629343}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7897550217328603634}
+  m_Father: {fileID: 5662646137841834420}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &7643458941595375129
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 5662646137841834420}
+    m_TransformParent: {fileID: 1676296616430472312}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 19aee9bc775bc4641ae665f260b50341,
         type: 3}
@@ -195,11 +252,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: -8391222552659086748, guid: 19aee9bc775bc4641ae665f260b50341,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
     - target: {fileID: -4683669308469848369, guid: 19aee9bc775bc4641ae665f260b50341,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -215,37 +267,29 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: -516098083770646512, guid: 19aee9bc775bc4641ae665f260b50341,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 19aee9bc775bc4641ae665f260b50341,
         type: 3}
       propertyPath: m_Name
-      value: WoodWall (1)
+      value: WoodWall
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 19aee9bc775bc4641ae665f260b50341,
         type: 3}
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 19aee9bc775bc4641ae665f260b50341,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 439516310653078524, guid: 19aee9bc775bc4641ae665f260b50341, type: 3}
+    - {fileID: -808966925217029657, guid: 19aee9bc775bc4641ae665f260b50341, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 19aee9bc775bc4641ae665f260b50341, type: 3}
---- !u!1 &4779633639489706307 stripped
+--- !u!1 &7409103878687189832 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 19aee9bc775bc4641ae665f260b50341,
     type: 3}
-  m_PrefabInstance: {fileID: 5662646138973955090}
+  m_PrefabInstance: {fileID: 7643458941595375129}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &5269066240264684537 stripped
+--- !u!4 &7897550217328603634 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 19aee9bc775bc4641ae665f260b50341,
     type: 3}
-  m_PrefabInstance: {fileID: 5662646138973955090}
+  m_PrefabInstance: {fileID: 7643458941595375129}
   m_PrefabAsset: {fileID: 0}

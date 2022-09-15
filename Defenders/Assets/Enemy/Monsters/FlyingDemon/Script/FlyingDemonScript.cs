@@ -103,7 +103,7 @@ public class FlyingDemonScript : PlayerBasedAIParent
 
         if (shouldBeSonicAttack)
         {
-            if (Vector3.Distance(transform.position, moveGoal) < 3f)
+            if (Vector3.Distance(transform.position, moveGoal) < 5f)
             {
                 print("start attacking");
                 anim.SetBool("isSonicAttack", true);

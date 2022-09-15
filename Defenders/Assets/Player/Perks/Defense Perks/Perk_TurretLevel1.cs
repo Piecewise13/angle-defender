@@ -17,7 +17,7 @@ public class Perk_TurretLevel1 : ParentPerkScript
             turret.gameObject.SetActive(true);
         }
         isUnlocked = true;
-        forgeUI.TurretUnlocked();
+        //forgeUI.TurretUnlocked();
     }
 
     // Start is called before the first frame update

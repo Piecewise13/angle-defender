@@ -12,6 +12,7 @@ TagManager:
   - Body
   - Ground
   - Monster
+  - Floor
   layers:
   - Default
   - TransparentFX
@@ -27,7 +28,7 @@ TagManager:
   - Enemy
   - Decoration
   - Post Processing
-  - 
+  - TowerThrowable
   - 
   - 
   - 

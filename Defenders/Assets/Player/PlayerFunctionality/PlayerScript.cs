@@ -516,6 +516,11 @@ public class PlayerScript : MonoBehaviour, Damageable
         return -1;
     }
 
+    public void LaunchPlayer(float height)
+    {
+        velocity.y = height;
+    }
+
     public int GetSoulFire()
     {
         return soulFire;
@@ -537,6 +542,11 @@ public class PlayerScript : MonoBehaviour, Damageable
     public int GetSoulFireMax()
     {
         return maxSoulFire;
+    }
+
+    public void SetHealthMax(int delta)
+    {
+        maxHealth += delta;
     }
 
     public float GetRespawnTime()

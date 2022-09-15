@@ -6,23 +6,38 @@ public class BulletForge : MonoBehaviour
 {
     private bool playerEnter;
     public PlayerScript player;
-    public WeaponInventoryManager inventory;
-
-    private int playerBulletsProduced;
-    private int turretBulletsProduced;
-
-    private int playerWoodAmount = 0;
-    private int turretWoodAmount;
-    public int woodCost;
-    public int bulletAmount;
-    private bool hasWood;
-
     private bool inMenu = false;
 
-    [SerializeField] private float bulletProductionDelay;
+
+
+    [Header("Input Vars")]
+    public float productionTime;
     private float lastProductionTime;
 
+    public int fuelBurnAmount;
+    public int fuelAmount = 0;
+    public int woodFuelAmount;
+    public int ironFuelAmount;
+    public int diamondFuelAmount;
+
+
+    [Header("Output Vars")]
+    public int firePerTick;
+    public int fireStored;
+
+    public float playerTransferTime;
+    private float lastPlayerTransferTime;
+    public int playerTransferAmount;
+
+    public int fuelMax;
+    public int soulFireMax;
+
+
+
+
     //Gameobject Components
+    [Space(20)]
+    [Header("Effect Gameobjects")]
     public BulletForgeUI bulletForgeUI;
     public ParticleSystem[] eyeFire;
     public ParticleSystem mouthFire;
@@ -36,36 +51,27 @@ public class BulletForge : MonoBehaviour
     public Color activeBlue;
     public Color disable;
 
-
-
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        if (hasWood)
+        if (fuelAmount > 0)
         {
-
-            if (bulletProductionDelay + lastProductionTime < Time.time)
-            {
-                if (playerWoodAmount >= woodCost)
+            if (fireStored < soulFireMax) {
+                if (productionTime + lastProductionTime < Time.time)
                 {
-                    ProducePlayerBullets();
-                }
-                if (turretWoodAmount >= woodCost)
-                {
-                    ProduceTurretBullets();
-                }
+                    fireStored += firePerTick;
+                    fuelAmount -= fuelBurnAmount;
 
-                lastProductionTime = Time.time;
+                    bulletForgeUI.UpdateSoulFireMeter();
+                    bulletForgeUI.UpdateFuelMeter();
+                    lastProductionTime = Time.time;
+                }
             }
         }
+
+
+
+
 
         if (playerEnter)
         {
@@ -75,6 +81,23 @@ public class BulletForge : MonoBehaviour
                 bulletForgeUI.gameObject.SetActive(inMenu);
                 player.openUIElement(inMenu);
             }
+
+            if (fireStored >= playerTransferAmount)
+            {
+
+                if (player.GetSoulFireMax() > player.GetSoulFire() + playerTransferAmount)
+                {
+                    if (playerTransferTime + lastPlayerTransferTime < Time.time)
+                    {
+                        player.SetSoulFire(playerTransferAmount);
+                        fireStored -= playerTransferAmount;
+                        bulletForgeUI.UpdateSoulFireMeter();
+                        
+                        lastPlayerTransferTime = Time.time;
+                    }
+                }
+
+            }
         }
     }
 
@@ -83,9 +106,7 @@ public class BulletForge : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             player = other.gameObject.GetComponentInParent<PlayerScript>();
-            inventory = other.gameObject.GetComponentInParent<WeaponInventoryManager>();
             playerEnter = true;
-            ReplenishBullets();
         }
 
     }
@@ -93,82 +114,34 @@ public class BulletForge : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            ReplenishBullets();
             playerEnter = false;
             
         }
     }
 
 
-    public void ProducePlayerBullets()
+    public void DepositResources(ResourceType type, int num)
     {
-
-        playerBulletsProduced += bulletAmount;
-        print("PlayerBullets: " + playerBulletsProduced);
-        mouthFire.Play();
-
-        playerWoodAmount += -woodCost;
-        bulletForgeUI.UpdateWoodIndicator();
-        if (playerWoodAmount < woodCost && turretWoodAmount < woodCost)
+        switch (type)
         {
-            hasWood = false;
-            StopEyeFire();
-        }
-    }
-    public void ProduceTurretBullets()
-    {
+            case ResourceType.Wood:
+                player.SetResourceAmount(ResourceType.Wood, -num);
+                fuelAmount += woodFuelAmount * num;
 
-        TurretScript.bulletsReady += bulletAmount;
-        turretWoodAmount += -woodCost;
-        bulletForgeUI.UpdateWoodIndicator();
-        if (turretWoodAmount < woodCost)
-        {
+                break;
+            case ResourceType.Iron:
+                player.SetResourceAmount(ResourceType.Iron, -num);
+                fuelAmount += ironFuelAmount * num;
 
-            StopSoulFireTubes();
-            if (playerWoodAmount < woodCost)
-            {
-                hasWood = false;
-                StopEyeFire();
-            }
-
-        }
-    }
-
-
-
-    public void ReplenishBullets()
-    {
-        if (playerBulletsProduced > 0)
-        {
-            
-            player.SetSoulFire(playerBulletsProduced);
-            playerBulletsProduced = 0;
-            mouthFire.Stop();
+                break;
+            case ResourceType.Diamond:
+                player.SetResourceAmount(ResourceType.Diamond, -num);
+                fuelAmount += diamondFuelAmount * num;
+                break;
         }
 
+
     }
-
-    public void ChangePlayerWoodAmount(int amount)
-    {
-        hasWood = true;
-        StartEyeFire();
-
-        playerWoodAmount += amount;
-
-        player.SetResourceAmount(ResourceType.Wood, -amount);
-    }
-    
-    
-    public void ChangeTurretWoodAmount(int amount)
-    {
-
-        hasWood = true;
-        StartEyeFire();
-        turretWoodAmount += amount;
-        StartSoulFireTubes();
-        player.SetResourceAmount(ResourceType.Wood, -amount);
-    }
-
 
     public void CloseMenu()
     {
@@ -186,7 +159,7 @@ public class BulletForge : MonoBehaviour
 
     public void UpgradeForge(int upgradeAmount)
     {
-        bulletAmount = Mathf.CeilToInt(bulletAmount * (1 + (upgradeAmount * .1f)));
+        firePerTick = Mathf.CeilToInt(firePerTick * (1 + (upgradeAmount * .1f)));
     }
 
     public void TurretUnlocked()
@@ -197,17 +170,6 @@ public class BulletForge : MonoBehaviour
         }
         StopSoulFireTubes();
     }
-
-    public int GetPlayerWood()
-    {
-        return playerWoodAmount;
-    }
-
-    public int GetTurretWood()
-    {
-        return turretWoodAmount;
-    }
-
 
 
     private void StartEyeFire()

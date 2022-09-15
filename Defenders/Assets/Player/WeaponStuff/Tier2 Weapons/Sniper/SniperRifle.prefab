@@ -65,6 +65,7 @@ MonoBehaviour:
   bulletCost: 10
   gunAnims: {fileID: 22100000, guid: 38f9df665fa736642be46e9895904adf, type: 2}
   reloadDuration: 1.33333
+  weaponIcon: {fileID: 21300000, guid: 75a93804af292244db48c948ed7e2000, type: 3}
 --- !u!1 &8757293545632558945
 GameObject:
   m_ObjectHideFlags: 0

@@ -120,24 +120,22 @@ public class MasterAI : MonoBehaviour
     }
 
 
+
     private float SpawnRate()
     {
-
-
+        //(1-d)^(t/3(S1)(d)) * S1
         return Mathf.Pow((1 - difficulty), (Time.timeSinceLevelLoad/60f) / initSpawnRateT1 * 3 * difficulty) * initSpawnRateT1;
     }
 
     private float SpawnRateT2()
     {
-
-
+        //(1-d)^(t/6(S2)(d)) * S2
         return Mathf.Pow((1 - difficulty), (Time.timeSinceLevelLoad / 60f) / initSpawnRateT2 * 6 * difficulty) * initSpawnRateT2;
     }
 
     private float SpawnRateT3()
     {
-
-
+        //(1-d)^(t/12(S3)(d)) * S3
         return Mathf.Pow((1 - difficulty), (Time.timeSinceLevelLoad / 60f) / initSpawnRateT3 * 12 * difficulty) * initSpawnRateT3;
     }
 

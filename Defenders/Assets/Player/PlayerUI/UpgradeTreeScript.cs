@@ -13,20 +13,27 @@ public class UpgradeTreeScript : MonoBehaviour
     private ParentPerkScript[] perks;
 
     private ParentPerkScript focusedPerk;
-
+    private bool canAffordPerk;
 
 
     private PlayerScript player;
     public EggScript egg;
 
+   
+
     [Header("PerkInfo")]
     public TMP_Text nameText;
     public TMP_Text descriptionText;
 
-    [Header("CostInfo")]
-    public TMP_Text woodCost;
-    public TMP_Text ironCost;
-    public TMP_Text diamondCost;
+    //[Header("CostInfo")]
+    //public TMP_Text woodCost;
+    //public TMP_Text ironCost;
+    //public TMP_Text diamondCost;
+
+    [Header("Player Info")]
+    public TMP_Text currentFireText;
+    public TMP_Text purchaseText;
+    public Button purchaseButton;
 
 
 
@@ -50,10 +57,20 @@ public class UpgradeTreeScript : MonoBehaviour
         focusedPerk = script;
         nameText.text = focusedPerk.perkName;
         descriptionText.text = focusedPerk.perkDescription;
+        canAffordPerk = CanAfford(script);
+        if (focusedPerk.isUnlocked)
+        {
+            purchaseText.text = "Already Unlocked";
+            purchaseButton.interactable = false;
+         
+        }
+        
 
-        woodCost.text = script.woodCost.ToString();
-        ironCost.text = script.ironCost.ToString();
-        diamondCost.text = script.diamondCost.ToString();
+        //woodCost.text = script.woodCost.ToString();
+        //ironCost.text = script.ironCost.ToString();
+        //diamondCost.text = script.diamondCost.ToString();
+
+
 
     }
 
@@ -63,11 +80,24 @@ public class UpgradeTreeScript : MonoBehaviour
         {
             if (CanAfford(focusedPerk))
             {
-                
-                player.SetResourceAmount(ResourceType.Wood, -focusedPerk.woodCost);
-                player.SetResourceAmount(ResourceType.Iron, -focusedPerk.ironCost);
-                player.SetResourceAmount(ResourceType.Diamond, -focusedPerk.diamondCost);
+
+                //player.SetResourceAmount(ResourceType.Wood, -focusedPerk.woodCost);
+                //player.SetResourceAmount(ResourceType.Iron, -focusedPerk.ironCost);
+                //player.SetResourceAmount(ResourceType.Diamond, -focusedPerk.diamondCost);
+                player.SetSoulFire(-focusedPerk.soulFireCost);
+                currentFireText.text = "" + player.GetSoulFire();
                 focusedPerk.UnlockUpgrade(player);
+                if (focusedPerk.id == -1)
+                {
+                    canAffordPerk = CanAfford(focusedPerk);
+                    if (focusedPerk.isUnlocked)
+                    {
+                        purchaseText.text = "Already Unlocked";
+                        purchaseButton.interactable = false;
+
+                    }
+                }
+                
                 OpenPath(focusedPerk);
             }
             else
@@ -84,13 +114,23 @@ public class UpgradeTreeScript : MonoBehaviour
 
     private bool CanAfford(ParentPerkScript perk)
     {
-        if(player.GetResourceAmount(ResourceType.Wood) >= perk.woodCost &&
-            player.GetResourceAmount(ResourceType.Iron) >= perk.ironCost &&
-            player.GetResourceAmount(ResourceType.Diamond) >= perk.diamondCost)
+        //if(player.GetResourceAmount(ResourceType.Wood) >= perk.woodCost &&
+        //    player.GetResourceAmount(ResourceType.Iron) >= perk.ironCost &&
+        //    player.GetResourceAmount(ResourceType.Diamond) >= perk.diamondCost)
+        //{
+        //    return true;
+        //}
+        //return false;
+        if (perk.soulFireCost > player.GetSoulFire())
         {
-            return true;
+            purchaseText.text = "Not Enough Soul Fire";
+            purchaseButton.interactable = false;
+            return false;
         }
-        return false;
+        purchaseText.text = "Purchase for " + perk.soulFireCost;
+        purchaseButton.interactable = true;
+        
+        return true;
 
     }
 
@@ -99,7 +139,7 @@ public class UpgradeTreeScript : MonoBehaviour
 
         int perkOffset = 0;
 
-        if (perk.id < 5)
+        if (perk.id < 5 && perk.id >= 0)
         {
             perkOffset = 3;
             perks[perk.id + perkOffset].SetAvalible();
@@ -163,6 +203,7 @@ public class UpgradeTreeScript : MonoBehaviour
     private void OnEnable()
     {
         player = egg.player;
+        currentFireText.text = player.GetSoulFire() + "";
     }
 
 

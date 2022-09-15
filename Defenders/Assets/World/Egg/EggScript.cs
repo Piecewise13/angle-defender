@@ -98,13 +98,10 @@ void Start()
         ingot.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-3,3), 10f, Random.Range(-3, 3)), ForceMode.Impulse);
     }
 
-    public void UpgradeResourceRate()
+    public void UpgradeResourceRate(int upgradeNum)
     {
-        upgradeNumber = 2;
-        float adjustment = Mathf.Log(upgradeNumber + 1, 1.7f) - 1f;
-        print(adjustment);
-        resourceSpawnRate -= adjustment;
-
+        //2(.85)^x for a final spawn rate of 4.29
+        resourceSpawnRate -= (2 * Mathf.Pow(.85f, upgradeNum));
 
     }
 

@@ -9,16 +9,24 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     public static Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 
+
+    Material wallMat;
+    public int lowMatVal;
+    public int highMatVal;
+
+
+    public GameObject[] wallObjects;
+    private int currentWall;
     
-
-
 
     [SerializeField] public float health { get; set; }
     public float maxHealth;
     public bool isDead { get; set; }
 
-    [SerializeField]private GameObject wallMesh;
+    public GameObject wallHolder;
+    [SerializeField]private GameObject wallObject;
     private NavMeshObstacle obstacle;
+    public Collider collide;
     
 
     // Start is called before the first frame update
@@ -27,7 +35,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         health = maxHealth;
         obstacle = GetComponentInParent<NavMeshObstacle>();
         cost.Clear();
-        cost.Add(ResourceType.Wood, 20);
+        cost.Add(ResourceType.Wood, 10);
         cost.Add(ResourceType.Iron, 0);
         cost.Add(ResourceType.Diamond, 0);
     }
@@ -45,10 +53,11 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
-        print(gameObject + " taking damage: " + damage);
         if (!isDead)
         {
             health -= damage;
+            ChangeWallObject();
+
             //print(wallMesh.activeSelf);
             //print("Wall taking damage health: " + health);
             if (health <= 0.0f)
@@ -60,20 +69,46 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     public void Death()
     {
-
+        health = 0f;
         //print(wallMesh.activeSelf);
-        wallMesh.SetActive(false);
+        //wallHolder.SetActive(false);
+        collide.enabled = false;
         obstacle.enabled = false;
         isDead = true;
         
     }
 
+
+
     public void Rebuild()
     {
-        wallMesh.SetActive(true);
+        collide.enabled = false;
+        //wallHolder.SetActive(true);
         obstacle.enabled = true;
         isDead = false;
     }
+
+
+
+    public void ChangeWallObject()
+    {
+        
+        float healthPercentage = health / maxHealth;
+
+        int index = Mathf.CeilToInt(Mathf.Lerp(wallObjects.Length - 1, 0, healthPercentage));
+        //int index = Mathf.Clamp(Mathf.CeilToInt((1 - healthPercentage) * (wallObjects.Length)), 0, wallObjects.Length - 1);
+
+        print("Health %: " + healthPercentage + ", index: " + index);
+
+        if (currentWall != index)
+        {
+            Destroy(wallObject);
+            print("trying to get: " + index);
+            wallObject = Instantiate(wallObjects[index], wallHolder.transform);
+            currentWall = index;
+        }
+    }
+
 }
 
 public interface repairable

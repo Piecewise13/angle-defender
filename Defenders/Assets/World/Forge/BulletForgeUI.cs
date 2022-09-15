@@ -8,30 +8,47 @@ public class BulletForgeUI : MonoBehaviour
 {
 
     public BulletForge forge;
-    
-    private int woodAmount;
-    private int depositAmount;
 
 
-    public Slider slider;
-    private float buttonPercent;
+    int playerWoodAmount;
+    int playerIronAmount;
+    int playerDiamondAmount;
 
 
-    public TMP_Text currentWood;
-    public TMP_Text sliderMaxValue;
-    public TMP_Text depositText;
+    int depositWoodAmount;
+    int depositIronAmount;
+    int depositDiamondAmount;
 
-    public TMP_Text playerWoodIndicator;
-    public TMP_Text turretWoodIndicator;
 
-    public GameObject restrictAccess;
-    public Button turretButton;
+    public Slider playerSoulFire;
+
+    [Header("Meter Vars")]
+    public Slider fuelSlider;
+    public Slider fuelPotSlider;
+    public Slider fireSlider;
+    public Slider firePotSlider;
+    public TMP_Text fuelIndicator;
+    public TMP_Text fireIndicator;
+
+
+    [Header("Player Text")]
+    public TMP_Text playerWoodText;
+    public TMP_Text playerIronText;
+    public TMP_Text playerDiamondText;
+
+    [Header("Deposit Text")]
+    public TMP_Text depositWoodText;
+    public TMP_Text depositIronText;
+    public TMP_Text depositDiamondText;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
         gameObject.SetActive(false);
+        UpdateFuelMeter();
+        UpdateSoulFireMeter();
     }
 
     // Update is called once per frame
@@ -40,68 +57,156 @@ public class BulletForgeUI : MonoBehaviour
         
     }
 
-    public void sliderChange()
+
+    public void WoodButtonPress(int num) {
+        if (num < 0 && depositWoodAmount <= 0)
+        {
+            return;
+        }
+
+        if (((depositWoodAmount + num) * forge.woodFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        {
+            return;
+        }
+        if (playerWoodAmount - num < 0)
+        {
+            return;
+        }
+
+        depositWoodAmount += num;
+        playerWoodAmount -= num;
+        UpdateDepositValues();
+        UpdatePlayerValues();
+        UpdatePotentialFuelMeter();
+    }
+    public void IronButtonPress(int num)
     {
-        UpdateDepositAmount(Mathf.CeilToInt(woodAmount * slider.value));
+        if (num < 0 && depositIronAmount <= 0)
+        {
+            return;
+        }
+
+        if (((depositIronAmount + num) * forge.ironFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        {
+            return;
+        }
+        if (playerIronAmount - num < 0)
+        {
+            return;
+        }
+
+        depositIronAmount += num;
+        playerIronAmount -= num;
+        UpdateDepositValues();
+        UpdatePlayerValues();
+        UpdatePotentialFuelMeter();
+    }
+    public void DiamondButtonPress(int num)
+    {
+        if (num < 0 && depositDiamondAmount <= 0)
+        {
+            return;
+        }
+
+        if (((depositDiamondAmount + num) * forge.diamondFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        {
+            return;
+        }
+        if (playerDiamondAmount - num < 0)
+        {
+            return;
+        }
+
+        depositDiamondAmount += num;
+        playerDiamondAmount -= num;
+        UpdateDepositValues();
+        UpdatePlayerValues();
+        UpdatePotentialFuelMeter();
     }
 
-    public void percentButton(float percent)
+    public void ResourceButtonPressed(int num)
     {
-        buttonPercent = percent;
-        UpdateDepositAmount(Mathf.CeilToInt(woodAmount * percent));
+        ResourceType type = (ResourceType)1;
+        switch (type)
+        {
+            case ResourceType.Wood:
+                depositWoodAmount += num;
+                playerWoodAmount -= num;
+
+                break;
+            case ResourceType.Iron:
+                depositIronAmount += num;
+                playerIronAmount -= num;
+                break;
+            case ResourceType.Diamond:
+                depositDiamondAmount += num;
+                playerDiamondAmount -= num;
+                break;
+        }
+
+        UpdateDepositValues();
+        UpdatePlayerValues();
     }
 
-    private void UpdateDepositAmount(int amount)
+    public void DepositResources()
     {
-        depositText.text = "Deposit: " + amount.ToString();
-        depositAmount = amount;
+        
+        forge.DepositResources(ResourceType.Wood, depositWoodAmount);
+        forge.DepositResources(ResourceType.Iron, depositIronAmount);
+        forge.DepositResources(ResourceType.Diamond, depositDiamondAmount);
+        ResetValues();
+        UpdateDepositValues();
+        UpdatePlayerValues();
+        UpdatePotentialFuelMeter();
+    }
+
+    public void UpdateFuelMeter()
+    {
+        fuelSlider.value = (float)forge.fuelAmount / (float)forge.fuelMax;
+        fuelIndicator.text = forge.fuelAmount + "";
+        UpdatePotentialFuelMeter();
+    }
+
+    void UpdatePotentialFuelMeter()
+    {
+        float value = (depositWoodAmount * forge.woodFuelAmount) + (depositIronAmount * forge.ironFuelAmount) + (depositDiamondAmount * forge.diamondFuelAmount) + forge.fuelAmount;
+        fuelPotSlider.value = value / forge.fuelMax;
+    }
+
+    public void UpdateSoulFireMeter()
+    {
+        fireSlider.value = (float)forge.fireStored / (float)forge.soulFireMax;
+        fireIndicator.text = forge.fireStored + "";
+        UpdatePlayerSoulFireMeter();
 
     }
 
-    public void DepositPlayer()
+    public void UpdatePlayerSoulFireMeter()
     {
-        forge.ChangePlayerWoodAmount(depositAmount);
-        UpdateDepositAmount(0);
-        UpdateWoodIndicator();
-        UpdateWoodValues();
+        playerSoulFire.value = (float)forge.player.GetSoulFire() / (float)forge.player.GetSoulFireMax();
     }
 
-    public void DepositTurret()
+    void UpdatePlayerValues()
     {
-        forge.ChangeTurretWoodAmount(depositAmount);
-        UpdateDepositAmount(0);
-        UpdateWoodIndicator();
-        UpdateWoodValues();
+        playerWoodText.text = playerWoodAmount + "";
+        playerIronText.text = playerIronAmount + "";
+        playerDiamondText.text = playerDiamondAmount + "";
     }
 
-    public void CloseForge()
+    void UpdateDepositValues()
     {
-        forge.CloseMenu();
+        depositWoodText.text = depositWoodAmount + "";
+        depositIronText.text = depositIronAmount + "";
+        depositDiamondText.text = depositDiamondAmount + "";
     }
 
-
-    public void UpdateWoodIndicator()
+    void ResetValues()
     {
-        playerWoodIndicator.text = "Wood Left: " + forge.GetPlayerWood();
-        turretWoodIndicator.text = "Wood Left: " + forge.GetTurretWood();
+        depositWoodAmount = 0;
+        depositIronAmount = 0;
+        depositDiamondAmount = 0;
+        UpdatePotentialFuelMeter();
     }
-
-    public void TurretUnlocked()
-    {
-        restrictAccess.SetActive(false);
-        turretButton.interactable = true;
-        forge.TurretUnlocked();
-    }
-
-    public void UpdateWoodValues()
-    {
-        print(forge.player);
-        woodAmount = (forge.player.GetResourceAmount(ResourceType.Wood));
-        currentWood.text = woodAmount.ToString();
-        sliderMaxValue.text = woodAmount.ToString();
-        UpdateWoodIndicator();
-    }
-
 
     public void OnEnable()
     {
@@ -109,6 +214,14 @@ public class BulletForgeUI : MonoBehaviour
         {
             return;
         }
-        UpdateWoodValues();
+        playerWoodAmount = forge.player.GetResourceAmount(ResourceType.Wood);
+        playerIronAmount = forge.player.GetResourceAmount(ResourceType.Iron);
+        playerDiamondAmount = forge.player.GetResourceAmount(ResourceType.Diamond);
+        ResetValues();
+        UpdateFuelMeter();
+        UpdateSoulFireMeter();
+        UpdatePlayerValues();
+        UpdateDepositValues();
+
     }
 }

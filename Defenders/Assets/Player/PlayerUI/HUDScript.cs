@@ -23,7 +23,20 @@ public class HUDScript : MonoBehaviour
     public RectTransform diamondChangePos;
     public GameObject changeValue;
 
-
+    [Space(20)]
+    [Header("Weapon Vars")]
+    public Image primaryImage;
+    public LayoutElement primaryElement;
+    public Image secondaryImage;
+    public LayoutElement secondaryElement;
+    public Image specialImage;
+    public LayoutElement specialElement;
+    [Space(10)]
+    public float bigWidth;
+    public float bigHeight;
+    [Space(10)]
+    public float smallWidth;
+    public float smallHeight;
 
 
 
@@ -101,4 +114,53 @@ public class HUDScript : MonoBehaviour
                 break;
         }
     }
+
+    public void UpdateWeaponIcon(Sprite weaponIcon, int tier)
+    {
+        print("updating icon: " + tier);
+        if (tier == 1)
+        {
+            primaryImage.sprite = weaponIcon;
+        } else if (tier == 2){
+            print("updating image");
+            secondaryImage.sprite = weaponIcon;
+        } else if(tier == 3)
+        {
+            specialImage.sprite = weaponIcon;
+        }
+    }
+
+    public void UpdateEquipedWeapon(int tier)
+    {
+        if (tier == 1)
+        {
+            primaryElement.preferredHeight = bigHeight;
+            primaryElement.preferredWidth = bigWidth;
+
+            secondaryElement.preferredHeight = smallHeight;
+            secondaryElement.preferredWidth = smallWidth;
+            specialElement.preferredHeight = smallHeight;
+            specialElement.preferredWidth = smallWidth;
+        } else if (tier == 2)
+        {
+            primaryElement.preferredHeight = smallHeight;
+            primaryElement.preferredWidth = smallWidth;
+
+            secondaryElement.preferredHeight = bigHeight;
+            secondaryElement.preferredWidth = bigWidth;
+
+            specialElement.preferredHeight = smallHeight;
+            specialElement.preferredWidth = smallWidth;
+        } else
+        {
+            primaryElement.preferredHeight = smallHeight;
+            primaryElement.preferredWidth = smallWidth;
+            secondaryElement.preferredHeight = smallHeight;
+            secondaryElement.preferredWidth = smallWidth;
+
+            specialElement.preferredHeight = bigHeight;
+            specialElement.preferredWidth = bigWidth;
+        }
+    }
+
 }

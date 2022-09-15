@@ -6,15 +6,15 @@ public class ForgeBuff : ParentPerkScript
 {
 
     private BulletForge forge;
-    private int upgradeNum;
+    private int upgradeInt;
 
     public override void UnlockUpgrade(PlayerScript player)
     {
 
-
-        upgradeNum++;
-        forge.UpgradeForge(upgradeNum);
-        if (upgradeNum == 10)
+        soulFireCost += (int)(soulFireCost * (Mathf.Pow(1.0025f, upgradeInt) - .75f));
+        upgradeInt++;
+        forge.UpgradeForge(upgradeInt);
+        if (upgradeInt == 10)
         {
             isUnlocked = true;
         }
@@ -25,12 +25,9 @@ public class ForgeBuff : ParentPerkScript
     // Start is called before the first frame update
     new void Start()
     {
+        base.Start();
         forge = FindObjectOfType<BulletForge>();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        SetAvalible();
     }
 }

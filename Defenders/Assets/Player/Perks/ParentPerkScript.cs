@@ -11,9 +11,10 @@ public abstract class ParentPerkScript : MonoBehaviour
     public bool isAvailale = false;
     public string perkName;
     [TextArea]public string perkDescription;
-    public int woodCost;
-    public int ironCost;
-    public int diamondCost;
+    //public int woodCost;
+    //public int ironCost;
+    //public int diamondCost;
+    public int soulFireCost;
 
     public Button perkButton;
 

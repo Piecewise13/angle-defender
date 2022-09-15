@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7992202369595653982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7992202369595653980}
+  - component: {fileID: 7992202369595653981}
+  m_Layer: 0
+  m_Name: JumpPad_PlayerPrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7992202369595653980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992202369595653982}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7950247287588038963}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7992202369595653981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7992202369595653982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a7777cd6d89fc74ca6040ce92f676cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerName: Jump Pad
+  towerThrowable: {fileID: 7992202369595653982, guid: 8a41a5e20a9b0b747bb18483993f27f0,
+    type: 3}
+  playerInventory: {fileID: 0}
+  canFire: 0
+--- !u!1001 &7628616957168701144
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7992202369595653980}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.58952415
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.769245
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.2324865
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.08169099
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -60.342
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 126.104
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -113.438
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0479909e8738cec47ab3743bfc8a0a10,
+        type: 3}
+      propertyPath: m_Name
+      value: JumpPadPlayerPrefab
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0479909e8738cec47ab3743bfc8a0a10, type: 3}
+--- !u!4 &7950247287588038963 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0479909e8738cec47ab3743bfc8a0a10,
+    type: 3}
+  m_PrefabInstance: {fileID: 7628616957168701144}
+  m_PrefabAsset: {fileID: 0}
