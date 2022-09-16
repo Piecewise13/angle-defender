@@ -17,6 +17,11 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
 
     public static WallDefenceScript[] walls;
+    protected bool inLure;
+    protected Vector3 lureDestination;
+    [SerializeField]protected bool canBeLured;
+
+
 
 
     public float health { get; set; }
@@ -89,6 +94,20 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         walls = FindObjectsOfType<WallDefenceScript>();
     }
 
+    public void Lure(Vector3 loc)
+    {
+        if (canBeLured)
+        {
+            inLure = true;
+            agent.destination = loc;
+        }
+
+    }
+
+    public void EndLure()
+    {
+        inLure = false;
+    }
 
     public virtual void TakeDamage(float damage, Collider hitCollider)
     {
@@ -101,7 +120,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     public virtual void Death()
     {
-        print(soulFireBallPrefab);
         Instantiate(soulFireBallPrefab, transform.position + Vector3.up * 2f, transform.rotation);
         Destroy(gameObject);
     }

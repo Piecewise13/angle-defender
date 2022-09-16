@@ -51,7 +51,14 @@ public class BasicEnemyScript : ParentAIScript
             }
             else
             {
-                UpdatePath();
+                if (inLure)
+                {
+                    print("in lure");
+                }
+                else
+                {
+                    UpdatePath();
+                }
             }
 
         }

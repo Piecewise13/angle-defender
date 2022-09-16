@@ -71,6 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 10
+  canBeLured: 1
   playerRange: 150
   playerMask:
     serializedVersion: 2

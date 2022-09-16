@@ -54,11 +54,18 @@ public class BulletForge : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //Make Fire
         if (fuelAmount > 0)
         {
             if (fireStored < soulFireMax) {
                 if (productionTime + lastProductionTime < Time.time)
                 {
+                    if (fireStored <= 0)
+                    {
+                        UpdateTransformers(true);
+                    }
+
                     fireStored += firePerTick;
                     fuelAmount -= fuelBurnAmount;
 
@@ -92,11 +99,15 @@ public class BulletForge : MonoBehaviour
                         player.SetSoulFire(playerTransferAmount);
                         fireStored -= playerTransferAmount;
                         bulletForgeUI.UpdateSoulFireMeter();
-                        
+                        if (fireStored < playerTransferAmount)
+                        {
+                            UpdateTransformers(false);
+                        }
+
+
                         lastPlayerTransferTime = Time.time;
                     }
                 }
-
             }
         }
     }
@@ -209,6 +220,24 @@ public class BulletForge : MonoBehaviour
         }
     }
 
+    public bool WithdrawFire(int delta)
+    {
+        if (fireStored >= delta)
+        {
+            fireStored -= delta;
+            return true;
+        }
+        return false;
 
+    }
+
+    private void UpdateTransformers(bool hasFire)
+    {
+        SoulFireTransformerScript[] script = FindObjectsOfType<SoulFireTransformerScript>();
+        foreach (var item in script)
+        {
+            item.ForgeHasFire(hasFire);
+        }
+    }
 
 }

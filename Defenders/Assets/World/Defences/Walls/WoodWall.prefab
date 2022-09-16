@@ -65,8 +65,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  lowMatVal: 0
-  highMatVal: 0
   wallObjects:
   - {fileID: 38687963538205134, guid: fcf4452782d0d444681fd2ca74503811, type: 3}
   - {fileID: 6479637341855314667, guid: 87941329da24ed34db84cfa1c13f5b8d, type: 3}
@@ -78,6 +76,9 @@ MonoBehaviour:
   wallHolder: {fileID: 8050227339879629343}
   wallObject: {fileID: 7409103878687189832}
   collide: {fileID: 2479556934726717190}
+  repairTime: 1
+  rebuildDelay: 2
+  repairAmount: 40
 --- !u!65 &2479556934726717190
 BoxCollider:
   m_ObjectHideFlags: 0

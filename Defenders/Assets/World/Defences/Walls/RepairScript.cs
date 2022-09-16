@@ -23,95 +23,30 @@ public class RepairScript : MonoBehaviour
     }
 
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag.Equals("Player"))
+        if (other.transform.root.tag.Equals("Player"))
         {
-            if (Input.GetButtonDown("Use"))
-            {
-                lastRepairTime = Time.time;
-                startRebuildTime = Time.time;
-
-            }
-            if (Input.GetButton("Use"))
-            {
-                if (wallDefence.health < wallDefence.maxHealth)
-                {
-                    player = other.GetComponentInParent<PlayerScript>();
-                    repair();
-                } 
-            }
+            wallDefence.PlayerEnter(other.GetComponentInParent<PlayerScript>());
         }
+        
     }
 
-    
-
-    public void repair()
+    private void OnTriggerExit(Collider other)
     {
-        if (lastRepairTime + timeDelay < Time.time)
+        if (other.transform.root.tag.Equals("Player"))
         {
-
-            if (CanAfford())
-            {
-                if (wallDefence.health <= 0)
-                {
-                    if (startRebuildTime + rebuildDelay < Time.time)
-                    {
-                        wallDefence.Rebuild();
-                        wallDefence.health += repairAmount;
-                        wallDefence.ChangeWallObject();
-                    }
-
-                } else
-                {
-                    if (wallDefence.health >= wallDefence.maxHealth)
-                    {
-                        wallDefence.health = wallDefence.maxHealth;
-                        wallDefence.ChangeWallObject();
-
-                    }
-                    else
-                    {
-                        wallDefence.health += repairAmount;
-                        wallDefence.ChangeWallObject();
-
-                        ChargePlayer();
-                    }
-                }
-
-
-            }
-            else
-            {
-                print("Can't Afford");
-                //PLAY SOUND
-            }
-            lastRepairTime = Time.time;
+            wallDefence.PlayerExit();
         }
     }
 
 
-    private bool CanAfford()
-    {
 
-        for (int i = 0; i < (int)ResourceType.Count; i++)
-        {
-            if (player.GetResourceAmount((ResourceType)i) < WallDefenceScript.cost[(ResourceType)i])
-            {
-                
-                return false;
-            }
-        }
 
-        return true;
-    }
 
-    private void ChargePlayer()
-    {
-        for (int i = 0; i < (int)ResourceType.Count; i++)
-        {
-            player.SetResourceAmount((ResourceType)i, -WallDefenceScript.cost[(ResourceType)i]);
-        }
-    }
+
+
+
+
     
 }

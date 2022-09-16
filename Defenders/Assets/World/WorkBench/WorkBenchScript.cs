@@ -19,8 +19,7 @@ public class WorkBenchScript : MonoBehaviour
     public TMP_Text descriptionText;
 
     [Space(10)]
-    public Button purchaseButton;
-    public TMP_Text purchaseText;
+    public LongClickButton longClickButton;
 
     [Space(10)]
     public TMP_Text playerWoodText;
@@ -106,12 +105,10 @@ public class WorkBenchScript : MonoBehaviour
 
         if (tower.CanAfford(player))
         {
-            purchaseButton.interactable = true;
-            purchaseText.text = "Purchase " + tower.towerName;
+            tower.longClickButton.canLongClick = true;
         } else
         {
-            purchaseButton.interactable = false;
-            purchaseText.text = "Not Enough Resources";
+            tower.longClickButton.canLongClick = false;
         }
 
     }

@@ -8,6 +8,7 @@ public class PurchaseTowerElementScript : MonoBehaviour
 {
 
     public GameObject towerObject;
+    public LongClickButton longClickButton;
 
     public Image panel;
 
@@ -44,7 +45,7 @@ public class PurchaseTowerElementScript : MonoBehaviour
         woodText.text = woodCost + "";
         ironText.text = ironCost + "";
         diamondText.text = diamondCost + "";
-
+        longClickButton = GetComponent<LongClickButton>();
 
 
     }
@@ -53,8 +54,15 @@ public class PurchaseTowerElementScript : MonoBehaviour
     void Update()
     {
         
+
+
     }
 
+
+    public void LongClickDisabled()
+    {
+        StartCoroutine(CostTextFlash());
+    }
 
     public bool CanAfford(PlayerScript player)
     {
@@ -80,6 +88,26 @@ public class PurchaseTowerElementScript : MonoBehaviour
     public int GetTier()
     {
         return tier;
+    }
+
+    IEnumerator CostTextFlash()
+    {
+        woodText.color = Color.red;
+        ironText.color = Color.red;
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.white;
+        ironText.color = Color.white;
+        diamondText.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.red;
+        ironText.color = Color.red;
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.white;
+        ironText.color = Color.white;
+        diamondText.color = Color.white;
+        yield return new WaitForSeconds(.5f);
     }
 
 }

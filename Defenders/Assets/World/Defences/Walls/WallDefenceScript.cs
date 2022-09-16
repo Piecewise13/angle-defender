@@ -5,29 +5,40 @@ using UnityEngine.AI;
 
 public class WallDefenceScript : MonoBehaviour, Damageable
 {
+    [Header("Resource")]
     public ResourceType type;
-
     public static Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 
-
-    Material wallMat;
-    public int lowMatVal;
-    public int highMatVal;
-
-
+    [Space(20)]
+    [Header("Wall Vars")]
     public GameObject[] wallObjects;
     private int currentWall;
     
-
-    [SerializeField] public float health { get; set; }
+    [Space(20)]
+    [Header("Health Vars")]
     public float maxHealth;
+    public float health { get; set; }
+
     public bool isDead { get; set; }
 
+
+    [Header("Component Vars")]
     public GameObject wallHolder;
     [SerializeField]private GameObject wallObject;
     private NavMeshObstacle obstacle;
     public Collider collide;
-    
+    private PlayerScript player;
+    private bool hasPlayer = false;
+
+    [Space(20)]
+    [Header("RepairVars")]
+    public float repairTime;
+    private float lastRepairTime;
+    public float rebuildDelay;
+    private float startRebuildTime;
+    public float repairAmount;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -43,13 +54,120 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     // Update is called once per frame
     void Update()
     {
-        
+        if (hasPlayer)
+        {
+            if (Input.GetButtonDown("Use"))
+            {
+                lastRepairTime = Time.time;
+                startRebuildTime = Time.time;
+
+            }
+            if (Input.GetButton("Use"))
+            {
+                if (health < maxHealth)
+                {
+                    if (lastRepairTime + repairTime < Time.time)
+                    {
+
+                        if (CanAfford())
+                        {
+                            if (Repair())
+                            {
+                                ChargePlayer();
+                            }
+
+                        }
+                        else
+                        {
+                            print("Can't Afford");
+                            //PLAY SOUND
+                        }
+                        lastRepairTime = Time.time;
+                    }
+                }
+            }
+        }
+    }
+
+    public bool Repair()
+    {
+        if (health <= 0)
+        {
+            if (startRebuildTime + rebuildDelay < Time.time)
+            {
+                Rebuild();
+                health += repairAmount;
+                ChangeWallObject();
+                return true;
+            }
+
+        }
+        else
+        {
+            if (health >= maxHealth)
+            {
+                health = maxHealth;
+                ChangeWallObject();
+                return false;
+            }
+            else
+            {
+                health += repairAmount;
+                ChangeWallObject();
+
+                return true;
+            }
+
+        }
+        return false;
+
+    }
+
+    private bool CanAfford()
+    {
+
+        for (int i = 0; i < (int)ResourceType.Count; i++)
+        {
+            if (player.GetResourceAmount((ResourceType)i) < WallDefenceScript.cost[(ResourceType)i])
+            {
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
-    
+    private void ChargePlayer()
+    {
+        for (int i = 0; i < (int)ResourceType.Count; i++)
+        {
+            player.SetResourceAmount((ResourceType)i, -WallDefenceScript.cost[(ResourceType)i]);
+        }
+    }
 
 
+
+    public void Rebuild()
+    {
+        collide.enabled = false;
+        //wallHolder.SetActive(true);
+        obstacle.enabled = true;
+        isDead = false;
+    }
+
+    public void PlayerEnter(PlayerScript player)
+    {
+        this.player = player;
+        hasPlayer = true;
+    }
+
+    public void PlayerExit()
+    {
+        this.player = null;
+        hasPlayer = false;
+    }
 
     public void TakeDamage(float damage, Collider hitCollider)
     {
@@ -75,20 +193,8 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         collide.enabled = false;
         obstacle.enabled = false;
         isDead = true;
-        
+
     }
-
-
-
-    public void Rebuild()
-    {
-        collide.enabled = false;
-        //wallHolder.SetActive(true);
-        obstacle.enabled = true;
-        isDead = false;
-    }
-
-
 
     public void ChangeWallObject()
     {
