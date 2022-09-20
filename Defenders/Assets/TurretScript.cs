@@ -22,7 +22,7 @@ public class TurretScript : MonoBehaviour
     private float lastSearchTime;
 
     private bool isShooting;
-    public static int bulletsReady;
+    public static BulletForge forge;
 
     [Header("TURRET STATS")]
     [SerializeField]private float targetRange;
@@ -35,6 +35,7 @@ public class TurretScript : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         particles = GetComponentInChildren<ParticleSystem>();
+        forge = FindObjectOfType<BulletForge>();
         particles.Stop();
     }
 
@@ -47,7 +48,7 @@ public class TurretScript : MonoBehaviour
 
         if (target != null)
         {
-            if (bulletsReady > 0)
+            if (forge.fireStored > 0)
             {
                 anim.SetBool("isShooting", isShooting);
                 turret.transform.rotation = Quaternion.LookRotation(((target.transform.position + (Vector3.up * 2f)) - turret.transform.position).normalized);
@@ -114,13 +115,12 @@ public class TurretScript : MonoBehaviour
 
     public void Shoot()
     {
-        if (bulletsReady > 0)
+        if (forge.WithdrawFire(1))
         {
             particles.Play();
             target.TakeDamage(damage, null);
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
             StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up  * 1.5f));
-            bulletsReady--;
         } else
         {
             particles.Stop();

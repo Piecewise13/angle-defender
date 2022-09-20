@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84bfd04d3203b484898c55813471f376, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soulFireAmount: 5
+  soulFireAmount: 10
 --- !u!54 &8226912682012151175
 Rigidbody:
   m_ObjectHideFlags: 0

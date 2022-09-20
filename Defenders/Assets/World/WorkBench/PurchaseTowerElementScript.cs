@@ -8,7 +8,7 @@ public class PurchaseTowerElementScript : MonoBehaviour
 {
 
     public GameObject towerObject;
-    public LongClickButton longClickButton;
+    public LongClickButton_Slider longClickButton;
 
     public Image panel;
 
@@ -45,7 +45,7 @@ public class PurchaseTowerElementScript : MonoBehaviour
         woodText.text = woodCost + "";
         ironText.text = ironCost + "";
         diamondText.text = diamondCost + "";
-        longClickButton = GetComponent<LongClickButton>();
+        longClickButton = GetComponent<LongClickButton_Slider>();
 
 
     }

@@ -64,10 +64,16 @@ public class BulletForge : MonoBehaviour
                     if (fireStored <= 0)
                     {
                         UpdateTransformers(true);
+                        StartSoulFireTubes();
                     }
 
                     fireStored += firePerTick;
                     fuelAmount -= fuelBurnAmount;
+
+                    if (fuelAmount <= 0)
+                    {
+                        StopEyeFire();
+                    }
 
                     bulletForgeUI.UpdateSoulFireMeter();
                     bulletForgeUI.UpdateFuelMeter();
@@ -102,6 +108,7 @@ public class BulletForge : MonoBehaviour
                         if (fireStored < playerTransferAmount)
                         {
                             UpdateTransformers(false);
+                            StopSoulFireTubes();
                         }
 
 
@@ -151,7 +158,7 @@ public class BulletForge : MonoBehaviour
                 break;
         }
 
-
+        StartEyeFire();
     }
 
     public void CloseMenu()

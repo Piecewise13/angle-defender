@@ -77,6 +77,10 @@ public class BasicEnemyScript : ParentAIScript
                 {
                     transform.LookAt(agent.destination);
                     anim.SetTrigger("Attack");
+                    if (attackTarget == null)
+                    {
+                        UpdatePath();
+                    }
                     attackTarget.TakeDamage(attackDamage, null);
                     timeLastAttack = Time.time;
                 }

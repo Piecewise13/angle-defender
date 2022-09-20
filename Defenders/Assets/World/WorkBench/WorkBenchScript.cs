@@ -19,7 +19,7 @@ public class WorkBenchScript : MonoBehaviour
     public TMP_Text descriptionText;
 
     [Space(10)]
-    public LongClickButton longClickButton;
+    public LongClickButton_Slider longClickButton;
 
     [Space(10)]
     public TMP_Text playerWoodText;

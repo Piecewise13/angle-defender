@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
 
 public abstract class ParentPerkScript : MonoBehaviour
 {
@@ -16,29 +17,47 @@ public abstract class ParentPerkScript : MonoBehaviour
     //public int diamondCost;
     public int soulFireCost;
 
-    public Button perkButton;
+    public TMP_Text costText;
+    private Image panelImage;
 
     public abstract void UnlockUpgrade(PlayerScript player);
 
     public void Start()
     {
-        perkButton = GetComponent<Button>();
+        panelImage = GetComponent<Image>();
         SetUnavalible();
     }
 
     public void SetAvalible()
     {
         isAvailale = false;
-        perkButton.interactable = true; 
+        costText.text = soulFireCost + "";
+
     }
 
     public void SetUnavalible()
     {
         isAvailale = false;
-        perkButton.interactable = false;
 
 
     }
 
+    public void Unlocked()
+    {
+        isUnlocked = true;
+        panelImage.color = new Color(100,100,100, 255);
+
+    }
+
+    public IEnumerator CostTextFlash()
+    {
+        costText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        costText.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        costText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        costText.color = Color.white;
+    }
 
 }
