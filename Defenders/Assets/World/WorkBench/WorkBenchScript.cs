@@ -28,7 +28,7 @@ public class WorkBenchScript : MonoBehaviour
 
     private int focusedTower;
 
-    private int unlockedTier = 1;
+    private int unlockedTier = 0;
 
 
     public GameObject workbenchUI;

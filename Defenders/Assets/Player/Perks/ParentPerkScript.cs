@@ -18,34 +18,44 @@ public abstract class ParentPerkScript : MonoBehaviour
     public int soulFireCost;
 
     public TMP_Text costText;
-    private Image panelImage;
+    public LongClickButton_Image longClick;
+    public Image panelImage;
 
     public abstract void UnlockUpgrade(PlayerScript player);
 
     public void Start()
     {
-        panelImage = GetComponent<Image>();
+        costText = GetComponentInChildren<TMP_Text>();
+        costText.text = soulFireCost + "";
+        //panelImage = GetComponentInChildren<Image>();
+        longClick = GetComponent<LongClickButton_Image>();
         SetUnavalible();
     }
 
     public void SetAvalible()
     {
-        isAvailale = false;
-        costText.text = soulFireCost + "";
+        isAvailale = true;
+        panelImage.color = new Color(.2f,.2f,.2f,.4f);
+        panelImage.fillAmount = 0f;
 
     }
 
     public void SetUnavalible()
     {
         isAvailale = false;
-
+        panelImage.color = new Color(.6f, .6f, .6f, .3f);
+        panelImage.fillAmount = 1f;
+        longClick.canLongClick = false;
 
     }
 
     public void Unlocked()
     {
         isUnlocked = true;
-        panelImage.color = new Color(100,100,100, 255);
+        isAvailale = false;
+        panelImage.fillAmount = 1f;
+        panelImage.color = new Color(.1f, .1f, .1f, .4f);
+        longClick.DisableLongClick();
 
     }
 

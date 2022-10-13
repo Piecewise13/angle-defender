@@ -17,8 +17,8 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
     public UnityEvent onLongClick;
     public UnityEvent onShortClick;
 
-    [HideInInspector]public bool canLongClick = true;
-    private bool messageSent;
+    public bool canLongClick = false;
+    private bool shouldReset = true;
 
     // Start is called before the first frame update
     void Start()
@@ -46,14 +46,6 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
                     //holdSlider.value = Mathf.Clamp(pointerDownTimer / pointerDownRequiredTime, 0, 1f);
                     pointerDownTimer += Time.deltaTime;
                 }
-            } else
-            {
-                if (!messageSent)
-                {
-                    //gameObject.SendMessage("LongClickDisabled");
-                    messageSent = true;
-                }
-
             }
 
         }
@@ -71,18 +63,33 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Reset();
+        if (canLongClick)
+        {
+            Reset();
+        }
+
         pointerDown = false;
         print("pointer up");
     }
 
     private void Reset()
     {
+        if (shouldReset)
+        {
 
-        messageSent = false;
-        holdImage.fillAmount = 0f;
-        //holdSlider.value = 0f;
-        pointerDownTimer = 0f;
+
+            holdImage.fillAmount = 0f;
+            //holdSlider.value = 0f;
+            pointerDownTimer = 0f;
+        }
+        
     }
 
+    public void DisableLongClick()
+    {
+        canLongClick = false;
+        holdImage.fillAmount = 1f;
+        shouldReset = false;
+
+    }
 }

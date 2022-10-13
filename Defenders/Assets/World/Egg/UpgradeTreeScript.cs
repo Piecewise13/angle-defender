@@ -63,11 +63,11 @@ public class UpgradeTreeScript : MonoBehaviour
             return;
 
         }
-        canAffordPerk = CanAfford(script);
-        if (!canAffordPerk)
+        if (focusedPerk.isAvailale)
         {
-            StartCoroutine((script.CostTextFlash()));
+            canAffordPerk = CanAfford(script);
         }
+
 
         
 
@@ -81,6 +81,7 @@ public class UpgradeTreeScript : MonoBehaviour
 
     public void purchaseUpgrade()
     {
+        print(focusedPerk);
         if (!focusedPerk.isUnlocked)
         {
             if (CanAfford(focusedPerk))
@@ -95,11 +96,8 @@ public class UpgradeTreeScript : MonoBehaviour
 
                 if (focusedPerk.id == -1)
                 {
-                    canAffordPerk = CanAfford(focusedPerk);
                     if (focusedPerk.isUnlocked)
                     {
-                        focusedPerk.Unlocked();
-                        purchaseButton.interactable = false;
                         return;
 
                     }
@@ -111,10 +109,6 @@ public class UpgradeTreeScript : MonoBehaviour
                 OpenPath(focusedPerk);
             }
             
-        }
-        else
-        {
-            print("already unlocked");
         }
     }
 
@@ -129,13 +123,12 @@ public class UpgradeTreeScript : MonoBehaviour
         //return false;
         if (perk.soulFireCost > player.GetSoulFire())
         {
-            purchaseText.text = "Not Enough Soul Fire";
-            purchaseButton.interactable = false;
+            perk.longClick.canLongClick = false;
+            StartCoroutine((perk.CostTextFlash()));
             return false;
         }
-        purchaseText.text = "Purchase for " + perk.soulFireCost;
-        purchaseButton.interactable = true;
-        
+        perk.longClick.canLongClick = true;
+
         return true;
 
     }
