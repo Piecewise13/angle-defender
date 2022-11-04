@@ -5,7 +5,7 @@ using EZCameraShake;
 
 public class MouseLook : MonoBehaviour
 {
-
+    public const float SENS_DEFAULT = 200;
     public Transform playerBody;
     public Transform cameraParent;
     private float xRotation;
@@ -64,6 +64,11 @@ public class MouseLook : MonoBehaviour
     {
         canLook = value;
 
+    }
+
+    public void SetSensitivity(float value)
+    {
+        mouseSensitivity = SENS_DEFAULT * value;
     }
 
     public void ShakeCamera(float magnitude)

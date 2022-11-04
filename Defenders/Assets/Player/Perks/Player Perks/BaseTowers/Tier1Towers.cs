@@ -16,6 +16,7 @@ public class Tier1Towers : ParentPerkScript
     new void Start()
     {
         base.Start();
+        SetAvalible();
 
     }
 }

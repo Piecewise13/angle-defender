@@ -36,6 +36,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("HUD Vars")]
     public HUDScript hudScript;
     [SerializeField] protected UpgradeTreeScript upgradeTree;
+    [SerializeField] protected GameObject settingsMenu;
+    protected bool inSettings;
+    
 
     /**
      * MOVEMENT VARS
@@ -303,6 +306,13 @@ public class PlayerScript : MonoBehaviour, Damageable
             {
                 Respawn();
             }
+        }
+
+        if (Input.GetButtonDown("Settings"))
+        {
+            inSettings = !inSettings;
+            openUIElement(inSettings);
+            settingsMenu.SetActive(inSettings);
         }
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
