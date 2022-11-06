@@ -5,7 +5,7 @@ using EZCameraShake;
 
 public class MouseLook : MonoBehaviour
 {
-    public const float SENS_DEFAULT = 200;
+    public const float SENS_DEFAULT = 300;
     public Transform playerBody;
     public Transform cameraParent;
     private float xRotation;
@@ -25,7 +25,8 @@ public class MouseLook : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-
+        mouseSensitivity = SENS_DEFAULT;
+        aimSensitivty = SENS_DEFAULT;
     }
 
     // Update is called once per frame

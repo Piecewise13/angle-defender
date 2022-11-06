@@ -8,11 +8,13 @@ public class MasterAI : MonoBehaviour
     public EnemySpawnData[] enemysT1;
     public EnemySpawnData[] enemysT2;
     public EnemySpawnData[] enemysT3;
+    public EnemySpawnData[] enemysT4;
 
 
 
 
     [SerializeField] private float difficulty;
+    #region CONTINOUS METHOD
     //float initSpawnRateT1;
     //float initSpawnRateT2;
     //float initSpawnRateT3;
@@ -26,12 +28,6 @@ public class MasterAI : MonoBehaviour
     //int waveNumT2 = 3;
     //int waveNumT3 = 1;
 
-
-
-
-    public Transform[] spawnPoints;
-
-
     //[SerializeField] private float waveTimeT1;
     //[SerializeField] private float waveTimeT2;
     //[SerializeField] private float waveTimeT3;
@@ -39,7 +35,9 @@ public class MasterAI : MonoBehaviour
     //private float lastWaveTime;
     //private float lastWaveTimeT2;
     //private float lastWaveTimeT3;
+    #endregion
 
+    /* TIME BASED WAVES
     [SerializeField] private float timeBetweenWaves;
     private float waveEndTime;
     [SerializeField] private float waveDuration;
@@ -50,10 +48,22 @@ public class MasterAI : MonoBehaviour
     private float lastSpawnTime;
     [SerializeField] private float spawnNum;
     private int numOfWaves = 0;
+*/
+
+    public Transform[] spawnPoints;
+
+    int waveNum = 0;
+    private List<GameObject> ai = new List<GameObject>();
+    private float[] spawnTimes = new float[4];
+    private int[] spawnNumber = new int[4];
+
+    private bool isSpawning;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        #region Continous Method
         //old spawn method
         //initSpawnRateT1 = 20f * (1f - (.5f * difficulty));
         //initSpawnRateT2 = 30f * (1f - (.7f * difficulty));
@@ -65,19 +75,23 @@ public class MasterAI : MonoBehaviour
         //waveTimeT1 = SpawnRate();
         //waveTimeT2 = SpawnRateT2();
         //waveTimeT3 = SpawnRateT3();
+        #endregion
 
-        //new spawn method
+        #region TIME BASED WAVES
+        /* TIME BASED WAVES
         timeBetweenWaves = GetTimeBetweenWaves(numOfWaves);
         waveDuration = GetWaveDuration(numOfWaves);
         spawnTime = GetSpawnTime(numOfWaves);
-
+        */
+        #endregion
         spawnPoints = GetComponentsInChildren<Transform>();
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        #region TIME BASED WAVES
+        /* TIME BASED WAVES
         if (shouldSpawn)
         {
             if (waveStartTime + waveDuration < Time.time)
@@ -158,7 +172,8 @@ public class MasterAI : MonoBehaviour
 
                 //spawn enemies n
             }
-        } else
+        }
+        else
         {
             if (waveEndTime + timeBetweenWaves < Time.time)
             {
@@ -182,7 +197,7 @@ public class MasterAI : MonoBehaviour
         //        int index = Random.Range(0, enemysT1.Length);
 
         //        Instantiate(enemysT1[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
-               
+
 
 
 
@@ -231,12 +246,12 @@ public class MasterAI : MonoBehaviour
         //        waveTimeT3 = SpawnRateT3();
         //    }
         //}
-
-
+        */
+        #endregion
     }
 
 
-
+    #region CONTINOUS
     //private float SpawnRate()
     //{
     //    //(1-d)^(t/3(S1)(d)) * S1
@@ -254,11 +269,13 @@ public class MasterAI : MonoBehaviour
     //    //(1-d)^(t/12(S3)(d)) * S3
     //    return Mathf.Pow((1 - difficulty), (Time.timeSinceLevelLoad / 60f) / initSpawnRateT3 * 12 * difficulty) * initSpawnRateT3;
     //}
-
+    #endregion
+    #region TIME BASED WAVES
+    /*
     private float GetTimeBetweenWaves(int waveNum)
     {
         float c = 40f * (1f - (.5f * difficulty));
-        return (Mathf.Pow((1f - difficulty), (3 * numOfWaves) / (c * difficulty))  * c) + 5f;
+        return (Mathf.Pow((1f - difficulty), (3 * numOfWaves) / (c * difficulty)) * c) + 5f;
     }
 
     private float GetWaveDuration(int waveNum)
@@ -290,6 +307,43 @@ public class MasterAI : MonoBehaviour
         print("SpawnT3");
         int index = Random.Range(0, enemysT3.Length);
         Instantiate(enemysT3[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+    }
+    */
+    #endregion
+
+    public void Start_Wave()
+    {
+
+    }
+
+    public void Enemy_Killed(GameObject enemy)
+    {
+        foreach (GameObject item in ai)
+        {
+            if (item.Equals(ai))
+            {
+                ai.Remove(item);
+            }
+        }
+        if(ai.Count == 0)
+        {
+            isSpawning   = false;
+            Update_SpawnNumber();
+        }
+    }
+
+    private void Update_SpawnNumber()
+    {
+        spawnNumber[0] = (int)(3f * difficulty * (float)waveNum) + (int)(5f * difficulty) + 10;
+        if (waveNum >= 5)
+        {
+            spawnNumber[1] = (int)(2f * difficulty * (float)waveNum) + (int)(5f * difficulty) + 5;
+        }
+        if(waveNum >= 10)
+        {
+            spawnNumber[2] = (int)((difficulty * waveNum) - (4 * difficulty));
+        }
+        
     }
 
 }
