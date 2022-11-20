@@ -109,6 +109,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
 
+
     #endregion
 
     /**
@@ -290,6 +291,8 @@ public class PlayerScript : MonoBehaviour, Damageable
                 controller.Move(moveDir * movementSpeedVar * Time.deltaTime);
             }
         }
+
+        
 
 
 

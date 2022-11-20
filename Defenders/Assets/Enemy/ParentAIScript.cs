@@ -13,9 +13,9 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     [SerializeField] protected float attackDamage;
     protected WallDefenceScript targetWall;
     protected NavMeshPath path;
-    protected static Object soulFireBallPrefab; 
+    protected static Object soulFireBallPrefab;
 
-
+    public MasterAI masterAI;
     public static WallDefenceScript[] walls;
     protected bool inLure;
     protected Vector3 lureDestination;
@@ -42,6 +42,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         walls = FindObjectsOfType<WallDefenceScript>();
         path = new NavMeshPath();
         soulFireBallPrefab = Resources.Load("SoulFireBall");
+        masterAI = FindObjectOfType<MasterAI>();
     }
 
 
@@ -114,6 +115,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         health -= damage;
         if (health <= 0f)
         {
+            
             Death();
         }
     } 
@@ -121,6 +123,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public virtual void Death()
     {
         Instantiate(soulFireBallPrefab, transform.position + Vector3.up * 2f, transform.rotation);
+        masterAI.Enemy_Killed(gameObject);
         Destroy(gameObject);
     }
 
