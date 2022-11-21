@@ -15,6 +15,33 @@ public class WeaponInventoryManager : MonoBehaviour
     public GameObject towerRoot;
     private int towerIndex;
 
+    [Space(30)]
+    [Header("Building")]
+    public Defense[] defenses;
+    private int activeDefense;
+
+    private bool isBuilding;
+    private bool isRemoving;
+
+    private int rotateNum;
+    [SerializeField] private float range;
+
+    public GameObject defenseRoot;
+    public float gridSize;
+
+
+    private GameObject defenseGhost;
+    public Material validMat;
+    public Material invalidMat;
+    private Renderer ghostRenderer;
+
+    public LayerMask removeLayer;
+
+
+    List<Vector3> defenseLocations = new List<Vector3>();
+
+
+
 
     private PlayerScript player;
     private int weaponIndex;
@@ -25,67 +52,212 @@ public class WeaponInventoryManager : MonoBehaviour
     public Animator playerAnimator;
 
     private BuildingScript buildingScript;
+    private Camera playerCamera;
+
 
     // Start is called before the first frame update
     void Start()
     {
         buildingScript = GetComponent<BuildingScript>();
         player = GetComponentInChildren<PlayerScript>();
+        playerCamera = GetComponentInChildren<Camera>();
         EquipWeapons();
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if (Input.GetButtonDown("WeaponToggle"))
+        if (Input.GetButtonDown("BuildingToggle"))
         {
-            weaponsActive = !weaponsActive;
-            if (weaponsActive)
+            if (isBuilding)
             {
-                EquipWeapons();
-
-            } else
+                StopBuilding();
+            }
+            else
             {
-                EquipTower();
-
+                StartBuilding();
             }
         }
 
-        if (weaponsActive) {
-            if (Input.GetKeyDown("1"))
-            {
-                ChangeGun(0);
 
-            }
-            if (Input.GetKeyDown("2"))
-            {
-                ChangeGun(1);
-            }
-
-
-
-        } else
+        if (!isBuilding)
         {
+            if (Input.GetButtonDown("WeaponToggle"))
+            {
+                weaponsActive = !weaponsActive;
+                if (weaponsActive)
+                {
+                    EquipWeapons();
+
+                }
+                else
+                {
+                    EquipTower();
+
+                }
+            }
+
+            if (weaponsActive)
+            {
+                if (Input.GetKeyDown("1"))
+                {
+                    ChangeGun(0);
+
+                }
+                if (Input.GetKeyDown("2"))
+                {
+                    ChangeGun(1);
+                }
+
+
+
+            }
+            else
+            {
+                if (Input.GetKeyDown("1"))
+                {
+                    ChangeTower(0);
+                }
+                if (Input.GetKeyDown("2"))
+                {
+                    ChangeTower(1);
+                }
+                if (Input.GetKeyDown("3"))
+                {
+                    ChangeTower(2);
+                }
+                if (Input.GetKeyDown("4"))
+                {
+                    ChangeTower(3);
+                }
+
+            }
+        }
+        else
+        {
+
+
             if (Input.GetKeyDown("1"))
             {
-                ChangeTower(0);
+                ChangeDefense(0);
             }
             if (Input.GetKeyDown("2"))
             {
-                ChangeTower(1);
+                ChangeDefense(1);
             }
             if (Input.GetKeyDown("3"))
             {
-                ChangeTower(2);
+                ChangeDefense(2);
             }
             if (Input.GetKeyDown("4"))
             {
-                ChangeTower(3);
+                ChangeDefense(3);
             }
 
+            if (Input.GetButtonDown("Remover"))
+            {
+                isRemoving = !isRemoving;
+                if (isRemoving)
+                {
+                    Destroy(defenseGhost);
+                }  else
+                {
+
+                }
+
+
+            } else
+            {
+                StartBuilding();
+            }
+
+
+            if (!isRemoving)
+            {
+                Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
+                Vector3 loc = Vector3.zero;
+                if (activeDefense == 0)
+                {
+                    if (rotateNum % 2 == 0)
+                    {
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    }
+                    else
+                    {
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
+                    }
+                }
+                else if (activeDefense == 1)
+                {
+                    loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                }
+
+                defenseGhost.transform.position = loc;
+
+                if (!defenseLocations.Contains(defenseGhost.transform.position))
+                {
+                    ghostRenderer.material = validMat;
+                    if (Input.GetButtonDown("Fire1"))
+                    {
+                        Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                        defenseLocations.Add(defenseGhost.transform.position);
+
+                    }
+                }
+                else
+                {
+                    ghostRenderer.material = invalidMat;
+
+                }
+
+                if (Input.GetButtonDown("RotateDefense"))
+                {
+
+                    if (rotateNum % 2 == 0)
+                    {
+                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+                    }
+                    else
+                    {
+                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    }
+                    rotateNum++;
+                }
+            } else
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range,  removeLayer))
+                {
+                    if (Input.GetButtonDown("Fire1"))
+                    {
+                        Destroy(hit.collider.transform.root.gameObject);
+                    }
+                }
+            }
         }
     }
+
+    private void StartBuilding()
+    {
+        isBuilding = true;
+        weaponRoot.SetActive(false);
+        towerRoot.SetActive(false);
+        defenseRoot.SetActive(true);
+        defenseGhost = Instantiate(defenses[0].ghost, Vector3.zero, Quaternion.Euler(Vector3.zero));
+        ghostRenderer = defenseGhost.GetComponentInChildren<Renderer>();
+        
+    }
+
+    private void StopBuilding()
+    {
+        isBuilding = false;
+        weaponRoot.SetActive(true);
+        towerRoot.SetActive(false);
+        defenseRoot.SetActive(false);
+        weaponsActive = true;
+        Destroy(defenseGhost);
+    }
+
 
     public void EquipTower()
     {
@@ -199,6 +371,13 @@ public class WeaponInventoryManager : MonoBehaviour
         playerAnimator.SetTrigger("newGun");
     }
 
+    void ChangeDefense(int index)
+    {
+        activeDefense = index;
+        Destroy(defenseGhost);
+        defenseGhost = Instantiate(defenses[activeDefense].ghost);
+        ghostRenderer = defenseGhost.GetComponentInChildren<Renderer>();
+    }
 
 
 
@@ -323,9 +502,6 @@ public class WeaponInventoryManager : MonoBehaviour
 
         
     }
-
-
-
     
 
     public void canShoot(bool value)
@@ -351,5 +527,13 @@ public class TowerHolder
         this.numHeld = num;
     }
 
+
+}
+
+[System.Serializable]
+public class Defense
+{
+    public GameObject ghost;
+    public GameObject defense;
 
 }
