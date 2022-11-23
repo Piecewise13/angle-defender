@@ -44,7 +44,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     void Start()
     {
         health = maxHealth;
-        obstacle = GetComponentInParent<NavMeshObstacle>();
+        obstacle = GetComponentInChildren<NavMeshObstacle>();
         cost.Clear();
         cost.Add(ResourceType.Wood, 10);
         cost.Add(ResourceType.Iron, 0);
@@ -91,8 +91,23 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     public bool Repair()
     {
+        if (health >= maxHealth)
+        {
+            health = maxHealth;
+            ChangeWallObject();
+            return false;
+        }
+        else
+        {
+            health += repairAmount;
+            ChangeWallObject();
+
+            return true;
+        }
+        /*
         if (health <= 0)
         {
+            /*
             if (startRebuildTime + rebuildDelay < Time.time)
             {
                 Rebuild();
@@ -100,26 +115,14 @@ public class WallDefenceScript : MonoBehaviour, Damageable
                 ChangeWallObject();
                 return true;
             }
-
+           
         }
         else
         {
-            if (health >= maxHealth)
-            {
-                health = maxHealth;
-                ChangeWallObject();
-                return false;
-            }
-            else
-            {
-                health += repairAmount;
-                ChangeWallObject();
 
-                return true;
-            }
 
         }
-        return false;
+      */
 
     }
 
@@ -210,6 +213,10 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         {
             Destroy(wallObject);
             print("trying to get: " + index);
+            if (index < 0)
+            {
+                return;
+            }
             wallObject = Instantiate(wallObjects[index], wallHolder.transform);
             currentWall = index;
         }

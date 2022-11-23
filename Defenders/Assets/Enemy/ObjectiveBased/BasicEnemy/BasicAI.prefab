@@ -73,6 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 10
+  masterAI: {fileID: 0}
   canBeLured: 1
   attackTime: 1
   wall:
@@ -125,7 +126,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3330682169171501313
 Transform:
   m_ObjectHideFlags: 0

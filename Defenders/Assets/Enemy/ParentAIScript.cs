@@ -20,6 +20,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     protected bool inLure;
     protected Vector3 lureDestination;
     [SerializeField]protected bool canBeLured;
+    protected bool atWall;
 
 
 
@@ -95,6 +96,17 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         walls = FindObjectsOfType<WallDefenceScript>();
     }
 
+    public virtual void AtWall(WallDefenceScript wall)
+    {
+        atWall = true;
+        targetWall = wall;
+    }
+
+    public virtual void LeaveWall()
+    {
+        atWall = false;
+    }
+
     public void Lure(Vector3 loc)
     {
         if (canBeLured)
@@ -104,6 +116,9 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         }
 
     }
+
+
+
 
     public void EndLure()
     {

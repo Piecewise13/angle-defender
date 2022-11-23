@@ -45,9 +45,14 @@ public class TurretScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
         if (target != null)
         {
+
+            anim.SetBool("isShooting", isShooting);
+            turret.transform.rotation = Quaternion.LookRotation(((target.transform.position + (Vector3.up * 2f)) - turret.transform.position).normalized);
+
+            /*
             if (forge.fireStored > 0)
             {
                 anim.SetBool("isShooting", isShooting);
@@ -57,6 +62,7 @@ public class TurretScript : MonoBehaviour
 
                 particles.Stop();
             }
+            */
 
         }
         else
@@ -115,6 +121,12 @@ public class TurretScript : MonoBehaviour
 
     public void Shoot()
     {
+        particles.Play();
+        target.TakeDamage(damage, null);
+        trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
+        StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
+
+        /*
         if (forge.WithdrawFire(1))
         {
             particles.Play();
@@ -126,7 +138,7 @@ public class TurretScript : MonoBehaviour
             particles.Stop();
         }
 
-
+        */
     }
 
     public IEnumerator SpawnTrail(TrailRenderer trail, Vector3 point)

@@ -7,7 +7,7 @@ using TMPro;
 public class PurchaseTowerElementScript : MonoBehaviour
 {
 
-    public GameObject towerObject;
+    public TowerHolder towerElements;
     public LongClickButton_Slider longClickButton;
 
     public Image panel;
@@ -62,17 +62,6 @@ public class PurchaseTowerElementScript : MonoBehaviour
     public void LongClickDisabled()
     {
         StartCoroutine(CostTextFlash());
-    }
-
-    public bool CanAfford(PlayerScript player)
-    {
-        if (player.GetResourceAmount(ResourceType.Wood) >= woodCost &&
-            player.GetResourceAmount(ResourceType.Iron) >= ironCost &&
-            player.GetResourceAmount(ResourceType.Diamond) >= diamondCost)
-        {
-            return true;
-        }
-        return false;
     }
 
     public int GetNumMade()

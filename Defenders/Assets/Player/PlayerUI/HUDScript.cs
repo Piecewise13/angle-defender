@@ -163,4 +163,25 @@ public class HUDScript : MonoBehaviour
         }
     }
 
+
+    public IEnumerator CantAffordResourcesFlash()
+    {
+        woodText.color = Color.red;
+        ironText.color = Color.red;
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.white;
+        ironText.color = Color.white;
+        diamondText.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.red;
+        ironText.color = Color.red;
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        woodText.color = Color.white;
+        ironText.color = Color.white;
+        diamondText.color = Color.white;
+        yield return null;
+    }
+
 }

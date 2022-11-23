@@ -6,15 +6,36 @@ public class WeaponInventoryManager : MonoBehaviour
 {
 
     private bool weaponsActive = true;
-
+    private PlayerScript player;
+    public Animator playerAnimator;
+    private Camera playerCamera;
+    /*
+     * WEAPON VARS
+     */
+    [Header("Weapons")]
     public GameObject[] weapons;
+    private int weaponIndex;
+
+    public int unlockedTier = 0;
+  
     public GameObject weaponRoot;
     private BasicWeaponScript equipedWeapon;
 
+    /*
+     * TOWER VARS
+     */
+    [Space(30)]
+    [Header("Tower")]
     public TowerHolder[] towers;
     public GameObject towerRoot;
     private int towerIndex;
+    private GameObject towerGhost;
+    private GhostScript towerRenderer;
+    public LayerMask possibleLayers;
 
+    /*
+     * BUILDING VARS
+     */
     [Space(30)]
     [Header("Building")]
     public Defense[] defenses;
@@ -33,7 +54,7 @@ public class WeaponInventoryManager : MonoBehaviour
     private GameObject defenseGhost;
     public Material validMat;
     public Material invalidMat;
-    private Renderer ghostRenderer;
+    private GhostScript ghostRenderer;
 
     public LayerMask removeLayer;
 
@@ -43,22 +64,15 @@ public class WeaponInventoryManager : MonoBehaviour
 
 
 
-    private PlayerScript player;
-    private int weaponIndex;
 
-    public int unlockedTier = 0;
     //public float damageMultiplier;
 
-    public Animator playerAnimator;
 
-    private BuildingScript buildingScript;
-    private Camera playerCamera;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        buildingScript = GetComponent<BuildingScript>();
         player = GetComponentInChildren<PlayerScript>();
         playerCamera = GetComponentInChildren<Camera>();
         EquipWeapons();
@@ -114,6 +128,7 @@ public class WeaponInventoryManager : MonoBehaviour
             }
             else
             {
+                #region TOWER FUNCTIONALITY
                 if (Input.GetKeyDown("1"))
                 {
                     ChangeTower(0);
@@ -131,8 +146,48 @@ public class WeaponInventoryManager : MonoBehaviour
                     ChangeTower(3);
                 }
 
+                RaycastHit hit;
+                if(Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, possibleLayers))
+                {
+                    towerGhost.transform.position = hit.point;
+                    int objLayer = (1 << hit.collider.gameObject.layer);
+                    if ((towers[towerIndex].placeLayers.value & objLayer) > 0)
+                    {
+                        towerRenderer.SetMaterials(validMat);
+                        if (towers[towerIndex].isSnapping)
+                        {
+                            towerGhost.transform.position = hit.collider.transform.position;
+                            if (Input.GetButtonDown("Fire1"))
+                            {
+                                Instantiate(towers[towerIndex].tower, towerGhost.transform.position, towerGhost.transform.rotation);
+                                towers[towerIndex].numHeld--;
+                                print("placing at snap");
+                                CleanUpTowerArray();
+                            }
+                        } else
+                        {
+                            towerGhost.transform.position = hit.point;
+                            if (Input.GetButtonDown("Fire1"))
+                            {
+                                Instantiate(towers[towerIndex].tower, hit.point, towerGhost.transform.rotation);
+                                towers[towerIndex].numHeld--;
+                                CleanUpTowerArray();
+                            }
+                        }
+           
+                    } else
+                    {
+                        towerRenderer.SetMaterials(invalidMat);
+                    }
+                } else
+                {
+                    towerRenderer.SetMaterials(invalidMat);
+                }
+                #endregion
             }
         }
+        #region BUILDING FUNCTIONALITY
+
         else
         {
 
@@ -162,14 +217,13 @@ public class WeaponInventoryManager : MonoBehaviour
                     Destroy(defenseGhost);
                 }  else
                 {
-
+                    StartBuilding();
                 }
 
 
-            } else
-            {
-                StartBuilding();
             }
+
+
 
 
             if (!isRemoving)
@@ -178,35 +232,66 @@ public class WeaponInventoryManager : MonoBehaviour
                 Vector3 loc = Vector3.zero;
                 if (activeDefense == 0)
                 {
-                    if (rotateNum % 2 == 0)
+                    if (rotateNum % 4 == 0)
                     {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
                     }
-                    else
+                    else if (rotateNum % 4 == 1)
                     {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
+                    }
+                    else if (rotateNum % 4 == 2)
+                    {
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize - (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    } else if (rotateNum % 4 == 3)
+                    {
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize - (gridSize / 2));
                     }
                 }
                 else if (activeDefense == 1)
                 {
-                    loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                } else if (activeDefense == 2)
+                {
+                    RaycastHit hit;
+                       
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, 512))
+                    {
+                        loc = hit.point;
+                        defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hit.normal) * defenseGhost.transform.rotation;
+                    }
                 }
 
                 defenseGhost.transform.position = loc;
 
                 if (!defenseLocations.Contains(defenseGhost.transform.position))
                 {
-                    ghostRenderer.material = validMat;
-                    if (Input.GetButtonDown("Fire1"))
-                    {
-                        Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
-                        defenseLocations.Add(defenseGhost.transform.position);
+                    //check if player can afford
 
+                    if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
+                    {
+                        ghostRenderer.SetMaterials(validMat);
+
+                        if (Input.GetButtonDown("Fire1"))
+                        {
+                            Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                            defenseLocations.Add(defenseGhost.transform.position);
+                            player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
+
+                        }
                     }
+                    else
+                    {
+                        if (Input.GetButtonDown("Fire1"))
+                        {
+                            StartCoroutine(player.hudScript.CantAffordResourcesFlash());
+                        }
+                    }
+
                 }
                 else
                 {
-                    ghostRenderer.material = invalidMat;
+                    ghostRenderer.SetMaterials(invalidMat);
 
                 }
 
@@ -234,8 +319,10 @@ public class WeaponInventoryManager : MonoBehaviour
                     }
                 }
             }
+            #endregion
         }
     }
+    #region BUILDING METHODS
 
     private void StartBuilding()
     {
@@ -243,8 +330,10 @@ public class WeaponInventoryManager : MonoBehaviour
         weaponRoot.SetActive(false);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(true);
-        defenseGhost = Instantiate(defenses[0].ghost, Vector3.zero, Quaternion.Euler(Vector3.zero));
-        ghostRenderer = defenseGhost.GetComponentInChildren<Renderer>();
+        defenseGhost = Instantiate(defenses[0].ghost);
+        ghostRenderer = defenseGhost.GetComponent<GhostScript>();
+        rotateNum = 0;
+        print("start building");
         
     }
 
@@ -257,88 +346,28 @@ public class WeaponInventoryManager : MonoBehaviour
         weaponsActive = true;
         Destroy(defenseGhost);
     }
-
-
-    public void EquipTower()
+    void ChangeDefense(int index)
     {
-        if (towers[0] != null && towers[0].numHeld!= 0)
-        {
-            weaponsActive = false;
-            player.ChangeCameraZoom(.8f);
-            player.animator.SetBool("isAiming", false);
-            player.lookScript.bUseAimSens = false;
-            weaponRoot.SetActive(false);
-            towerRoot.SetActive(true);
-            foreach (var item in weapons)
-            {
-                if (item != null)
-                {
-                    item.SetActive(false);
-                }
-            }
-            ChangeTower(0);
-        } else
-        {
-            weaponsActive = true;
-        }
-
+        activeDefense = index;
+        Destroy(defenseGhost);
+        defenseGhost = Instantiate(defenses[activeDefense].ghost);
+        ghostRenderer = defenseGhost.GetComponent<GhostScript>();
+        print("change tower");
     }
 
+    #endregion
+
+    #region WEAPONS METHOD
     public void EquipWeapons()
     {
         weaponsActive = true;
         player.ChangeCameraZoom(1f);
         towerRoot.SetActive(false);
         weaponRoot.SetActive(true);
-        int index = -1;
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] != null && towers[i].numHeld != 0)
-            {
-                if (index == -1)
-                {
-
-                }
-                towers[i].towerObject.SetActive(false);
-            }
-        }
+        Destroy(towerGhost);
 
         ChangeGun(0);
     }
-
-
-    void ChangeTower(int index)
-    {
-
-        if (towers[index] == null ||towers[index].numHeld == 0)
-        {
-            return;
-        }
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] != null)
-            {
-                if (towers[i].numHeld != 0)
-                {
-                    towers[i].towerObject.SetActive(false);
-                    towers[i].towerScript.canFire = false;
-                    towers[index].towerScript.playerInventory = this;
-                }
-
-            }
-        }
-        towerIndex = index;
-        towers[index].towerObject.SetActive(true);
-        towers[index].towerScript.canFire = true;
-
-
-        playerAnimator.SetTrigger("newGun");
-
-    }
-
-
 
     void ChangeGun(int index)
     {
@@ -348,78 +377,30 @@ public class WeaponInventoryManager : MonoBehaviour
         }
         foreach (GameObject weapon in weapons)
         {
-            if(weapon != null)
+            if (weapon != null)
                 weapon.SetActive(false);
         }
         weaponIndex = index;
         weapons[weaponIndex].SetActive(true);
-        
-        
 
-        try{
+
+
+        try
+        {
             equipedWeapon = weapons[weaponIndex].GetComponent<BasicWeaponScript>();
             player.hudScript.UpdateEquipedWeapon(index + 1);
             playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
             //equipedWeapon.SetPlayer(player);
             //BasicWeaponScript.damageMultiplier = damageMultiplier;
-        } catch
+        }
+        catch
         {
 
         }
 
         playerAnimator.SetTrigger("newGun");
     }
-
-    void ChangeDefense(int index)
-    {
-        activeDefense = index;
-        Destroy(defenseGhost);
-        defenseGhost = Instantiate(defenses[activeDefense].ghost);
-        ghostRenderer = defenseGhost.GetComponentInChildren<Renderer>();
-    }
-
-
-
-    public bool GiveNewTower(GameObject tower)
-    {
-        ThrowableTowerScript script = tower.GetComponent<ThrowableTowerScript>();
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] != null && towers[i].numHeld != 0)
-            {
-                //this most likely wont work but maybe
-                if (towers[i].towerScript.towerName.Equals(script.towerName))
-                {
-                    print("Already have one");
-                    towers[i].numHeld++;
-                    //EquipTower();
-                    //ChangeTower(i);
-                    return true;
-                }
-            }
-
-        }
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] == null || towers[i].numHeld == 0)
-            {
-                print("made a new one");
-                towers[i] = new TowerHolder(Instantiate(tower, towerRoot.transform), 1);
-                towers[i].numHeld = 1;
-                
-                //EquipTower();
-                //ChangeTower(i);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
 
     public void GiveNewGun(GameObject gun, int weaponTier)
     {
@@ -435,10 +416,111 @@ public class WeaponInventoryManager : MonoBehaviour
         //print("length: " + weapons.Length);
         ChangeGun(weaponIndex);
     }
+    #endregion
+
+    #region TOWER METHODS
+    public void EquipTower()
+    {
+        if (towers[0] != null && towers[0].numHeld != 0)
+        {
+            weaponsActive = false;
+            player.ChangeCameraZoom(.8f);
+            player.animator.SetBool("isAiming", false);
+            player.lookScript.bUseAimSens = false;
+            weaponRoot.SetActive(false);
+            towerRoot.SetActive(true);
+            foreach (var item in weapons)
+            {
+                if (item != null)
+                {
+                    item.SetActive(false);
+                }
+            }
+            ChangeTower(0);
+        }
+        else
+        {
+            weaponsActive = true;
+        }
+        
+    }
+
+    void ChangeTower(int index)
+    {
+        if (towers[index] == null || towers[index].numHeld == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < towers.Length; i++)
+        {
+            if (towers[i] != null)
+            {
+                if (towers[i].numHeld != 0)
+                {
+                    Destroy(towerGhost);
+                    towerGhost = Instantiate(towers[index].ghost, Vector3.zero, Quaternion.Euler(Vector3.zero));
+                    towerRenderer = towerGhost.GetComponentInChildren<GhostScript>();
+                }
+
+            }
+        }
+        towerIndex = index;
+
+
+        playerAnimator.SetTrigger("newGun");
+
+        /*
+         * OLD METHOD
+
+        */
+
+    }
+
+    public bool GiveNewTower(TowerHolder tower)
+    {
+
+        for (int i = 0; i < towers.Length; i++)
+        {
+            if (towers[i] != null && towers[i].numHeld != 0)
+            {
+                //this most likely wont work but maybe
+                if (towers[i].Equals(tower))
+                {
+                    print("Already have one");
+                    towers[i].numHeld++;
+                    //EquipTower();
+                    //ChangeTower(i);
+                    return true;
+                }
+            }
+
+        }
+        for (int i = 0; i < towers.Length; i++)
+        {
+            if (towers[i] == null || towers[i].numHeld == 0)
+            {
+                print("made a new one");
+                towers[i] = tower;
+                towers[i].numHeld = 1;
+
+                //EquipTower();
+                //ChangeTower(i);
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+
+
 
 
     private void CleanUpTowerArray()
     {
+
         int lastAval = -1;
         for (int i = 0; i < towers.Length - 1; i++)
         {
@@ -484,6 +566,8 @@ public class WeaponInventoryManager : MonoBehaviour
 
     public bool TowerThrown()
     {
+        return true;
+        /*
         if (towers[towerIndex].numHeld != 0)
         {
             towers[towerIndex].numHeld--;
@@ -499,10 +583,11 @@ public class WeaponInventoryManager : MonoBehaviour
         {
             return false;
         }
-
+        */
         
     }
-    
+
+    #endregion
 
     public void canShoot(bool value)
     {
@@ -516,18 +601,17 @@ public class WeaponInventoryManager : MonoBehaviour
 public class TowerHolder
 {
 
-    public ThrowableTowerScript towerScript;
-    public GameObject towerObject;
-    public int numHeld;
+    public GameObject ghost;
+    public GameObject tower;
+    [HideInInspector]public int numHeld;
+    public LayerMask placeLayers;
+    public bool isSnapping;
 
-    public TowerHolder(GameObject tower, int num)
+
+    public bool Equals(TowerHolder obj)
     {
-        this.towerObject = tower;
-        towerScript = towerObject.GetComponent<ThrowableTowerScript>();
-        this.numHeld = num;
+        return tower = obj.tower;
     }
-
-
 }
 
 [System.Serializable]
@@ -535,5 +619,7 @@ public class Defense
 {
     public GameObject ghost;
     public GameObject defense;
+
+    public int woodCost, ironCost, diamondCost;
 
 }

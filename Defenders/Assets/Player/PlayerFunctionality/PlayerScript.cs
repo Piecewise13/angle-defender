@@ -13,7 +13,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public CharacterController controller;
     public Camera playerCamera;
     [SerializeField] protected Transform groundCheck;
-    [HideInInspector]public MouseLook lookScript;
+    [HideInInspector] public MouseLook lookScript;
     protected WeaponInventoryManager weaponManager;
     public Animator animator;
     public GameObject deathScreen;
@@ -38,7 +38,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected UpgradeTreeScript upgradeTree;
     [SerializeField] protected GameObject settingsMenu;
     protected bool inSettings;
-    
+
 
     /**
      * MOVEMENT VARS
@@ -55,7 +55,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected bool canJump;
 
     protected Vector3 moveDir;
-    protected float  gravity = -9.81f;
+    protected float gravity = -9.81f;
     protected Vector3 velocity;
     protected bool isGrounded;
 
@@ -105,6 +105,11 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected bool firstPerkUnlocked = false;
     protected bool secondPerkUnlocked = false;
     protected bool thirdPerkUnlocked = false;
+
+    [Space(10)]
+    [Header("Ladder Vars")]
+    public float ladderSpeed;
+    private bool isOnLadder;
 
 
 
@@ -177,16 +182,20 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            if (isOnLadder)
+            {
+                velocity.y = 0;
+            }
+            else
+            {
+                velocity.y = -2f;
+            }
             canJump = true;
             canWallKick = true;
-            animator.SetBool("isFalling", false);
+
         }
 
-        if (velocity.y < 0 && !isGrounded)
-        {
-            animator.SetBool("isFalling", true);
-        }
+
 
 
 
@@ -209,11 +218,22 @@ public class PlayerScript : MonoBehaviour, Damageable
             sideValue = Input.GetAxis("Horizontal");
 
 
-            moveDir = forwardValue * transform.forward + sideValue * transform.right;
+            if (!isOnLadder)
+            {
+                moveDir = forwardValue * transform.forward + sideValue * transform.right;
+                movementSpeedVar = defaultMovementSpeed;
+            }
+            else
+            {
+                moveDir = forwardValue * Vector3.up + sideValue * transform.right;
+                movementSpeedVar = ladderSpeed;
+            }
+
             if (!moveDir.Equals(Vector3.zero))
             {
                 animator.SetBool("isWalking", true);
-            } else
+            }
+            else
             {
                 animator.SetBool("isWalking", false);
 
@@ -249,8 +269,6 @@ public class PlayerScript : MonoBehaviour, Damageable
                 }
             }
 
-
-
             if (Input.GetButtonDown("Jump") && canJump)
             {
                 if (shouldADH)
@@ -271,33 +289,33 @@ public class PlayerScript : MonoBehaviour, Damageable
                 velocity.y = jumpHeight;
 
                 animator.SetTrigger("isJumping");
-                animator.SetBool("isFalling", true);
             }
 
             if (isDashing)
             {
-                if (dashTime + startDashTime >  Time.time)
+                if (dashTime + startDashTime > Time.time)
                 {
                     print("should be actually dashing");
                     controller.Move(initForward * dashSpeed * Time.deltaTime);
-                } else
+                }
+                else
                 {
                     dashTrigger.SetActive(false);
                     isDashing = false;
                 }
 
-            } else
+            }
+            else
             {
                 controller.Move(moveDir * movementSpeedVar * Time.deltaTime);
             }
         }
 
-        
+        if (!isOnLadder)
+        {
+            velocity.y += gravity * Time.deltaTime;
 
-
-
-
-        velocity.y += gravity * Time.deltaTime;
+        }
 
         controller.Move(velocity * Time.deltaTime);
         #endregion
@@ -325,11 +343,12 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         if (forwardValue == -1f)
         {
-            if (!isGrounded && !canJump )
+            if (!isGrounded && !canJump)
             {
                 canABH = true;
                 tickCounter = 0;
-            } else
+            }
+            else
 
 
             if (canABH)
@@ -344,7 +363,8 @@ public class PlayerScript : MonoBehaviour, Damageable
                         canABH = false;
                         tickCounter = 0;
                         abhCount = 1;
-                    } else
+                    }
+                    else
                     {
 
                         shouldADH = true;
@@ -354,7 +374,8 @@ public class PlayerScript : MonoBehaviour, Damageable
 
             }
 
-        } else
+        }
+        else
         {
             shouldADH = false;
             movementSpeedVar = defaultMovementSpeed;
@@ -456,6 +477,18 @@ public class PlayerScript : MonoBehaviour, Damageable
         targetFOV = defaultFov / amount;
     }
 
+    public bool CanAffordResources(int woodCost, int ironCost, int diamondCost)
+    {
+        if (woodAmount >= woodCost &&
+    ironAmount >= ironCost &&
+    diamondAmount >= diamondCost)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 
     public void openUIElement(bool isOpen)
     {
@@ -509,6 +542,26 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
         hudScript.UpdateResourceValues();
         hudScript.ResoucesChangeFade(type, delta);
+    }
+
+    public void SetResourceAmount(int woodDelta, int ironDelta, int diamondDelta)
+    {
+        woodAmount += woodDelta;
+        ironAmount += ironDelta;
+        diamondAmount += diamondDelta;
+        hudScript.UpdateResourceValues();
+        if (woodDelta != 0)
+        {
+            hudScript.ResoucesChangeFade(ResourceType.Wood, woodDelta);
+        }
+        if (ironDelta != 0)
+        {
+            hudScript.ResoucesChangeFade(ResourceType.Iron, ironDelta);
+        }
+        if (diamondDelta != 0)
+        {
+            hudScript.ResoucesChangeFade(ResourceType.Diamond, diamondDelta);
+        }
     }
 
     public int GetResourceAmount(ResourceType type)
@@ -571,11 +624,21 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         foreach (var item in animator.parameters)
         {
-            if(item.type == AnimatorControllerParameterType.Bool)
+            if (item.type == AnimatorControllerParameterType.Bool)
             {
                 animator.SetBool(item.name, false);
             }
         }
+    }
+
+    public void SetIsOnLadder(bool value)
+    {
+        isOnLadder = value;
+    }
+
+    public bool GetIsOnLadder()
+    {
+        return isOnLadder;
     }
 
     #endregion

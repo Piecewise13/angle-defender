@@ -41,6 +41,7 @@ public class BasicEnemyScript : ParentAIScript
         {
             if (agent.hasPath)
             {
+                /*
                 if (shouldAttack)
                 {
                     if (Vector3.Distance(transform.position, targetWall.transform.position) < 2f)
@@ -48,6 +49,7 @@ public class BasicEnemyScript : ParentAIScript
                         StartAttack();
                     }
                 }
+                */
             }
             else
             {
@@ -71,19 +73,22 @@ public class BasicEnemyScript : ParentAIScript
             {
                 if (attackTarget.isDead)
                 {
-                    EndAttack();
-                }
-                if (attackTime + timeLastAttack < Time.time)
+                    LeaveWall();
+                } else
                 {
-                    transform.LookAt(agent.destination);
-                    anim.SetTrigger("Attack");
-                    if (attackTarget == null)
+                    if (attackTime + timeLastAttack < Time.time)
                     {
-                        UpdatePath();
+                        transform.LookAt(agent.destination);
+                        anim.SetTrigger("Attack");
+                        if (attackTarget != null)
+                        {
+                            attackTarget.TakeDamage(attackDamage, null);
+                        }
+
+                        timeLastAttack = Time.time;
                     }
-                    attackTarget.TakeDamage(attackDamage, null);
-                    timeLastAttack = Time.time;
                 }
+
             } else
             {
                 EndAttack();
@@ -98,15 +103,22 @@ public class BasicEnemyScript : ParentAIScript
 
         anim.SetBool("isWalking", true);
         //figure out if there is a path to player
+        agent.destination = egg.transform.position;
 
+        /*
         agent.CalculatePath(egg.transform.position, path);
         if (path.status == NavMeshPathStatus.PathComplete)
         {
             shouldAttack = false;
             agent.SetPath(path);
-            return;
+
         }
-        shouldAttack = true;
+        else
+        {
+            shouldAttack = true;
+        }
+
+        
         targetWall = GetRandomWall();
         atttackTargetGO = targetWall.gameObject;
         attackTarget = targetWall;
@@ -114,7 +126,7 @@ public class BasicEnemyScript : ParentAIScript
         {
             agent.destination = targetWall.transform.position;
         }
-
+        */
 
     }
 
@@ -136,7 +148,21 @@ public class BasicEnemyScript : ParentAIScript
         shouldAttack = false;
         canAttack = false;
         agent.isStopped = false;
+        print("end attack");
         UpdatePath();
+    }
+
+    public override void AtWall(WallDefenceScript wall)
+    {
+        base.AtWall(wall);
+        StartAttack();
+
+    }
+    public override void LeaveWall()
+    {
+        base.LeaveWall();
+        EndAttack();
+        print("Leaving Wall");
     }
 
 }

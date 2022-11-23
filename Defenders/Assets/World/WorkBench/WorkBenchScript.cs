@@ -28,7 +28,7 @@ public class WorkBenchScript : MonoBehaviour
 
     private int focusedTower;
 
-    private int unlockedTier = 0;
+    [SerializeField]private int unlockedTier = 1;
 
 
     public GameObject workbenchUI;
@@ -103,7 +103,7 @@ public class WorkBenchScript : MonoBehaviour
         nameText.text = tower.towerName;
         descriptionText.text = tower.towerDescription;
 
-        if (tower.CanAfford(player))
+        if (player.CanAffordResources(tower.woodCost, tower.ironCost, tower.diamondCost))
         {
             tower.longClickButton.canLongClick = true;
         } else
@@ -123,7 +123,7 @@ public class WorkBenchScript : MonoBehaviour
 
         PurchaseTowerElementScript tower = purchaseTowerObjects[focusedTower];
 
-        if (playerInventory.GiveNewTower(tower.towerObject))
+        if (playerInventory.GiveNewTower(tower.towerElements))
         {
             purchasedtower = true;
             player.SetResourceAmount(ResourceType.Wood, -tower.woodCost);
