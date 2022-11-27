@@ -35,7 +35,7 @@ public class EggScript : MonoBehaviour, Damageable
 void Start()
     {
         health = maxHealth;
-        print(health);
+        //print(health);
         playerHuds = FindObjectsOfType<HUDScript>();
         playerData = FindObjectOfType<PlayerDataMangerScript>();
     }

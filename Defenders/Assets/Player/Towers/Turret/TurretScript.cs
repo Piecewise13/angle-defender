@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TurretScript : MonoBehaviour
+public class TurretScript : TowerParentScript
 {
 
     public GameObject turret;
@@ -22,7 +22,6 @@ public class TurretScript : MonoBehaviour
     private float lastSearchTime;
 
     private bool isShooting;
-    public static BulletForge forge;
 
     [Header("TURRET STATS")]
     [SerializeField]private float targetRange;
@@ -30,13 +29,17 @@ public class TurretScript : MonoBehaviour
     private static float shootSpeedMultiplier = 1f;
 
 
+
+
+
+
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         particles = GetComponentInChildren<ParticleSystem>();
-        forge = FindObjectOfType<BulletForge>();
         particles.Stop();
+        towerUI = GetComponentInChildren<TowerGUIParent>();
     }
 
 
@@ -157,5 +160,20 @@ public class TurretScript : MonoBehaviour
         //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(trail.gameObject, trail.time);
 
+    }
+
+    public override void UpgradeOne()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void UpgradeTwo()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override void UpgradeThree()
+    {
+        throw new System.NotImplementedException();
     }
 }

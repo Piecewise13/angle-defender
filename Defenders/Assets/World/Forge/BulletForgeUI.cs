@@ -7,7 +7,7 @@ using TMPro;
 public class BulletForgeUI : MonoBehaviour
 {
 
-    public BulletForge forge;
+    public FurnaceTower forge;
 
 
     int playerWoodAmount;
@@ -47,6 +47,7 @@ public class BulletForgeUI : MonoBehaviour
     void Start()
     {
         gameObject.SetActive(false);
+        forge = GetComponentInParent<FurnaceTower>();
         UpdateFuelMeter();
         UpdateSoulFireMeter();
     }
@@ -183,7 +184,7 @@ public class BulletForgeUI : MonoBehaviour
 
     public void UpdatePlayerSoulFireMeter()
     {
-        playerSoulFire.value = (float)forge.player.GetSoulFire() / (float)forge.player.GetSoulFireMax();
+        playerSoulFire.value = (float)forge.GetPlayer().GetSoulFire() / (float)forge.GetPlayer().GetSoulFireMax();
     }
 
     void UpdatePlayerValues()
@@ -210,13 +211,14 @@ public class BulletForgeUI : MonoBehaviour
 
     public void OnEnable()
     {
-        if (forge.player == null)
+        PlayerScript player = forge.GetPlayer();
+        if (player == null)
         {
             return;
         }
-        playerWoodAmount = forge.player.GetResourceAmount(ResourceType.Wood);
-        playerIronAmount = forge.player.GetResourceAmount(ResourceType.Iron);
-        playerDiamondAmount = forge.player.GetResourceAmount(ResourceType.Diamond);
+        playerWoodAmount = player.GetResourceAmount(ResourceType.Wood);
+        playerIronAmount = player.GetResourceAmount(ResourceType.Iron);
+        playerDiamondAmount = player.GetResourceAmount(ResourceType.Diamond);
         ResetValues();
         UpdateFuelMeter();
         UpdateSoulFireMeter();
