@@ -32,7 +32,7 @@ public class MonsterSpawnScript : MonoBehaviour
     private PlayerScript player;
 
     public ResourceType neededResource = ResourceType.Wood;
-
+    private bool spawned;
 
 
 
@@ -46,6 +46,10 @@ public class MonsterSpawnScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (spawned)
+        {
+            return;
+        }
         if (bHasPlayer)
         {
             if (tickDuration + lastTick < Time.time)
@@ -189,7 +193,7 @@ public class MonsterSpawnScript : MonoBehaviour
         Instantiate(monsters[index], spawnPoint.position, spawnPoint.rotation);
         monsters.RemoveAt(index);
 
-
+        spawned = true;
         Destroy(currentResourceCollector);
         print("Spawn");
     }

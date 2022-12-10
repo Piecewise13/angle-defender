@@ -57,13 +57,6 @@ public abstract class TowerParentScript : MonoBehaviour
 
     }
 
-    /*
-     * ABSTRACT METHODS
-     */
-    public abstract void UpgradeOne();
-    public abstract void UpgradeTwo();
-    public abstract void UpgradeThree();
-
 
 
 
@@ -84,5 +77,6 @@ public abstract class TowerParentScript : MonoBehaviour
     public virtual void SetPlayer(PlayerScript value)
     {
         player = value;
+        towerUI.SetPlayer(player);
     }
 }

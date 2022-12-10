@@ -50,7 +50,7 @@ public class MasterAI : MonoBehaviour
     #endregion
 
     int waveNum = 0;
-    List<GameObject> ai = new List<GameObject>();
+    public List<GameObject> ai = new List<GameObject>();
 
     public int[] spawnNumber = new int[4];
     float[] spawnTime = new float[4];
@@ -63,13 +63,18 @@ public class MasterAI : MonoBehaviour
     float tier1Time, tier2Time, tier3Time;
     int tier1Number = 0, tier2Number = 0, tier3Number = 0;
 
-    int numberKilled;
-    int totalToSpawn;
+    public int numberKilled;
+    public int totalToSpawn;
+    private int killedMOE = 5;
 
 
     public GameObject startWaveObjcet;
     public Transform[] spawnPoints;
+    public GameObject spawnBall;
+    public Transform spawnBallSpawnPoint;
 
+    public ParticleSystem fireParticles;
+    public Animator chaliceAnim;
 
 
     
@@ -340,7 +345,9 @@ public class MasterAI : MonoBehaviour
 
     public void Start_Wave()
     {
+        ai.Clear();
         startWaveObjcet.SetActive(false);
+        fireParticles.Play();
         waveNum++;
         Update_Number();
 
@@ -366,6 +373,14 @@ public class MasterAI : MonoBehaviour
 
     }
 
+    public void End_Wave()
+    {
+        isSpawning = false;
+        startWaveObjcet.SetActive(true);
+        fireParticles.Stop();
+        chaliceAnim.SetBool("isSwinging", false);
+    }
+
     private void Update_Number()
     {
         spawnNumber[0] = (int)(3f * difficulty * waveNum) + (int)(5 * difficulty) + 10;
@@ -386,12 +401,15 @@ public class MasterAI : MonoBehaviour
 
     public void Enemy_Killed(GameObject obj)
     {
-        ai.Remove(obj);
-        numberKilled++;
-        if (numberKilled >= totalToSpawn)
+        if (ai.Contains(obj))
         {
-            isSpawning = false;
-            startWaveObjcet.SetActive(true);
+            ai.Remove(obj);
+            numberKilled++;
+        }
+
+        if (totalToSpawn - numberKilled <= killedMOE)
+        {
+            End_Wave();
         }
 
     }
@@ -400,7 +418,10 @@ public class MasterAI : MonoBehaviour
     {
         print("SpawnT1");
         int index = Random.Range(0, enemysT1.Length);
-        Instantiate(enemysT1[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        //Instantiate(enemysT1[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        SpawnBallScript script = Instantiate(spawnBall, spawnBallSpawnPoint.position, spawnBallSpawnPoint.rotation).GetComponent<SpawnBallScript>();
+        script.enemy = enemysT1[index].prefab;
+        script.masterAI = this;
     }
 
     private void SpawnT2()

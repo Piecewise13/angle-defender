@@ -178,14 +178,10 @@ public class BulletForgeUI : MonoBehaviour
     {
         fireSlider.value = (float)forge.fireStored / (float)forge.soulFireMax;
         fireIndicator.text = forge.fireStored + "";
-        UpdatePlayerSoulFireMeter();
+
 
     }
 
-    public void UpdatePlayerSoulFireMeter()
-    {
-        playerSoulFire.value = (float)forge.GetPlayer().GetSoulFire() / (float)forge.GetPlayer().GetSoulFireMax();
-    }
 
     void UpdatePlayerValues()
     {

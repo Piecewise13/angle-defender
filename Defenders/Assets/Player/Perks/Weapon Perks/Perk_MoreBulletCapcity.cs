@@ -8,7 +8,7 @@ public class Perk_MoreBulletCapcity : ParentPerkScript
     public float fireAmount;
     public override void UnlockUpgrade(PlayerScript player)
     {
-        player.SetSoulFireMax(1000);
+        //player.SetSoulFireMax(1000);
     }
 
 

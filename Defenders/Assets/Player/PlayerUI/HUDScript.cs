@@ -42,7 +42,9 @@ public class HUDScript : MonoBehaviour
 
     [Header("Player Variables")]
     public Slider healthSlider;
-    public Slider soulFireSlider;
+    public TMP_Text healthText;
+    //public Slider soulFireSlider;
+    public TMP_Text soulFireText;
     private float previousSoulFire;
 
 
@@ -72,13 +74,15 @@ public class HUDScript : MonoBehaviour
     public void UpdateSoulFireValues()
     {
 
-        soulFireSlider.value = (float)player.GetSoulFire() / (float)player.GetSoulFireMax();
+        //soulFireSlider.value = (float)player.GetSoulFire() / (float)player.GetSoulFireMax();
+        soulFireText.text = player.GetSoulFire() + "";
 
     }
 
     public void UpdateHealth()
     {
         healthSlider.value = player.health / player.maxHealth;
+        healthText.text = player.health + " / " + player.maxHealth;
     }
 
 
