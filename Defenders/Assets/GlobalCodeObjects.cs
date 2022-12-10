@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GlobalCodeObjects : MonoBehaviour
 {
@@ -54,6 +56,18 @@ public static class Extns
     public static Vector3 xz3(this Vector3 vv)
     {
         return new Vector3(vv.x, 0f, vv.z);
+    }
+
+    public static IEnumerator TextFlash(TMP_Text text)
+    {
+        text.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        text.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        text.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        text.color = Color.white;
+        yield return new WaitForSeconds(.5f);
     }
 
 }

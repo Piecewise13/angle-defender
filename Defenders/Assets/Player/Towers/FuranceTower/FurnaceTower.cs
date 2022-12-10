@@ -79,18 +79,14 @@ public class FurnaceTower : TowerParentScript
 
             if (fireStored >= playerTransferAmount)
             {
-
-                if (player.GetSoulFireMax() > player.GetSoulFire() + playerTransferAmount)
+                if (playerTransferTime + lastPlayerTransferTime < Time.time)
                 {
-                    if (playerTransferTime + lastPlayerTransferTime < Time.time)
-                    {
-                        player.SetSoulFire(playerTransferAmount);
-                        fireStored -= playerTransferAmount;
-                        bulletForgeUI.UpdateSoulFireMeter();
+                    player.SetSoulFire(playerTransferAmount);
+                    fireStored -= playerTransferAmount;
+                    bulletForgeUI.UpdateSoulFireMeter();
 
 
-                        lastPlayerTransferTime = Time.time;
-                    }
+                    lastPlayerTransferTime = Time.time;
                 }
             }
         }
@@ -100,7 +96,7 @@ public class FurnaceTower : TowerParentScript
     public void PlayerEnter(PlayerScript player)
     {
         hasPlayer = true;
-        this.player = player;
+        SetPlayer(player);
 
 
 
@@ -163,18 +159,4 @@ public class FurnaceTower : TowerParentScript
 
     }
 
-    public override void UpgradeOne()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void UpgradeTwo()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void UpgradeThree()
-    {
-        throw new System.NotImplementedException();
-    }
 }

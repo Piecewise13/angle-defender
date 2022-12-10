@@ -162,18 +162,4 @@ public class TurretScript : TowerParentScript
 
     }
 
-    public override void UpgradeOne()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void UpgradeTwo()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void UpgradeThree()
-    {
-        throw new System.NotImplementedException();
-    }
 }

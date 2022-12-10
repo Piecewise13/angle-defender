@@ -196,7 +196,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         collide.enabled = false;
         obstacle.enabled = false;
         isDead = true;
-
+        Destroy(gameObject);
     }
 
     public void ChangeWallObject()

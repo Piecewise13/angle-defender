@@ -20,7 +20,7 @@ public class Perk_PassiveSoulFire : ParentPerkScript
     {
         upgradeInt++;
         // g(x) = 25x + 15 for a total soulfire value of 2025
-        player.SetSoulFireMax(30 * (upgradeInt) + 20);
+        //player.SetSoulFireMax(30 * (upgradeInt) + 20);
         soulFireCost += (int)(soulFireCost * (Mathf.Pow(1.0025f, upgradeInt) - .75f));
         indicator.IncreaseIndicator();
         if (upgradeInt == 10)

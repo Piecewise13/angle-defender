@@ -97,24 +97,21 @@ public class BulletForge : MonoBehaviour
 
             if (fireStored >= playerTransferAmount)
             {
-
-                if (player.GetSoulFireMax() > player.GetSoulFire() + playerTransferAmount)
+                if (playerTransferTime + lastPlayerTransferTime < Time.time)
                 {
-                    if (playerTransferTime + lastPlayerTransferTime < Time.time)
+                    player.SetSoulFire(playerTransferAmount);
+                    fireStored -= playerTransferAmount;
+                    bulletForgeUI.UpdateSoulFireMeter();
+                    if (fireStored < playerTransferAmount)
                     {
-                        player.SetSoulFire(playerTransferAmount);
-                        fireStored -= playerTransferAmount;
-                        bulletForgeUI.UpdateSoulFireMeter();
-                        if (fireStored < playerTransferAmount)
-                        {
-                            UpdateTransformers(false);
-                            StopSoulFireTubes();
-                        }
-
-
-                        lastPlayerTransferTime = Time.time;
+                        UpdateTransformers(false);
+                        StopSoulFireTubes();
                     }
+
+
+                    lastPlayerTransferTime = Time.time;
                 }
+
             }
         }
     }

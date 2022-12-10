@@ -27,7 +27,6 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected float zoomSpeed = 10f;
     protected float targetFOV = 60f;
     [SerializeField] protected int soulFire;
-    [SerializeField] protected int maxSoulFire;
 
     /*
      * HUD SCRIPTS
@@ -489,6 +488,11 @@ public class PlayerScript : MonoBehaviour, Damageable
         return false;
     }
 
+    public bool CanAffordSoulFire(int cost)
+    {
+        return soulFire >= cost;
+    }
+
 
     public void openUIElement(bool isOpen)
     {
@@ -599,16 +603,6 @@ public class PlayerScript : MonoBehaviour, Damageable
     }
 
 
-    public void SetSoulFireMax(int delta)
-    {
-        maxSoulFire += delta;
-        hudScript.UpdateSoulFireValues();
-    }
-
-    public int GetSoulFireMax()
-    {
-        return maxSoulFire;
-    }
 
     public void SetHealthMax(int delta)
     {
