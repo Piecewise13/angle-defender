@@ -6,8 +6,7 @@ public class TurretScript : TowerParentScript
 {
 
     public GameObject turret;
-    private ParticleSystem particles;
-    private Animator anim;
+    public Animator anim;
     
     //bullet trail
     public TrailRenderer bulletTrail;
@@ -24,9 +23,9 @@ public class TurretScript : TowerParentScript
     private bool isShooting;
 
     [Header("TURRET STATS")]
-    [SerializeField]private float targetRange;
+    [SerializeField] private float targetRange;
     [SerializeField] private float damage;
-    private static float shootSpeedMultiplier = 1f;
+    [SerializeField] private float shootSpeedMultiplier = 1f;
 
 
 
@@ -36,10 +35,7 @@ public class TurretScript : TowerParentScript
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
-        particles = GetComponentInChildren<ParticleSystem>();
-        particles.Stop();
-        towerUI = GetComponentInChildren<TowerGUIParent>();
+
     }
 
 
@@ -84,7 +80,7 @@ public class TurretScript : TowerParentScript
 
     private void FindTarget()
     {
-        anim.SetFloat("shootSpeed", shootSpeedMultiplier);
+        //anim.SetFloat("shootSpeed", shootSpeedMultiplier);
         Collider[] foundEnemy = Physics.OverlapSphere(transform.position, targetRange, layerMask);
 
         if (foundEnemy.Length == 0)
@@ -115,7 +111,7 @@ public class TurretScript : TowerParentScript
 
     }
 
-    public static void UpgradeShootSpeed(float value)
+    public void UpgradeShootSpeed(float value)
     {
         shootSpeedMultiplier = value;
         
@@ -124,7 +120,6 @@ public class TurretScript : TowerParentScript
 
     public void Shoot()
     {
-        particles.Play();
         target.TakeDamage(damage, null);
         trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
         StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
@@ -160,6 +155,11 @@ public class TurretScript : TowerParentScript
         //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(trail.gameObject, trail.time);
 
+    }
+
+    public void SetAnimator(Animator anim)
+    {
+        this.anim = anim;
     }
 
 }

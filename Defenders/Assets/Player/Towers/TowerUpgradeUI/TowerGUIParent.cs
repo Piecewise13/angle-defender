@@ -60,7 +60,8 @@ public class TowerGUIParent : MonoBehaviour
 
     public void PurchaseUpgrade()
     {
-    
+        print(player);
+        print(player.CanAffordSoulFire(focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost));
         if (player.CanAffordSoulFire(focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost))
         {
             player.SetSoulFire(-focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost);
@@ -71,6 +72,7 @@ public class TowerGUIParent : MonoBehaviour
 
     public void FocusUpgrade(TowerGUI_UpgradePath upgradePath)
     {
+        //print("called");
         if (focusedUpgradePath != null)
         {
             focusedUpgradePath.selectionImage.color = TowerGUI_UpgradePath.unselectedColor;
@@ -79,15 +81,17 @@ public class TowerGUIParent : MonoBehaviour
 
         focusedUpgradePath = upgradePath;
         focusedUpgradePath.selectionImage.color = TowerGUI_UpgradePath.selectedColor;
-        print(TowerGUI_UpgradePath.selectedColor);
+        //print(TowerGUI_UpgradePath.selectedColor);
         UpgradeInfo upgrade = focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible];
-        print(focusedUpgradePath.currentUpgradeAvalible);
+        //print(focusedUpgradePath.currentUpgradeAvalible);
+        upgradeName.text = upgrade.name + "";
+        upgradeDesciption.text = upgrade.description + "";
+        print(player.CanAffordSoulFire(upgrade.cost));
         if (player.CanAffordSoulFire(upgrade.cost))
         {
             purchaseButtonInteractable.enabled = true;
             purchaseButton.interactable = true;
-            upgradeName.text = upgrade.name + "";
-            upgradeDesciption.text = upgrade.description + "";
+
 
         } else
         { 
@@ -100,7 +104,7 @@ public class TowerGUIParent : MonoBehaviour
 
     public void SetEventCamera(Camera playerCam)
     {
-        canvas.worldCamera = playerCam;
+        //canvas.worldCamera = playerCam;
     }
 
     public void SetPlayer(PlayerScript player)

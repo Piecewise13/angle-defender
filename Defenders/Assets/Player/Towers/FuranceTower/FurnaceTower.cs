@@ -93,13 +93,10 @@ public class FurnaceTower : TowerParentScript
     }
 
 
-    public void PlayerEnter(PlayerScript player)
+    public override void SetPlayer(PlayerScript player)
     {
         hasPlayer = true;
-        SetPlayer(player);
-
-
-
+        base.SetPlayer(player);
     }
 
     public void PlayerExit()

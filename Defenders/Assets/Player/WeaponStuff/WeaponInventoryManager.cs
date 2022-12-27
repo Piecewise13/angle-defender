@@ -5,7 +5,8 @@ using UnityEngine;
 public class WeaponInventoryManager : MonoBehaviour
 {
 
-    private bool weaponsActive = true;
+    private PlayerMode mode;
+
     private PlayerScript player;
     public Animator playerAnimator;
     private Camera playerCamera;
@@ -40,8 +41,6 @@ public class WeaponInventoryManager : MonoBehaviour
     [Header("Building")]
     public Defense[] defenses;
     private int activeDefense;
-
-    private bool isBuilding;
     private bool isRemoving;
 
     private int rotateNum;
@@ -81,38 +80,14 @@ public class WeaponInventoryManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("BuildingToggle"))
+        if (Input.GetButtonDown("SwitchMode"))
         {
-            if (isBuilding)
-            {
-                StopBuilding();
-            }
-            else
-            {
-                StartBuilding();
-            }
+            CycleMode();
         }
 
-
-        if (!isBuilding)
+        switch (mode)
         {
-            if (Input.GetButtonDown("WeaponToggle"))
-            {
-                weaponsActive = !weaponsActive;
-                if (weaponsActive)
-                {
-                    EquipWeapons();
-
-                }
-                else
-                {
-                    EquipTower();
-
-                }
-            }
-
-            if (weaponsActive)
-            {
+            case PlayerMode.Weapons:
                 if (Input.GetKeyDown("1"))
                 {
                     ChangeGun(0);
@@ -122,12 +97,139 @@ public class WeaponInventoryManager : MonoBehaviour
                 {
                     ChangeGun(1);
                 }
+                break;
+            case PlayerMode.Building:
+                if (Input.GetKeyDown("1"))
+                {
+                    ChangeDefense(0);
+                }
+                if (Input.GetKeyDown("2"))
+                {
+                    ChangeDefense(1);
+                }
+                if (Input.GetKeyDown("3"))
+                {
+                    ChangeDefense(2);
+                }
+                if (Input.GetKeyDown("4"))
+                {
+                    ChangeDefense(3);
+                }
+
+                if (Input.GetButtonDown("Remover"))
+                {
+                    isRemoving = !isRemoving;
+                    if (isRemoving)
+                    {
+                        Destroy(defenseGhost);
+                    }
+                    else
+                    {
+                        StartBuilding();
+                    }
+                }
+
+                if (!isRemoving)
+                {
+                    Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
+                    Vector3 loc = Vector3.zero;
+                    if (activeDefense == 0)
+                    {
+                        if (rotateNum % 4 == 0)
+                        {
+                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                        }
+                        else if (rotateNum % 4 == 1)
+                        {
+                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
+                        }
+                        else if (rotateNum % 4 == 2)
+                        {
+                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize - (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                        }
+                        else if (rotateNum % 4 == 3)
+                        {
+                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize - (gridSize / 2));
+                        }
+                    }
+                    else if (activeDefense == 1)
+                    {
+                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    }
+                    else if (activeDefense == 2)
+                    {
+                        RaycastHit hitout;
+
+                        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, 512))
+                        {
+                            loc = hitout.point;
+                            defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hitout.normal) * defenseGhost.transform.rotation;
+                        }
+                    }
+
+                    defenseGhost.transform.position = loc;
+
+                    if (!defenseLocations.Contains(defenseGhost.transform.position))
+                    {
+                        //check if player can afford
+
+                        if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
+                        {
+                            ghostRenderer.SetMaterials(validMat);
+
+                            if (Input.GetButtonDown("Fire1"))
+                            {
+                                Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                                defenseLocations.Add(defenseGhost.transform.position);
+                                player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
+
+                            }
+                        }
+                        else
+                        {
+                            ghostRenderer.SetMaterials(invalidMat);
+                            if (Input.GetButtonDown("Fire1"))
+                            {
+                                StartCoroutine(player.hudScript.CantAffordResourcesFlash());
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        ghostRenderer.SetMaterials(invalidMat);
+
+                    }
+
+                    if (Input.GetButtonDown("RotateDefense"))
+                    {
+
+                        if (rotateNum % 2 == 0)
+                        {
+                            defenseGhost.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+                        }
+                        else
+                        {
+                            defenseGhost.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                        }
+                        rotateNum++;
+                    }
+                }
+                else
+                {
+                    RaycastHit hitray;
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitray, range, removeLayer))
+                    {
+                        if (Input.GetButtonDown("Fire1"))
+                        {
+                            Destroy(hitray.collider.transform.root.gameObject);
+                        }
+                    }
+                }
+                break;
 
 
-
-            }
-            else
-            {
+            case PlayerMode.Tower:
                 #region TOWER FUNCTIONALITY
                 if (Input.GetKeyDown("1"))
                 {
@@ -147,7 +249,7 @@ public class WeaponInventoryManager : MonoBehaviour
                 }
 
                 RaycastHit hit;
-                if(Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, possibleLayers))
+                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, possibleLayers))
                 {
                     towerGhost.transform.position = hit.point;
                     int objLayer = (1 << hit.collider.gameObject.layer);
@@ -164,7 +266,8 @@ public class WeaponInventoryManager : MonoBehaviour
                                 print("placing at snap");
                                 CleanUpTowerArray();
                             }
-                        } else
+                        }
+                        else
                         {
                             towerGhost.transform.position = hit.point;
                             if (Input.GetButtonDown("Fire1"))
@@ -174,176 +277,45 @@ public class WeaponInventoryManager : MonoBehaviour
                                 CleanUpTowerArray();
                             }
                         }
-           
-                    } else
+
+                    }
+                    else
                     {
                         towerRenderer.SetMaterials(invalidMat);
                     }
-                } else
+                }
+                else
                 {
                     towerRenderer.SetMaterials(invalidMat);
                 }
                 #endregion
-            }
+                break;
+            default:
+                break;
         }
-        #region BUILDING FUNCTIONALITY
 
-        else
-        {
-
-
-            if (Input.GetKeyDown("1"))
-            {
-                ChangeDefense(0);
-            }
-            if (Input.GetKeyDown("2"))
-            {
-                ChangeDefense(1);
-            }
-            if (Input.GetKeyDown("3"))
-            {
-                ChangeDefense(2);
-            }
-            if (Input.GetKeyDown("4"))
-            {
-                ChangeDefense(3);
-            }
-
-            if (Input.GetButtonDown("Remover"))
-            {
-                isRemoving = !isRemoving;
-                if (isRemoving)
-                {
-                    Destroy(defenseGhost);
-                }  else
-                {
-                    StartBuilding();
-                }
-
-
-            }
-
-
-
-
-            if (!isRemoving)
-            {
-                Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
-                Vector3 loc = Vector3.zero;
-                if (activeDefense == 0)
-                {
-                    if (rotateNum % 4 == 0)
-                    {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                    }
-                    else if (rotateNum % 4 == 1)
-                    {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
-                    }
-                    else if (rotateNum % 4 == 2)
-                    {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize - (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                    } else if (rotateNum % 4 == 3)
-                    {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize - (gridSize / 2));
-                    }
-                }
-                else if (activeDefense == 1)
-                {
-                    loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                } else if (activeDefense == 2)
-                {
-                    RaycastHit hit;
-                       
-                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, 512))
-                    {
-                        loc = hit.point;
-                        defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hit.normal) * defenseGhost.transform.rotation;
-                    }
-                }
-
-                defenseGhost.transform.position = loc;
-
-                if (!defenseLocations.Contains(defenseGhost.transform.position))
-                {
-                    //check if player can afford
-
-                    if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
-                    {
-                        ghostRenderer.SetMaterials(validMat);
-
-                        if (Input.GetButtonDown("Fire1"))
-                        {
-                            Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
-                            defenseLocations.Add(defenseGhost.transform.position);
-                            player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
-
-                        }
-                    }
-                    else
-                    {
-                        if (Input.GetButtonDown("Fire1"))
-                        {
-                            StartCoroutine(player.hudScript.CantAffordResourcesFlash());
-                        }
-                    }
-
-                }
-                else
-                {
-                    ghostRenderer.SetMaterials(invalidMat);
-
-                }
-
-                if (Input.GetButtonDown("RotateDefense"))
-                {
-
-                    if (rotateNum % 2 == 0)
-                    {
-                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-                    }
-                    else
-                    {
-                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                    }
-                    rotateNum++;
-                }
-            } else
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range,  removeLayer))
-                {
-                    if (Input.GetButtonDown("Fire1"))
-                    {
-                        Destroy(hit.collider.transform.root.gameObject);
-                    }
-                }
-            }
-            #endregion
-        }
     }
     #region BUILDING METHODS
 
     private void StartBuilding()
     {
-        isBuilding = true;
         weaponRoot.SetActive(false);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(true);
-        defenseGhost = Instantiate(defenses[0].ghost);
+        activeDefense = 0;
+        defenseGhost = Instantiate(defenses[activeDefense].ghost);
+        
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
         rotateNum = 0;
-        print("start building");
         
     }
 
     private void StopBuilding()
     {
-        isBuilding = false;
+
         weaponRoot.SetActive(true);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(false);
-        weaponsActive = true;
         Destroy(defenseGhost);
     }
     void ChangeDefense(int index)
@@ -360,7 +332,6 @@ public class WeaponInventoryManager : MonoBehaviour
     #region WEAPONS METHOD
     public void EquipWeapons()
     {
-        weaponsActive = true;
         player.ChangeCameraZoom(1f);
         towerRoot.SetActive(false);
         weaponRoot.SetActive(true);
@@ -423,7 +394,6 @@ public class WeaponInventoryManager : MonoBehaviour
     {
         if (towers[0] != null && towers[0].numHeld != 0)
         {
-            weaponsActive = false;
             player.ChangeCameraZoom(.8f);
             player.animator.SetBool("isAiming", false);
             player.lookScript.bUseAimSens = false;
@@ -440,7 +410,7 @@ public class WeaponInventoryManager : MonoBehaviour
         }
         else
         {
-            weaponsActive = true;
+            CycleMode();
         }
         
     }
@@ -548,7 +518,7 @@ public class WeaponInventoryManager : MonoBehaviour
         {
             if (towers[0] == null || towers[0].numHeld == 0)
             {
-                print("nmo more towers");
+                print("no more towers");
                 EquipWeapons();
             } else
             {
@@ -589,9 +559,31 @@ public class WeaponInventoryManager : MonoBehaviour
 
     #endregion
 
+    private void CycleMode()
+    {
+        switch (mode)
+        {
+            case PlayerMode.Weapons:
+                mode = PlayerMode.Building;
+                StartBuilding();
+                break;
+            case PlayerMode.Building:
+                mode = PlayerMode.Tower;
+                StopBuilding();
+                EquipTower();
+                break;
+            case PlayerMode.Tower:
+                mode = PlayerMode.Weapons;
+                EquipWeapons();
+                break;
+        }
+        player.hudScript.UpdatePlayerMode(mode);
+        //print(mode);
+    }
+
     public void canShoot(bool value)
     {
-        weapons[weaponIndex].GetComponent<BasicWeaponScript>().setCanShoot(value);
+        BasicWeaponScript.SetCanShoot(value);
     }
 
 
@@ -622,4 +614,11 @@ public class Defense
 
     public int woodCost, ironCost, diamondCost;
 
+}
+
+public enum PlayerMode
+{
+    Weapons,
+    Building,
+    Tower
 }

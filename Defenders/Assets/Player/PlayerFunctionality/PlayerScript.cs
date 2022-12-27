@@ -160,7 +160,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         weaponManager = GetComponent<WeaponInventoryManager>();
         animator = GetComponent<Animator>();
 
-        upgradeTree.gameObject.SetActive(false);
+        //upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
         movementSpeedVar = defaultMovementSpeed;
         dashTrigger.SetActive(false);

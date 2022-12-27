@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
-public abstract class TowerParentScript : MonoBehaviour
+public class TowerParentScript : MonoBehaviour
 {
 
     protected PlayerScript player;
@@ -31,11 +31,12 @@ public abstract class TowerParentScript : MonoBehaviour
         if (other.transform.root.gameObject.tag.Equals("Player"))
         {
             player = other.GetComponent<PlayerScript>();
+            SetPlayer(player);
             towerUI.SetEventCamera(player.playerCamera);
             Vector3 playerOffset = player.transform.position + player.transform.forward * 5;
             Vector3 towerOffset = transform.position - player.transform.position;
             //Debug.DrawRay(player.transform.position, towerOffset, Color.red);
-            print(towerOffset);
+            //print(towerOffset);
             //print(Vector3.Angle(towerOffset, playerOffset));
             Vector3 uiLocation = transform.position + Vector3.up * 2 + Vector3.Cross(towerOffset, Vector3.up).normalized * uiDistanceFromTower;
             uiLocation = player.transform.position + (uiLocation - player.transform.position).normalized * 10; 

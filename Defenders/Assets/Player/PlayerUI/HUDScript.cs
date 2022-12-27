@@ -53,6 +53,18 @@ public class HUDScript : MonoBehaviour
 
     public static EggScript egg;
 
+    [Space(20)]
+    [Header("Mode Vars")]
+    public Transform modeTransform;
+    public GameObject weaponsIcon;
+    public GameObject buildingIcon;
+    public GameObject towerIcon;
+    private RectTransform currentRect;
+    Vector3 currentInitPos;
+    [SerializeField] private int modeSpace;
+    [SerializeField] private float modeAnimationTime;
+    [SerializeField] private float modeAnimationSpeed;
+
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +75,8 @@ public class HUDScript : MonoBehaviour
         UpdateResourceValues();
         UpdateSoulFireValues();
         UpdateHealth();
+        currentRect = weaponsIcon.GetComponent<RectTransform>();
+        currentInitPos = currentRect.localPosition;
     }
 
     // Update is called once per frame
@@ -134,6 +148,12 @@ public class HUDScript : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerMode(PlayerMode newMode)
+    {
+        StartCoroutine(PlayerModeSwitchAnimation(newMode));
+    }
+
+
     public void UpdateEquipedWeapon(int tier)
     {
         if (tier == 1)
@@ -167,6 +187,70 @@ public class HUDScript : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayerModeSwitchAnimation(PlayerMode newMode)
+    {
+        bool hasSwitched = false;
+
+        //RectTransform top = weaponsIcon.GetComponent<RectTransform>();
+        //RectTransform middle = towerIcon.GetComponent<RectTransform>();
+        //RectTransform bottom = buildingIcon.GetComponent<RectTransform>();
+
+        //RectTransform weapons = weaponsIcon.GetComponent<RectTransform>();
+        //RectTransform tower = towerIcon.GetComponent<RectTransform>();
+        //RectTransform building = buildingIcon.GetComponent<RectTransform>();
+
+        RectTransform moveRect = null;
+
+
+        switch (newMode)
+        {
+            case PlayerMode.Weapons:
+                //middle = weaponsIcon.GetComponent<RectTransform>();
+                //bottom = towerIcon.GetComponent<RectTransform>();
+                //top = buildingIcon.GetComponent<RectTransform>();
+                moveRect = weaponsIcon.GetComponent<RectTransform>();
+                break;
+            case PlayerMode.Building:
+                //middle = buildingIcon.GetComponent<RectTransform>();
+                //bottom = weaponsIcon.GetComponent<RectTransform>();
+                //top = towerIcon.GetComponent<RectTransform>();
+                moveRect = buildingIcon.GetComponent<RectTransform>();
+                break;
+            case PlayerMode.Tower:
+                //middle = towerIcon.GetComponent<RectTransform>();
+                //bottom = buildingIcon.GetComponent<RectTransform>();
+                //top = weaponsIcon.GetComponent<RectTransform>();
+                moveRect = towerIcon.GetComponent<RectTransform>();
+                break;
+        }
+
+        //Vector3 topPosition = top.localPosition;
+        //Vector3 middlePosition = middle.localPosition;
+        //Vector3 bottomPosition = bottom.localPosition;
+        
+        moveRect.localPosition = currentInitPos + Vector3.up * modeSpace;
+
+
+        float timer = 0;
+        while (timer < modeAnimationTime)
+        {
+
+            currentRect.localPosition = Vector3.Lerp(currentInitPos, currentInitPos + Vector3.down * modeSpace, timer / modeAnimationTime);
+            moveRect.localPosition = Vector3.Lerp(currentInitPos + Vector3.up * modeSpace, currentInitPos, timer / modeAnimationTime);
+
+            //top.localPosition = Vector3.Lerp(topPosition, middlePosition, timer / modeAnimationTime);
+            //middle.localPosition = Vector3.Lerp(middlePosition, bottomPosition, timer / modeAnimationTime);
+            //bottom.localPosition = Vector3.Lerp(bottomPosition, bottomPosition + Vector3.down * modeSpace, timer / modeAnimationTime);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        currentRect = moveRect;
+        //bottom.localPosition = topPosition;
+
+        yield return null;
+
+    }
 
     public IEnumerator CantAffordResourcesFlash()
     {

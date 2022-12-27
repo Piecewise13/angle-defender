@@ -59,10 +59,6 @@ public class WorkBenchScript : MonoBehaviour
                 {
                     purchasedtower = false;
                 }
-                if (inMenu == false && purchasedtower)
-                {
-                    playerInventory.EquipTower();
-                }
             }
         }
     }

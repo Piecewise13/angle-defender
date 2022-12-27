@@ -5,7 +5,7 @@ using UnityEngine;
 public class AssaultRifleScript : BasicWeaponScript
 {
 
-    
+    public ParticleSystem bulletSystem;
 
     // Update is called once per frame
     private void Update()
@@ -17,6 +17,7 @@ public class AssaultRifleScript : BasicWeaponScript
             {
                 if (shootDelay + lastShootTime < Time.time)
                 {
+                    UpdateParticleSystem();
                     Shoot();
                 }
             } else
@@ -65,7 +66,19 @@ public class AssaultRifleScript : BasicWeaponScript
     }
 
 
+    protected override void FinishReload()
+    {
+        base.FinishReload();
+        bulletSystem.transform.localScale = Vector3.one;
+    }
 
+    protected void UpdateParticleSystem()
+    {
+        bulletSystem.transform.localScale = Vector3.Lerp(Vector3.one * .1f, Vector3.one, (float)currentNumOfBullets / (float)clipSize);
+
+
+
+    }
 
     public override void EquipGun()
     {

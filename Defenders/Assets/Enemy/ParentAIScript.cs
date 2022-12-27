@@ -137,17 +137,14 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     public virtual void Death()
     {
-        print("1");
         Instantiate(soulFireBallPrefab, transform.position + Vector3.up * 2f, transform.rotation);
-        print("2");
         masterAI.Enemy_Killed(gameObject);
-        print("3");
         Destroy(gameObject);
     }
 
     public void ReachedEgg() {
-        print("Reached Egg");
         masterAI.Enemy_Killed(gameObject);
+        Destroy(gameObject);
         //START A COUROTINE TO MAKE COOL EFFECTS AND SHIT
     }
 

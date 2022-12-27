@@ -53,7 +53,6 @@ public abstract class BasicWeaponScript : MonoBehaviour
     [SerializeField] protected float reloadDuration;
     protected bool isReloading;
     protected float startReloadTime;
-    protected ParticleSystem bulletSystem;
 
     [Space(20)]
     [Header("Component Vars")]
@@ -66,7 +65,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     protected float setupTimer;
     
 
-    protected bool canShoot = false;
+    protected static bool canShoot = false;
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +74,6 @@ public abstract class BasicWeaponScript : MonoBehaviour
         playerAnimator = GetComponentInParent<Animator>();
         player = GetComponentInParent<PlayerScript>();
         hud = GameObject.FindObjectOfType<HUDScript>();
-        bulletSystem = GetComponentInChildren<ParticleSystem>();
         inventory = GetComponentInParent<WeaponInventoryManager>();
         currentNumOfBullets = clipSize;
         cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
@@ -101,7 +99,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     Random.Range(-recoilAmount.z, recoilAmount.z));
     }
 
-    public void setCanShoot(bool value)
+    public static void SetCanShoot(bool value)
     {
         canShoot = value;
     }
@@ -144,11 +142,11 @@ public abstract class BasicWeaponScript : MonoBehaviour
         lastShootTime = Time.time;
         AddRecoil();
         currentNumOfBullets -= 1;
-        UpdateParticleSystem();
+
 
     }
 
-    public void Reload()
+    public virtual void Reload()
     {
         StopAim();
         int numBullets = player.GetSoulFire();
@@ -176,18 +174,19 @@ public abstract class BasicWeaponScript : MonoBehaviour
         startReloadTime = Time.time;
         playerAnimator.SetBool("isReloading", true);
 
-        bulletSystem.transform.localScale = Vector3.one;
+
 
     }
 
-    protected void FinishReload()
+    protected virtual void FinishReload()
     {
-        if (reloadDuration + startReloadTime < Time.time)
+        if (reloadDuration + startReloadTime > Time.time)
         {
-            playerAnimator.SetBool("isReloading", false);
-            isReloading = false;
-            canShoot = true;
+            return;
         }
+        playerAnimator.SetBool("isReloading", false);
+        isReloading = false;
+        canShoot = true;
 
     }
 
@@ -210,13 +209,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
 
     }
 
-    protected void UpdateParticleSystem()
-    {
-        bulletSystem.transform.localScale = Vector3.Lerp( Vector3.one * .1f, Vector3.one, (float)currentNumOfBullets / (float)clipSize);
-        
-        
-        
-    }
+
 
 
 
@@ -249,8 +242,6 @@ public abstract class BasicWeaponScript : MonoBehaviour
         }
 
     }
-
-
 
     public abstract void EquipGun();
 }

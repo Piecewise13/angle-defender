@@ -23,7 +23,7 @@ public class Furnace_PlayerTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            script.PlayerEnter(other.gameObject.GetComponentInParent<PlayerScript>());
+            script.SetPlayer(other.gameObject.GetComponentInParent<PlayerScript>());
         }
     }
 

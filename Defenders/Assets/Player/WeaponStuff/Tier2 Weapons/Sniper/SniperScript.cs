@@ -8,6 +8,8 @@ public class SniperScript : BasicWeaponScript
     bool isAiming;
     bool hasBullet = true;
 
+    public ParticleSystem bulletSystem;
+
     public override void EquipGun()
     {
         

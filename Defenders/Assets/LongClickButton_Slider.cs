@@ -61,7 +61,6 @@ public class LongClickButton_Slider : MonoBehaviour, IPointerDownHandler, IPoint
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        print("pointer down");
 
         pointerDownTimer = 0f;
         pointerDown = true;
@@ -72,7 +71,6 @@ public class LongClickButton_Slider : MonoBehaviour, IPointerDownHandler, IPoint
     {
         Reset();
         pointerDown = false;
-        print("pointer up");
     }
 
     private void Reset()
