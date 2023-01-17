@@ -16,7 +16,17 @@ public class TowerGUIParent : MonoBehaviour
     private TowerGUI_UpgradePath focusedUpgradePath;
     private PlayerScript player;
     public TowerGUI_Interactable purchaseButtonInteractable;
+
+
     private Button purchaseButton;
+    private Image purchaseImage;
+    public TMP_Text textPrompt;
+    public TMP_Text purchaseText;
+    public float purchaseOffset;
+
+
+    public GameObject purchasePanel;
+    private RectTransform purchasePanelRect;
 
     public TMP_Text upgradeName;
     public TMP_Text upgradeDesciption;
@@ -28,6 +38,8 @@ public class TowerGUIParent : MonoBehaviour
         eventSystem = EventSystem.current;
         raycaster = GetComponent<GraphicRaycaster>();
         purchaseButton = purchaseButtonInteractable.GetComponent<Button>();
+        purchasePanel.SetActive(false);
+        purchasePanelRect = purchasePanel.GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -60,43 +72,39 @@ public class TowerGUIParent : MonoBehaviour
 
     public void PurchaseUpgrade()
     {
-        print(player);
-        print(player.CanAffordSoulFire(focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost));
-        if (player.CanAffordSoulFire(focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost))
-        {
-            player.SetSoulFire(-focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible].cost);
-            focusedUpgradePath.UpgradeBought(focusedUpgradePath.currentUpgradeAvalible);
-        }
+        print("purchasing");
+        player.SetSoulFire(-focusedUpgradePath.GetCurrentCost());
+        focusedUpgradePath.UpgradeBought();
 
     }
 
     public void FocusUpgrade(TowerGUI_UpgradePath upgradePath)
     {
+        
         //print("called");
         if (focusedUpgradePath != null)
         {
-            focusedUpgradePath.selectionImage.color = TowerGUI_UpgradePath.unselectedColor;
+            focusedUpgradePath.UnselectPath();
         }
         
 
         focusedUpgradePath = upgradePath;
-        focusedUpgradePath.selectionImage.color = TowerGUI_UpgradePath.selectedColor;
-        //print(TowerGUI_UpgradePath.selectedColor);
-        UpgradeInfo upgrade = focusedUpgradePath.upgrades[focusedUpgradePath.currentUpgradeAvalible];
-        //print(focusedUpgradePath.currentUpgradeAvalible);
-        upgradeName.text = upgrade.name + "";
-        upgradeDesciption.text = upgrade.description + "";
-        print(player.CanAffordSoulFire(upgrade.cost));
-        if (player.CanAffordSoulFire(upgrade.cost))
+        focusedUpgradePath.SelectPath();
+
+        if (player.CanAffordSoulFire(focusedUpgradePath.GetCurrentCost()))
         {
-            purchaseButtonInteractable.enabled = true;
-            purchaseButton.interactable = true;
+            //RectTransform rectTransform = upgradePath.GetComponent<RectTransform>();
+            purchasePanel.SetActive(true);
+            purchasePanel.transform.position = upgradePath.transform.position + (transform.right * purchaseOffset * -1);
+            //purchaseButtonInteractable.enabled = true;
+            //purchaseButton.interactable = true;
 
 
         } else
-        { 
-            purchaseButtonInteractable.enabled = false;
-            purchaseButton.interactable = true;
+        {
+            purchasePanel.SetActive(false);
+            //purchaseButtonInteractable.enabled = false;
+            //purchaseButton.interactable = true;
         }
         
     }

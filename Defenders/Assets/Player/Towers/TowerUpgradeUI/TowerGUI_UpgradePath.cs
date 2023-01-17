@@ -5,19 +5,32 @@ using UnityEngine.UI;
 using TMPro;
 
 public abstract class TowerGUI_UpgradePath : MonoBehaviour
-{
-
-    public Image[] upgradeTickBoxes;
-    public static Color upgradeTickBoxColor = new Color(0f, 255f, 0f, 255f);
-
+{ 
+    [Header("Selection Box")]
     public Image selectionImage;
-    public static Color selectedColor = new Color(140f, 85f, 135f, .1f);
-    public static Color unselectedColor = new Color(140f, 85f, 135f, 0f);
+    public Sprite SelectedBox;
+    public Sprite UnselectedBox;
 
+    [Header("Indicator Box")]
+    public static float[] FILL_AMOUNTS = {0, .085f, .13f, .2f, .3f, .37f, .42f, .5f, .58f, .63f, .69f, .8f, .87f, .92f, 1f };
+    public Image indicatorImage;
+    public Sprite maxedOutSprite;
+
+    [Header("Upgrade Information")]
+    [SerializeField] private int[] costs;
+    protected int upgradeCount;
+
+    
+    /*
+     * OLD SYSTEM
+     */
     public UpgradeInfo[] upgrades;
     public int currentUpgradeAvalible;
 
     private bool[] unlocked;
+
+
+
 
     [Header("UI Vars")]
     public Image upgradeIcon;
@@ -28,14 +41,16 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
     private TowerGUIParent GUIParent;
 
 
+
     // Start is called before the first frame update
-    void Start()
+    public virtual void Start()
     {
         interactable = GetComponent<TowerGUI_Interactable>();
         
         GUIParent = GetComponentInParent<TowerGUIParent>();
         //unlocked = new bool[upgrades.Length];
-        ChangeUpgradeInfo(0);
+        ChangeUpgradeInfo();
+        UnselectPath();
     }
 
     // Update is called once per frame
@@ -44,15 +59,23 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
     }
 
-    public abstract void UpgradeOne();
-
-    public abstract void UpgradeTwo();
-
-    public abstract void UpgradeThree();
+    public abstract void SpecialFunctionality();
 
 
-    public void UpgradeBought(int upgrade)
+    public void UpgradeBought()
     {
+        if (upgradeCount >= 10)
+        {
+            return;
+        }
+
+        upgradeCount++;
+        ChangeUpgradeInfo();
+        SpecialFunctionality();
+
+        //set it uninteractable if it is the last upgrade and set new image boarder
+
+        /*
         if (upgrade == 0)
         {
             UpgradeOne();
@@ -73,12 +96,18 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
         ChangeUpgradeInfo(currentUpgradeAvalible);
         interactable.Interact();
         
-        
+        */
 
     }
 
-    protected void ChangeUpgradeInfo(int nextUpgrade)
+    protected void ChangeUpgradeInfo()
     {
+
+        //figure out way to determine the next price. either by formula or preset values
+        indicatorImage.fillAmount = FILL_AMOUNTS[upgradeCount];
+        upgradeCost.text = costs[upgradeCount] + "";
+
+        /*
         if (nextUpgrade != upgrades.Length)
         {
 
@@ -89,8 +118,29 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
             interactable.enabled = false;
             //set it equal to finsihed graphic and info 
         }
-
+        */
     }
+
+    public void SelectPath()
+    {
+        selectionImage.sprite = SelectedBox;
+    }
+
+    public void UnselectPath()
+    {
+        selectionImage.sprite = UnselectedBox;
+    }
+
+    public int GetCurrentCost()
+    {
+        return costs[upgradeCount];
+    }
+
+    public int GetCurrentUpgradeNumber()
+    {
+        return upgradeCount;
+    }
+
 }
 
 

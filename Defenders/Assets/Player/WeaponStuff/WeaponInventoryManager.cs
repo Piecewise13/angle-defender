@@ -28,10 +28,16 @@ public class WeaponInventoryManager : MonoBehaviour
     [Space(30)]
     [Header("Tower")]
     public TowerHolder[] towers;
+
+    public GameObject towerHammerPlayer;
+    public GameObject towerHammerThrow;
+
     public GameObject towerRoot;
+    private bool isTowerUtility;
     private int towerIndex;
-    private GameObject towerGhost;
-    private GhostScript towerRenderer;
+    private GameObject currentTower;
+    //private GameObject towerGhost;
+    private TowerParentScript currentTowerScript;
     public LayerMask possibleLayers;
 
     /*
@@ -248,45 +254,71 @@ public class WeaponInventoryManager : MonoBehaviour
                     ChangeTower(3);
                 }
 
+                if (Input.GetButtonDown("Utility"))
+                {
+                    EquipTowerUtility();
+                    //equip utility
+                }
+
+                if (isTowerUtility)
+                {
+                    if (Input.GetButtonDown("Fire1"))
+                    {
+                        GameObject hammer = Instantiate(towerHammerThrow, towerRoot.transform.position, towerRoot.transform.rotation);
+                        hammer.GetComponent<HammerThrowableScript>().SetPlayer(player);
+                    }
+
+                    return;
+                }
+
                 RaycastHit hit;
                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, possibleLayers))
                 {
-                    towerGhost.transform.position = hit.point;
+                    currentTower.transform.position = hit.point;
                     int objLayer = (1 << hit.collider.gameObject.layer);
-                    if ((towers[towerIndex].placeLayers.value & objLayer) > 0)
+                    if ((towers[towerIndex].placeLayers.value & objLayer) <= 0)
                     {
-                        towerRenderer.SetMaterials(validMat);
-                        if (towers[towerIndex].isSnapping)
-                        {
-                            towerGhost.transform.position = hit.collider.transform.position;
-                            if (Input.GetButtonDown("Fire1"))
-                            {
-                                Instantiate(towers[towerIndex].tower, towerGhost.transform.position, towerGhost.transform.rotation);
-                                towers[towerIndex].numHeld--;
-                                print("placing at snap");
-                                CleanUpTowerArray();
-                            }
-                        }
-                        else
-                        {
-                            towerGhost.transform.position = hit.point;
-                            if (Input.GetButtonDown("Fire1"))
-                            {
-                                Instantiate(towers[towerIndex].tower, hit.point, towerGhost.transform.rotation);
-                                towers[towerIndex].numHeld--;
-                                CleanUpTowerArray();
-                            }
-                        }
+                        currentTowerScript.SetMaterials(invalidMat);
+                        return;
+                    }
 
+                    if (!player.CanAffordSoulFire(towers[0].GetCost()))
+                    {
+                        currentTowerScript.SetMaterials(invalidMat);
+                        return;
+                    }
+                    currentTowerScript.SetMaterials(validMat);
+                    if (towers[towerIndex].isSnapping)
+                    {
+                        currentTower.transform.position = hit.collider.transform.position;
+
+                        if (Input.GetButtonDown("Fire1"))
+                        {
+                            //TODO remove the collider when placed but store it on the tower object so that
+                            //when tower is deleted it can be replaced
+                            currentTower.transform.SetParent(hit.collider.transform);
+                            currentTowerScript.Place();
+                            player.SetSoulFire(-towers[0].GetCost());
+                            SpawnNewTower();
+                            print("placing at snap");
+                        }
                     }
                     else
                     {
-                        towerRenderer.SetMaterials(invalidMat);
+
+                        currentTower.transform.position = hit.point;
+                        if (Input.GetButtonDown("Fire1"))
+                        {
+                            currentTowerScript.Place();
+                            SpawnNewTower();
+                            player.SetSoulFire(-towers[0].GetCost());
+                        }
                     }
                 }
+                
                 else
                 {
-                    towerRenderer.SetMaterials(invalidMat);
+                    currentTowerScript.SetMaterials(invalidMat);
                 }
                 #endregion
                 break;
@@ -335,7 +367,7 @@ public class WeaponInventoryManager : MonoBehaviour
         player.ChangeCameraZoom(1f);
         towerRoot.SetActive(false);
         weaponRoot.SetActive(true);
-        Destroy(towerGhost);
+        Destroy(currentTower);
 
         ChangeGun(0);
     }
@@ -392,171 +424,62 @@ public class WeaponInventoryManager : MonoBehaviour
     #region TOWER METHODS
     public void EquipTower()
     {
-        if (towers[0] != null && towers[0].numHeld != 0)
+        player.ChangeCameraZoom(.8f);
+        player.animator.SetBool("isAiming", false);
+        player.lookScript.bUseAimSens = false;
+        weaponRoot.SetActive(false);
+        towerRoot.SetActive(true);
+        foreach (var item in weapons)
         {
-            player.ChangeCameraZoom(.8f);
-            player.animator.SetBool("isAiming", false);
-            player.lookScript.bUseAimSens = false;
-            weaponRoot.SetActive(false);
-            towerRoot.SetActive(true);
-            foreach (var item in weapons)
+            if (item != null)
             {
-                if (item != null)
-                {
-                    item.SetActive(false);
-                }
+                item.SetActive(false);
             }
-            ChangeTower(0);
         }
-        else
-        {
-            CycleMode();
-        }
+        ChangeTower(0);
         
+    }
+
+    void SpawnNewTower()
+    {
+        currentTower = Instantiate(towers[towerIndex].tower);
+        currentTowerScript = currentTower.GetComponent<TowerParentScript>();
+        currentTowerScript.SetMaterials(invalidMat);
     }
 
     void ChangeTower(int index)
     {
-        if (towers[index] == null || towers[index].numHeld == 0)
-        {
-            return;
-        }
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] != null)
-            {
-                if (towers[i].numHeld != 0)
-                {
-                    Destroy(towerGhost);
-                    towerGhost = Instantiate(towers[index].ghost, Vector3.zero, Quaternion.Euler(Vector3.zero));
-                    towerRenderer = towerGhost.GetComponentInChildren<GhostScript>();
-                }
-
-            }
-        }
+        isTowerUtility = false;
         towerIndex = index;
+        if(currentTower != null)
+        {
+            Destroy(currentTower);
+        }
+
+        SpawnNewTower();
+        //TODO make a cool animation and play it here
 
 
-        playerAnimator.SetTrigger("newGun");
+    }
 
-        /*
-         * OLD METHOD
-
-        */
-
+    void EquipTowerUtility()
+    {
+        Destroy(currentTower);
+        Instantiate(towerHammerPlayer, towerRoot.transform);
+        isTowerUtility = true;
     }
 
     public bool GiveNewTower(TowerHolder tower)
     {
-
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] != null && towers[i].numHeld != 0)
-            {
-                //this most likely wont work but maybe
-                if (towers[i].Equals(tower))
-                {
-                    print("Already have one");
-                    towers[i].numHeld++;
-                    //EquipTower();
-                    //ChangeTower(i);
-                    return true;
-                }
-            }
-
-        }
-        for (int i = 0; i < towers.Length; i++)
-        {
-            if (towers[i] == null || towers[i].numHeld == 0)
-            {
-                print("made a new one");
-                towers[i] = tower;
-                towers[i].numHeld = 1;
-
-                //EquipTower();
-                //ChangeTower(i);
-                return true;
-            }
-        }
-
-        return false;
-
+        return true;
     }
 
-
-
-
-
-    private void CleanUpTowerArray()
-    {
-
-        int lastAval = -1;
-        for (int i = 0; i < towers.Length - 1; i++)
-        {
-
-            if (towers[i] == null || towers[i].numHeld == 0)
-            {
-
-                if (towers[i+1] == null)
-                {
-                    print("List should be sorted");
-                    break;
-                }
-
-                towers[i] = towers[i + 1];
-                towers[i + 1] = null;
-                    
-            } else
-            {
-                print("setting last avalible to " + i);
-                lastAval = i;
-            }
-        }
-
-        if (lastAval == -1)
-        {
-            if (towers[0] == null || towers[0].numHeld == 0)
-            {
-                print("no more towers");
-                EquipWeapons();
-            } else
-            {
-                ChangeTower(0);
-                print("this is the exeception");
-            }
-
-        } else
-        {
-            ChangeTower(lastAval);
-            print("Switching to tower: " + lastAval);
-        }
-
-    }
 
     public bool TowerThrown()
     {
         return true;
-        /*
-        if (towers[towerIndex].numHeld != 0)
-        {
-            towers[towerIndex].numHeld--;
-            
-            if (towers[towerIndex].numHeld == 0)
-            {
-                print("runnin this hsit");
-                Destroy(towers[towerIndex].towerObject);
-                CleanUpTowerArray();
-            }
-            return true;
-        } else
-        {
-            return false;
-        }
-        */
         
     }
-
     #endregion
 
     private void CycleMode()
@@ -578,7 +501,6 @@ public class WeaponInventoryManager : MonoBehaviour
                 break;
         }
         player.hudScript.UpdatePlayerMode(mode);
-        //print(mode);
     }
 
     public void canShoot(bool value)
@@ -593,16 +515,19 @@ public class WeaponInventoryManager : MonoBehaviour
 public class TowerHolder
 {
 
-    public GameObject ghost;
     public GameObject tower;
-    [HideInInspector]public int numHeld;
     public LayerMask placeLayers;
     public bool isSnapping;
-
+    [SerializeField]private int cost;
 
     public bool Equals(TowerHolder obj)
     {
         return tower = obj.tower;
+    }
+
+    public int GetCost()
+    {
+        return cost;
     }
 }
 

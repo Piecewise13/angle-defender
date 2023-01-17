@@ -4,19 +4,9 @@ using UnityEngine;
 
 public class Furance_UpgradePathOne : TowerGUI_UpgradePath
 {
-    public override void UpgradeOne()
+    public override void SpecialFunctionality()
     {
-        print("upgrade one purchased");
-    }
-
-    public override void UpgradeTwo()
-    {
-        print("upgrade two purchased");
-    }
-
-    public override void UpgradeThree()
-    {
-        print("upgrade three purchased");
+        throw new System.NotImplementedException();
     }
 
 

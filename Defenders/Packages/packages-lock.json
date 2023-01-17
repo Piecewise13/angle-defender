@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.coffee.softmask-for-ugui": {
-      "version": "file:B:/Downloads/SoftMaskForUGUI-main",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
     "com.unity.burst": {
       "version": "1.6.5",
       "depth": 1,

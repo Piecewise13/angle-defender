@@ -4,19 +4,8 @@ using UnityEngine;
 
 public class Furnace_UpgradePathTwo : TowerGUI_UpgradePath
 {
-    public override void UpgradeOne()
-    {
-        print("path 2");
-    }
-
-    public override void UpgradeThree()
+    public override void SpecialFunctionality()
     {
         throw new System.NotImplementedException();
     }
-
-    public override void UpgradeTwo()
-    {
-        throw new System.NotImplementedException();
-    }
-
 }

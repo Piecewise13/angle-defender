@@ -4,16 +4,26 @@ using UnityEngine;
 
 public class TurretScript : TowerParentScript
 {
-
-    public GameObject turret;
     public Animator anim;
     
     //bullet trail
     public TrailRenderer bulletTrail;
-    public GameObject bulletSpawnPoint;
+    public Transform bulletSpawnPoint;
     protected TrailRenderer trailObject;
 
+    //Model Parts
+    public GameObject barrelModel;
+    [SerializeField]private GameObject[] barrelObjects;
 
+    public GameObject turretModel;
+    [SerializeField]private GameObject turretObject;
+
+
+    private GameObject baseModel;
+    [SerializeField]private GameObject baseObject;
+    public Transform turretParent;
+
+    private Transform[] spawnPoints;
 
     public LayerMask layerMask;
     private ParentAIScript target;
@@ -24,18 +34,20 @@ public class TurretScript : TowerParentScript
 
     [Header("TURRET STATS")]
     [SerializeField] private float targetRange;
-    [SerializeField] private float damage;
+    [SerializeField] private float baseDamage;
+    private float damageMultiplier = 1f;
     [SerializeField] private float shootSpeedMultiplier = 1f;
 
 
-
+    private Transform[] barrelLocation = new Transform[1];
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        //base.Start();
+        baseModel = baseObject;
     }
 
 
@@ -44,13 +56,16 @@ public class TurretScript : TowerParentScript
     // Update is called once per frame
     void Update()
     {
-        
+        if (!isPlaced)
+        {
+            return;
+        }
+        //print(target);
         if (target != null)
         {
-
             anim.SetBool("isShooting", isShooting);
-            turret.transform.rotation = Quaternion.LookRotation(((target.transform.position + (Vector3.up * 2f)) - turret.transform.position).normalized);
 
+            turretObject.transform.rotation = Quaternion.LookRotation(((target.transform.position + (Vector3.up * 2f)) - turretObject.transform.position).normalized);
             /*
             if (forge.fireStored > 0)
             {
@@ -80,7 +95,7 @@ public class TurretScript : TowerParentScript
 
     private void FindTarget()
     {
-        //anim.SetFloat("shootSpeed", shootSpeedMultiplier);
+        
         Collider[] foundEnemy = Physics.OverlapSphere(transform.position, targetRange, layerMask);
 
         if (foundEnemy.Length == 0)
@@ -104,7 +119,8 @@ public class TurretScript : TowerParentScript
                 shortestDist = distace;
             }
         }
-        
+
+        print("Found Target");
         target = foundEnemy[current].GetComponentInParent<ParentAIScript>();
         isShooting = true;
 
@@ -114,14 +130,14 @@ public class TurretScript : TowerParentScript
     public void UpgradeShootSpeed(float value)
     {
         shootSpeedMultiplier = value;
-        
+        //anim.SetFloat("shootSpeed", shootSpeedMultiplier);
     }
 
-
+    
     public void Shoot()
     {
-        target.TakeDamage(damage, null);
-        trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
+        target.TakeDamage(baseDamage * damageMultiplier, null);
+        trailObject = Instantiate(bulletTrail, bulletSpawnPoint.position, Quaternion.identity);
         StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
 
         /*
@@ -138,6 +154,53 @@ public class TurretScript : TowerParentScript
 
         */
     }
+
+    public void ChangeBarrels(GameObject model)
+    {
+        barrelModel = model;
+        for (int i = 0; i < barrelObjects.Length; i++)
+        {
+            Destroy(barrelObjects[i]);
+        }
+        print(turretObject);
+        Transform[] barrelPoints = FindSpawnPoints(turretObject).ToArray();
+        barrelObjects = new GameObject[barrelPoints.Length];
+        print(barrelPoints.Length);
+
+        for (int i = 0; i < barrelObjects.Length; i++)
+        {
+            barrelObjects[i] = Instantiate(model, barrelPoints[i]);
+            
+        }
+        print(barrelObjects.Length);
+        bulletSpawnPoint = FindSpawnPoints(barrelObjects[0])[0];
+    }
+
+    public void ChangeBody(GameObject model)
+    {
+        print("Changing Body");
+        //get rid of old model
+        DestroyImmediate(turretObject);
+        //print(turretObject);
+        turretModel = model;
+        turretObject = Instantiate(model, turretParent);
+        SetAnimator(turretObject.GetComponent<Animator>());
+        ChangeBarrels(barrelModel);
+
+
+    }
+
+    public void ChangeBase(GameObject model)
+    {
+        print("Changing Base");
+        Destroy(baseObject);
+        baseModel = model;
+        baseObject = Instantiate(model, transform);
+        turretParent = FindSpawnPoints(baseObject)[0];
+        ChangeBody(turretModel);
+    }
+
+
 
     public IEnumerator SpawnTrail(TrailRenderer trail, Vector3 point)
     {
@@ -160,6 +223,42 @@ public class TurretScript : TowerParentScript
     public void SetAnimator(Animator anim)
     {
         this.anim = anim;
+        anim.speed = shootSpeedMultiplier;
+        //print(shootSpeedMultiplier + " " + anim.speed);
     }
+
+    private List<Transform> FindSpawnPoints(GameObject parent)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (Transform child in parent.transform)
+        {
+            if (child.CompareTag("SpawnPoint"))
+            {
+                result.Add(child);
+            }
+            print(child.gameObject);
+            result.AddRange(FindSpawnPoints(child.gameObject));
+        }
+
+        return result;
+
+    }
+
+
+    public void SetDamageMultiplier(float value)
+    {
+        damageMultiplier = value;
+    }
+
+    public void SetSeachRadius(float value)
+    {
+
+    }
+
+    public void SetSpeedMultiplier(float value)
+    {
+        shootSpeedMultiplier = value;
+    }
+
 
 }

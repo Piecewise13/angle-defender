@@ -19,8 +19,8 @@ public abstract class TurretUpgradeScript : MonoBehaviour
     public void Start()
     {
         mainScript = GetComponentInParent<TurretScript>();
-        mainScript.bulletSpawnPoint = spawnPoint;
-        mainScript.turret = turret;
+        //mainScript.bulletSpawnPoint = spawnPoint;
+        //mainScript.turret = turret;
         mainScript.SetAnimator(animator);
         Upgrade();
     }

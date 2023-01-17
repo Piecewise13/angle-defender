@@ -5,7 +5,7 @@ using EZCameraShake;
 
 public class MouseLook : MonoBehaviour
 {
-    public const float SENS_DEFAULT = 300;
+    public const float SENS_DEFAULT = 700f;
     public Transform playerBody;
     public Transform cameraParent;
     private float xRotation;
