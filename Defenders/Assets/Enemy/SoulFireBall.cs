@@ -5,17 +5,12 @@ using UnityEngine;
 public class SoulFireBall : MonoBehaviour
 {
 
-    public int soulFireAmount;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private int soulFireAmount;
+    public Rigidbody rb;
 
-    // Update is called once per frame
-    void Update()
+    public void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -27,5 +22,16 @@ public class SoulFireBall : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void SetSoulFire(int value)
+    {
+        soulFireAmount = value;
+    }
+
+    public void LaunchBall(Vector3 direction)
+    {
+        rb.AddForce(direction, ForceMode.Impulse);
+    }
+
 
 }

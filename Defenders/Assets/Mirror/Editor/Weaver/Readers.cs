@@ -35,7 +35,7 @@ namespace Mirror.Weaver
         {
             if (readFuncs.ContainsKey(dataType))
             {
-                // TODO enable this again later.
+                //enable this again later.
                 // Reader has some obsolete functions that were renamed.
                 // Don't want weaver warnings for all of them.
                 //Log.Warning($"Registering a Read method for {dataType.FullName} when one already exists", methodReference);

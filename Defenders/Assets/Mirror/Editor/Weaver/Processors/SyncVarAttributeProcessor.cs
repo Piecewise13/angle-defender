@@ -96,7 +96,7 @@ namespace Mirror.Weaver
             // call 'new Action<T,T>()' constructor to convert the function to an action
             // we need to make an instance of the generic Action<T,T>.
             //
-            // TODO this allocates a new 'Action' for every SyncVar hook call.
+            // this allocates a new 'Action' for every SyncVar hook call.
             //      we should allocate it once and store it somewhere in the future.
             //      hooks are only called on the client though, so it's not too bad for now.
             TypeReference actionRef = assembly.MainModule.ImportReference(typeof(Action<,>));
@@ -331,7 +331,7 @@ namespace Mirror.Weaver
                 worker.Emit(OpCodes.Ldflda, netIdFieldReference);
                 worker.Emit(OpCodes.Call, weaverTypes.generatedSyncVarSetter_NetworkIdentity);
             }
-            // TODO this only uses the persistent netId for types DERIVED FROM NB.
+            //this only uses the persistent netId for types DERIVED FROM NB.
             //      not if the type is just 'NetworkBehaviour'.
             //      this is what original implementation did too. fix it after.
             else if (fd.FieldType.IsDerivedFrom<NetworkBehaviour>())

@@ -29,7 +29,7 @@ public class TurretUpgradePath_Damage : TowerGUI_UpgradePath
             modelsIndex++;
         }
         turret.SetDamageMultiplier(damageValues[upgradeCount]);
-        print("Setting multiplier to " + damageValues[upgradeCount]);
+        //print("Setting multiplier to " + damageValues[upgradeCount]);
     } 
 
     // Update is called once per frame

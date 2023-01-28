@@ -22,7 +22,7 @@ public class TurretUpgradePath_Range : TowerGUI_UpgradePath
             modelsIndex++;
         }
         turret.SetSeachRadius(rangeValues[upgradeCount]);
-        print("Setting range multiplier to " + rangeValues[upgradeCount]);
+        //print("Setting range multiplier to " + rangeValues[upgradeCount]);
     }
 
     // Start is called before the first frame update

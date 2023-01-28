@@ -118,7 +118,7 @@ public class WorkBenchScript : MonoBehaviour
         }
 
         PurchaseTowerElementScript tower = purchaseTowerObjects[focusedTower];
-
+        /*
         if (playerInventory.GiveNewTower(tower.towerElements))
         {
             purchasedtower = true;
@@ -131,6 +131,7 @@ public class WorkBenchScript : MonoBehaviour
         {
             print("didn't work");
         }
+        */
     }
 
     public void TierUnlocked(int tier)
@@ -162,7 +163,5 @@ public class WorkBenchScript : MonoBehaviour
         playerIronText.text = "Current Iron: " + player.GetResourceAmount(ResourceType.Iron) + "";
         playerDiamondText.text = "Current Diamond: " + player.GetResourceAmount(ResourceType.Diamond) + "";
     }
-
-    //TODO: MAKE IT SO THAT IT PASSES ON THE NUMBER MADE AND MAKE IT SO THAT IT CAN'T BE FIRED UNTIL AFTER PLAYER HAS LEFT MENU
 
 }

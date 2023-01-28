@@ -7,7 +7,6 @@ using TMPro;
 public class PurchaseTowerElementScript : MonoBehaviour
 {
 
-    public TowerHolder towerElements;
     public LongClickButton_Slider longClickButton;
 
     public Image panel;

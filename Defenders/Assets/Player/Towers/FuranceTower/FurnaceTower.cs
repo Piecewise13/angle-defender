@@ -6,40 +6,85 @@ public class FurnaceTower : TowerParentScript
 {
     private bool hasPlayer;
     private bool inMenu = false;
-
+    private bool inUpgradeMenu = false;
 
 
     [Header("Input Vars")]
-    public float productionTime;
-    private float lastProductionTime;
+    [SerializeField] private float defaultOutputSpeed;
+    private float outputSpeed;
+    private float lastOutputTime;
 
-    public int fuelBurnAmount;
-    public int fuelAmount = 0;
-    public int woodFuelAmount;
-    public int ironFuelAmount;
-    public int diamondFuelAmount;
+    [SerializeField] private int defaultFuelBurnAmount;
+    private int fuelBurnAmount;
+
+    private int fuelAmount = 0;
+
+    [SerializeField] private int woodFuelAmount;
+    [SerializeField] private int ironFuelAmount;
+    [SerializeField] private int diamondFuelAmount;
 
 
     [Header("Output Vars")]
     public int firePerTick;
     public int fireStored;
 
-    public float playerTransferTime;
-    private float lastPlayerTransferTime;
-    public int playerTransferAmount;
+    [SerializeField] private int defaultSoulFireOutputAmount;
+    private int soulFireOutputAmount;
 
     public int fuelMax;
-    public int soulFireMax;
 
+    /* UPGRADE PATHS
+     * 1. OUTPUT: Increases the size of the soul fire balls and the amount of soul fire
+     * 2. SPEED: Increase the production rate of the soul fire and affects the dispenser
+     * 3. EFFICIENCY: Decreases the amount of resources needed to produce fire affects the forge and the fire
+     */
 
+    //UPGRADE VARS
+    private float efficienyMultiplier = 1;
+    private float speedMultiplier = 1;
+    private float outputMultiplier = 1;
 
 
     //Gameobject Components
     [Space(20)]
     [Header("Effect Gameobjects")]
     public BulletForgeUI bulletForgeUI;
-    public ParticleSystem[] eyeFire;
-    public ParticleSystem mouthFire;
+    public ParticleSystem forgeFire;
+    public Transform fireSpawnPoint;
+    public GameObject soulFireBall;
+    private Vector3 soulfireBallScale;
+    [SerializeField] private float soulFireBallMinScaleFactor;
+    [SerializeField] private float soulFireBallMaxScaleFactor;
+
+    [Space(20)]
+    [Header("Tower Components")]
+    public GameObject forgeModel;
+    public GameObject dispenserModel;
+    //[Space(10)]
+
+
+
+
+    private Transform[] soulfireSpawnPoints;
+    private int dispenserTracker;
+    public float launchForce;
+
+    [SerializeField] private Transform dispenserSpawnPoint;
+
+    [SerializeField] private GameObject forgeObject;
+    [SerializeField] private GameObject dispenserObject;
+
+    private void Start()
+    {
+        
+        soulfireSpawnPoints = FindSpawnPoints(dispenserObject).ToArray();
+
+        outputSpeed = defaultOutputSpeed;
+        fuelBurnAmount = defaultFuelBurnAmount;
+        soulfireBallScale = Vector3.one * soulFireBallMinScaleFactor;
+        soulFireOutputAmount = defaultSoulFireOutputAmount;
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -48,26 +93,25 @@ public class FurnaceTower : TowerParentScript
         //Make Fire
         if (fuelAmount > 0)
         {
-            if (fireStored < soulFireMax)
+            if (outputSpeed + lastOutputTime < Time.time)
             {
-                if (productionTime + lastProductionTime < Time.time)
-                {
+                lastOutputTime = Time.time;
+                print("output speed: " + outputSpeed);
+                fuelAmount -= fuelBurnAmount;
+                DispenseSoulFire();
 
-                    fireStored += firePerTick;
-                    fuelAmount -= fuelBurnAmount;
-
-
-                    bulletForgeUI.UpdateSoulFireMeter();
-                    bulletForgeUI.UpdateFuelMeter();
-                    lastProductionTime = Time.time;
-                }
+                //bulletForgeUI.UpdateFuelMeter();
+                
             }
         }
 
 
 
 
-
+        if (towerCamera.isActiveAndEnabled)
+        {
+            return;
+        }
         if (hasPlayer)
         {
             if (Input.GetButtonDown("Use"))
@@ -75,19 +119,6 @@ public class FurnaceTower : TowerParentScript
                 inMenu = !inMenu;
                 bulletForgeUI.gameObject.SetActive(inMenu);
                 player.openUIElement(inMenu);
-            }
-
-            if (fireStored >= playerTransferAmount)
-            {
-                if (playerTransferTime + lastPlayerTransferTime < Time.time)
-                {
-                    player.SetSoulFire(playerTransferAmount);
-                    fireStored -= playerTransferAmount;
-                    bulletForgeUI.UpdateSoulFireMeter();
-
-
-                    lastPlayerTransferTime = Time.time;
-                }
             }
         }
     }
@@ -126,34 +157,88 @@ public class FurnaceTower : TowerParentScript
         }
     }
 
-    public void CloseMenu()
+    public void UpgradeEfficency(float factor)
     {
-        inMenu = false;
-        bulletForgeUI.gameObject.SetActive(inMenu);
-        player.openUIElement(inMenu);
+        efficienyMultiplier = factor;
+        fuelBurnAmount = (int)(defaultFuelBurnAmount / factor);
     }
 
-    public void OpenMenu()
+    public void UpgradeSpeed(float factor)
     {
-        inMenu = true;
-        bulletForgeUI.gameObject.SetActive(inMenu);
-        player.openUIElement(inMenu);
+        speedMultiplier = factor;
+        outputSpeed = defaultOutputSpeed / speedMultiplier;
     }
 
-    public void UpgradeForge(int upgradeAmount)
+    public void UpgradeOutput(float factor, float upgradePercentage)
     {
-        firePerTick = Mathf.CeilToInt(firePerTick * (1 + (upgradeAmount * .1f)));
+        soulFireOutputAmount = (int)(defaultSoulFireOutputAmount * factor);
+        soulfireBallScale = Vector3.Lerp(soulFireBallMinScaleFactor * Vector3.one,
+                                         soulFireBallMaxScaleFactor * Vector3.one,
+                                         upgradePercentage);
     }
 
-    public bool WithdrawFire(int delta)
+    public void ChangeForge(GameObject model)
     {
-        if (fireStored >= delta)
+        DestroyImmediate(forgeObject);
+        forgeModel = model;
+        forgeObject = Instantiate(forgeModel, transform);
+
+        Transform[] spawnpoints = FindSpawnPoints(forgeObject).ToArray();
+        fireSpawnPoint = spawnpoints[0];
+        //forgeFire.transform.SetParent(fireSpawnPoint);
+        //forgeFire.transform.position = Vector3.zero;
+
+        dispenserSpawnPoint = spawnpoints[1];
+        ChangeDispenser(dispenserModel);
+
+
+    }
+
+    public void ChangeDispenser(GameObject model)
+    {
+        DestroyImmediate(dispenserObject);
+        dispenserModel = model;
+        dispenserObject = Instantiate(dispenserModel, dispenserSpawnPoint);
+
+        soulfireSpawnPoints = FindSpawnPoints(dispenserObject).ToArray();
+        dispenserTracker = 0;
+    }
+
+    private void DispenseSoulFire()
+    {
+        //TODO fix soulfire not colliding and shooting in random directions
+        int dispenserIndex = dispenserTracker % soulfireSpawnPoints.Length;
+        Transform spawnpoint = soulfireSpawnPoints[dispenserIndex];
+        SoulFireBall script = Instantiate(soulFireBall, spawnpoint.position, spawnpoint.rotation).GetComponent<SoulFireBall>();
+        script.SetSoulFire(soulFireOutputAmount);
+        script.gameObject.transform.localScale = soulfireBallScale;
+        Vector3 launchDir = Quaternion.Euler(Vector3.up * Random.Range(0f, 360f)) * Vector3.forward * launchForce / 5 + Vector3.up * launchForce;
+        //Vector3.up + Vector3.right * Random.Range(-1f, 1f) + Vector3.forward * Random.Range(-1f, 1f);
+        print(launchDir);
+        script.LaunchBall(launchDir);
+        dispenserTracker++;
+    }
+
+
+    public int GetResourceFuelAmount(ResourceType type)
+    {
+        switch (type)
         {
-            fireStored -= delta;
-            return true;
-        }
-        return false;
+            case ResourceType.Wood:
+                return woodFuelAmount;
+            case ResourceType.Iron:
+                return ironFuelAmount;
+            case ResourceType.Diamond:
+                return diamondFuelAmount;
 
+        }
+        return 0;
     }
+
+    public int GetFuelAmount()
+    {
+        return fuelAmount;
+    }
+
 
 }

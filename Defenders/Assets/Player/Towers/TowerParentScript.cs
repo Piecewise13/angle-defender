@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(SphereCollider))]
-public class TowerParentScript : MonoBehaviour
+[RequireComponent(typeof(BoxCollider))]
+public abstract class TowerParentScript : MonoBehaviour
 {
 
     protected PlayerScript player;
@@ -16,8 +16,16 @@ public class TowerParentScript : MonoBehaviour
     protected Material[] defaultMaterials;
 
     protected bool isPlaced;
+    public LayerMask placementLayers;
+
+    [SerializeField]protected bool isSnapping;
 
     protected Camera towerCamera;
+
+    [SerializeField] private int towerCost;
+
+    BoxCollider towerCollider;
+
 
 
     // Start is called before the first frame update
@@ -28,6 +36,9 @@ public class TowerParentScript : MonoBehaviour
         towerCamera = GetComponentInChildren<Camera>();
         towerCamera.gameObject.SetActive(false);
 
+        towerCollider = GetComponent<BoxCollider>();
+        towerCollider.enabled = false;
+
         meshes = GetComponentsInChildren<Renderer>();
         //print(meshes.Length);
         defaultMaterials = new Material[meshes.Length];
@@ -37,36 +48,11 @@ public class TowerParentScript : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (!isPlaced)
         {
             return;
-        }
-        if (other.transform.root.gameObject.tag.Equals("Player"))
-        {
-            player = other.GetComponent<PlayerScript>();
-            SetPlayer(player);
-            towerUI.SetEventCamera(player.playerCamera);
-            Vector3 playerOffset = player.transform.position + player.transform.forward * 5;
-            Vector3 towerOffset = transform.position - player.transform.position;
-            //Debug.DrawRay(player.transform.position, towerOffset, Color.red);
-            //print(towerOffset);
-            //print(Vector3.Angle(towerOffset, playerOffset));
-            Vector3 uiLocation = transform.position + Vector3.Cross(towerOffset, Vector3.up).normalized * uiDistanceFromTower;
-            uiLocation = Extns.xz3(player.transform.position + (uiLocation - player.transform.position).normalized * 10) + Vector3.up * 3; 
-            //print(uiLocation);
-            towerUI.transform.position = uiLocation;
-            towerUI.transform.LookAt(player.transform.position, Vector3.up);
-            towerUI.transform.Rotate(Vector3.up, 180);
-
-            towerUI.gameObject.SetActive(true);
         }
     }
 
@@ -98,9 +84,11 @@ public class TowerParentScript : MonoBehaviour
 
     public void SwitchToTowerCamera(PlayerScript player)
     {
+        SetPlayer(player);
         Cursor.lockState = CursorLockMode.Confined;
         towerCamera.gameObject.SetActive(true);
         player.playerCamera.gameObject.SetActive(false);
+        player.openUIElement(true);
         towerUI.gameObject.SetActive(true);        
     }
 
@@ -110,6 +98,24 @@ public class TowerParentScript : MonoBehaviour
         player.playerCamera.gameObject.SetActive(true);
         towerCamera.gameObject.SetActive(false);
         towerUI.gameObject.SetActive(false);
+        player.openUIElement(false);
+    }
+
+    protected List<Transform> FindSpawnPoints(GameObject parent)
+    {
+        List<Transform> result = new List<Transform>();
+        foreach (Transform child in parent.transform)
+        {
+            if (child.CompareTag("SpawnPoint"))
+            {
+                result.Add(child);
+            }
+            //print(child.gameObject);
+            result.AddRange(FindSpawnPoints(child.gameObject));
+        }
+
+        return result;
+
     }
 
 
@@ -121,6 +127,8 @@ public class TowerParentScript : MonoBehaviour
     {
         isPlaced = true;
         SetMaterialsToDefault();
+        towerCollider.enabled = true;
+
     }
 
     public virtual void RemoveTower()
@@ -128,6 +136,16 @@ public class TowerParentScript : MonoBehaviour
 
     }
 
+    public void SetTowerCost(int cost)
+    {
+        towerCost = cost;
+        
+    }
+
+    public int GetTowerCost()
+    {
+        return towerCost;
+    }
 
     public virtual PlayerScript GetPlayer()
     {
@@ -138,5 +156,10 @@ public class TowerParentScript : MonoBehaviour
     {
         player = value;
         towerUI.SetPlayer(player);
+    }
+
+    public bool GetIsSnapping()
+    {
+        return isSnapping;
     }
 }

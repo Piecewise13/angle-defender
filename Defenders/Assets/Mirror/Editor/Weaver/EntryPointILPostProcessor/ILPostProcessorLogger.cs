@@ -13,7 +13,7 @@ namespace Mirror.Weaver
         {
             Logs.Add(new DiagnosticMessage
             {
-                // TODO add file etc. for double click opening later?
+                //add file etc. for double click opening later?
                 DiagnosticType = logType, // doesn't have .Log
                 File = null,
                 Line = 0,

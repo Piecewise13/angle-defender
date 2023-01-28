@@ -10,6 +10,9 @@ public class WeaponInventoryManager : MonoBehaviour
     private PlayerScript player;
     public Animator playerAnimator;
     private Camera playerCamera;
+
+    private bool freeToPlay = true;
+
     /*
      * WEAPON VARS
      */
@@ -27,10 +30,12 @@ public class WeaponInventoryManager : MonoBehaviour
      */
     [Space(30)]
     [Header("Tower")]
-    public TowerHolder[] towers;
+    public GameObject[] towers;
 
     public GameObject towerHammerPlayer;
     public GameObject towerHammerThrow;
+
+    public GameObject towerPlacerObject;
 
     public GameObject towerRoot;
     private bool isTowerUtility;
@@ -39,6 +44,7 @@ public class WeaponInventoryManager : MonoBehaviour
     //private GameObject towerGhost;
     private TowerParentScript currentTowerScript;
     public LayerMask possibleLayers;
+    private static List<Vector3> snappableTowers = new List<Vector3>();
 
     /*
      * BUILDING VARS
@@ -89,6 +95,11 @@ public class WeaponInventoryManager : MonoBehaviour
         if (Input.GetButtonDown("SwitchMode"))
         {
             CycleMode();
+        }
+
+        if (!freeToPlay)
+        {
+            return;
         }
 
         switch (mode)
@@ -183,7 +194,7 @@ public class WeaponInventoryManager : MonoBehaviour
                         {
                             ghostRenderer.SetMaterials(validMat);
 
-                            if (Input.GetButtonDown("Fire1"))
+                            if (Input.GetButtonDown("Fire1") && freeToPlay)
                             {
                                 Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
                                 defenseLocations.Add(defenseGhost.transform.position);
@@ -194,7 +205,7 @@ public class WeaponInventoryManager : MonoBehaviour
                         else
                         {
                             ghostRenderer.SetMaterials(invalidMat);
-                            if (Input.GetButtonDown("Fire1"))
+                            if (Input.GetButtonDown("Fire1") && freeToPlay)
                             {
                                 StartCoroutine(player.hudScript.CantAffordResourcesFlash());
                             }
@@ -226,7 +237,7 @@ public class WeaponInventoryManager : MonoBehaviour
                     RaycastHit hitray;
                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitray, range, removeLayer))
                     {
-                        if (Input.GetButtonDown("Fire1"))
+                        if (Input.GetButtonDown("Fire1") && freeToPlay)
                         {
                             Destroy(hitray.collider.transform.root.gameObject);
                         }
@@ -260,6 +271,8 @@ public class WeaponInventoryManager : MonoBehaviour
                     //equip utility
                 }
 
+
+
                 if (isTowerUtility)
                 {
                     if (Input.GetButtonDown("Fire1"))
@@ -276,42 +289,55 @@ public class WeaponInventoryManager : MonoBehaviour
                 {
                     currentTower.transform.position = hit.point;
                     int objLayer = (1 << hit.collider.gameObject.layer);
-                    if ((towers[towerIndex].placeLayers.value & objLayer) <= 0)
+                    if ((currentTowerScript.placementLayers.value & objLayer) <= 0)
                     {
                         currentTowerScript.SetMaterials(invalidMat);
                         return;
                     }
 
-                    if (!player.CanAffordSoulFire(towers[0].GetCost()))
+                    if (!player.CanAffordSoulFire(currentTowerScript.GetTowerCost()))
                     {
                         currentTowerScript.SetMaterials(invalidMat);
                         return;
                     }
+
+
                     currentTowerScript.SetMaterials(validMat);
-                    if (towers[towerIndex].isSnapping)
+                    if (currentTowerScript.GetIsSnapping())
                     {
                         currentTower.transform.position = hit.collider.transform.position;
 
+                        if (snappableTowers.Contains(currentTower.transform.position))
+                        {
+                            currentTowerScript.SetMaterials(invalidMat);
+                            return;
+                        }
+
                         if (Input.GetButtonDown("Fire1"))
                         {
-                            //TODO remove the collider when placed but store it on the tower object so that
-                            //when tower is deleted it can be replaced
                             currentTower.transform.SetParent(hit.collider.transform);
                             currentTowerScript.Place();
-                            player.SetSoulFire(-towers[0].GetCost());
+                            snappableTowers.Add(currentTower.transform.position);
+                            player.SetSoulFire(-currentTowerScript.GetTowerCost());
                             SpawnNewTower();
                             print("placing at snap");
                         }
                     }
                     else
                     {
+                        //HIGH HIGH PROBABILITY THAT THIS WILL FAIL WITH OTHER TOWERS CHECK THIS WITH FURNACE
+                        if (hit.collider.gameObject.layer.Equals(LayerMask.NameToLayer("Tower")))
+                        {
+                            currentTowerScript.SetMaterials(invalidMat);
+                            return;
+                        }
 
                         currentTower.transform.position = hit.point;
                         if (Input.GetButtonDown("Fire1"))
                         {
                             currentTowerScript.Place();
                             SpawnNewTower();
-                            player.SetSoulFire(-towers[0].GetCost());
+                            player.SetSoulFire(-currentTowerScript.GetTowerCost());
                         }
                     }
                 }
@@ -442,7 +468,7 @@ public class WeaponInventoryManager : MonoBehaviour
 
     void SpawnNewTower()
     {
-        currentTower = Instantiate(towers[towerIndex].tower);
+        currentTower = Instantiate(towers[towerIndex]);
         currentTowerScript = currentTower.GetComponent<TowerParentScript>();
         currentTowerScript.SetMaterials(invalidMat);
     }
@@ -450,6 +476,8 @@ public class WeaponInventoryManager : MonoBehaviour
     void ChangeTower(int index)
     {
         isTowerUtility = false;
+        towerHammerPlayer.SetActive(false);
+        towerPlacerObject.SetActive(true);
         towerIndex = index;
         if(currentTower != null)
         {
@@ -465,13 +493,9 @@ public class WeaponInventoryManager : MonoBehaviour
     void EquipTowerUtility()
     {
         Destroy(currentTower);
-        Instantiate(towerHammerPlayer, towerRoot.transform);
+        towerHammerPlayer.SetActive(true);
+        towerPlacerObject.SetActive(false);
         isTowerUtility = true;
-    }
-
-    public bool GiveNewTower(TowerHolder tower)
-    {
-        return true;
     }
 
 
@@ -479,6 +503,11 @@ public class WeaponInventoryManager : MonoBehaviour
     {
         return true;
         
+    }
+
+    public void TowerRemoved(GameObject tower)
+    {
+        snappableTowers.Remove(tower.transform.position);
     }
     #endregion
 
@@ -508,27 +537,13 @@ public class WeaponInventoryManager : MonoBehaviour
         BasicWeaponScript.SetCanShoot(value);
     }
 
-
-}
-
-[System.Serializable]
-public class TowerHolder
-{
-
-    public GameObject tower;
-    public LayerMask placeLayers;
-    public bool isSnapping;
-    [SerializeField]private int cost;
-
-    public bool Equals(TowerHolder obj)
+    public void SetFreeToPlay(bool value)
     {
-        return tower = obj.tower;
+        freeToPlay = value;
+        canShoot(value);
     }
 
-    public int GetCost()
-    {
-        return cost;
-    }
+
 }
 
 [System.Serializable]

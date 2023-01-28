@@ -12,6 +12,7 @@ public class TowerGUIParent : MonoBehaviour
     GraphicRaycaster raycaster;
     PointerEventData pointerEventData;
     EventSystem eventSystem;
+    TowerParentScript towerParent;
 
     private TowerGUI_UpgradePath focusedUpgradePath;
     private PlayerScript player;
@@ -31,15 +32,28 @@ public class TowerGUIParent : MonoBehaviour
     public TMP_Text upgradeName;
     public TMP_Text upgradeDesciption;
 
+    public TMP_Text playerSoulFireText;
+
+    public TMP_Text sellValueText;
+    private int towerValue;
+    private int sellValue;
+    private static float sellMarkdown = .7f;
+
+    protected int completeUpgradePaths;
+
+    //TODO make it possible to max out the tower
+
     // Start is called before the first frame update
     void Start()
     {
         canvas = GetComponent<Canvas>();
+        towerParent = GetComponentInParent<TowerParentScript>();
         eventSystem = EventSystem.current;
         raycaster = GetComponent<GraphicRaycaster>();
         purchaseButton = purchaseButtonInteractable.GetComponent<Button>();
         purchasePanel.SetActive(false);
         purchasePanelRect = purchasePanel.GetComponent<RectTransform>();
+        SetTowerValue(towerParent.GetTowerCost()); 
     }
 
     // Update is called once per frame
@@ -70,18 +84,26 @@ public class TowerGUIParent : MonoBehaviour
         }
     }
 
+    //Called when the purchase button is pressed
     public void PurchaseUpgrade()
     {
-        print("purchasing");
-        player.SetSoulFire(-focusedUpgradePath.GetCurrentCost());
-        focusedUpgradePath.UpgradeBought();
+        //print("purchasing");
+        if (focusedUpgradePath.CanBuyUpgrade())
+        {
+            SetTowerValue(focusedUpgradePath.GetCurrentCost());
+            player.SetSoulFire(-focusedUpgradePath.GetCurrentCost());
+            playerSoulFireText.text = player.GetSoulFire() + "";
+            focusedUpgradePath.Upgrade();
+        }
+        
+        
+        
 
     }
 
     public void FocusUpgrade(TowerGUI_UpgradePath upgradePath)
     {
         
-        //print("called");
         if (focusedUpgradePath != null)
         {
             focusedUpgradePath.UnselectPath();
@@ -90,12 +112,13 @@ public class TowerGUIParent : MonoBehaviour
 
         focusedUpgradePath = upgradePath;
         focusedUpgradePath.SelectPath();
-
         if (player.CanAffordSoulFire(focusedUpgradePath.GetCurrentCost()))
         {
             //RectTransform rectTransform = upgradePath.GetComponent<RectTransform>();
             purchasePanel.SetActive(true);
-            purchasePanel.transform.position = upgradePath.transform.position + (transform.right * purchaseOffset * -1);
+            purchaseText.text = focusedUpgradePath.descriptionText;
+            //purchasePanel.transform.position = upgradePath.transform.position + (transform.right * purchaseOffset * -1);
+            purchasePanelRect.position = focusedUpgradePath.GetComponent<RectTransform>().position + Vector3.right * purchaseOffset;
             //purchaseButtonInteractable.enabled = true;
             //purchaseButton.interactable = true;
 
@@ -107,6 +130,47 @@ public class TowerGUIParent : MonoBehaviour
             //purchaseButton.interactable = true;
         }
         
+    }
+
+    public void UpgradePathComplete()
+    {
+        completeUpgradePaths++;
+        if (completeUpgradePaths >= 3)
+        {
+            MaxOutTower();
+        }
+    }
+
+    private void SetTowerValue(int delta)
+    {
+        towerValue += delta;
+        sellValue = (int)(towerValue * sellMarkdown);
+        sellValueText.text = sellValue + "";
+        
+    }
+
+    public void SellTower()
+    {
+        player.SetSoulFire(sellValue);
+        player.weaponManager.TowerRemoved(gameObject);
+        towerParent.SwitchFromTowerCamera(player);
+        player.weaponManager.TowerRemoved(towerParent.gameObject);
+        Destroy(towerParent.gameObject);
+    }
+
+    protected virtual void MaxOutTower()
+    {
+
+    }
+
+    public void ExitMenu()
+    {
+        towerParent.SwitchFromTowerCamera(player);
+    }
+
+    public static void SetSellMarkdown(float value)
+    {
+        sellMarkdown = value;
     }
 
 

@@ -14,7 +14,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public Camera playerCamera;
     [SerializeField] protected Transform groundCheck;
     [HideInInspector] public MouseLook lookScript;
-    protected WeaponInventoryManager weaponManager;
+    public WeaponInventoryManager weaponManager;
     public Animator animator;
     public GameObject deathScreen;
 
@@ -504,8 +504,8 @@ public class PlayerScript : MonoBehaviour, Damageable
             Cursor.lockState = CursorLockMode.Confined;
             lookScript.setCanLook(false);
             canMove = false;
-            weaponManager.canShoot(false);
-
+            //weaponManager.canShoot(false);
+            weaponManager.SetFreeToPlay(false);
         }
         else
         {
@@ -514,7 +514,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             lookScript.setCanLook(true);
             canMove = true;
 
-            weaponManager.canShoot(true);
+            weaponManager.SetFreeToPlay(true);
         }
     }
 

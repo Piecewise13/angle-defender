@@ -87,7 +87,7 @@ namespace Mirror.Experimental
             // add velocity to position as position would have moved on server at that velocity
             target.position += target.velocity * Time.fixedDeltaTime;
 
-            // TODO does this also need to sync acceleration so and update velocity?
+            // does this also need to sync acceleration so and update velocity?
         }
     }
 }

@@ -8,26 +8,20 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 { 
     [Header("Selection Box")]
     public Image selectionImage;
-    public Sprite SelectedBox;
-    public Sprite UnselectedBox;
+    private Sprite SelectedBox;
+    private Sprite UnselectedBox;
 
     [Header("Indicator Box")]
-    public static float[] FILL_AMOUNTS = {0, .085f, .13f, .2f, .3f, .37f, .42f, .5f, .58f, .63f, .69f, .8f, .87f, .92f, 1f };
+    public static float[] FILL_AMOUNTS = {0, 0.123f, 0.186f, 0.309f, 0.378f, 0.516f, 0.624f, 0.709f, 0.817f, 0.902f, 1f};
     public Image indicatorImage;
     public Sprite maxedOutSprite;
 
     [Header("Upgrade Information")]
     [SerializeField] private int[] costs;
     protected int upgradeCount;
+    public string descriptionText;
 
-    
-    /*
-     * OLD SYSTEM
-     */
-    public UpgradeInfo[] upgrades;
-    public int currentUpgradeAvalible;
-
-    private bool[] unlocked;
+   
 
 
 
@@ -51,52 +45,29 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
         //unlocked = new bool[upgrades.Length];
         ChangeUpgradeInfo();
         UnselectPath();
+
+        SelectedBox = Resources.Load<Sprite>("TowerGUI/TowerUI_SelectedRect");
+        UnselectedBox = Resources.Load<Sprite>("TowerGUI/TowerUI_UnselectedRect");
+        selectionImage.sprite = UnselectedBox;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public abstract void SpecialFunctionality();
 
-
-    public void UpgradeBought()
+    public bool CanBuyUpgrade()
     {
-        if (upgradeCount >= 10)
-        {
-            return;
-        }
+        return upgradeCount <= 10;
+    }
 
+
+    public void Upgrade()
+    {
         upgradeCount++;
+
+
+
         ChangeUpgradeInfo();
         SpecialFunctionality();
-
-        //set it uninteractable if it is the last upgrade and set new image boarder
-
-        /*
-        if (upgrade == 0)
-        {
-            UpgradeOne();
-        } else if (upgrade == 1)
-        {
-            UpgradeTwo();
-        } else if (upgrade == 2)
-        {
-            UpgradeThree();
-        } else
-        {
-            print("over");
-            ChangeUpgradeInfo(upgrade++);
-            return;
-        }
-        upgradeTickBoxes[upgrade].color = upgradeTickBoxColor;
-        currentUpgradeAvalible++;
-        ChangeUpgradeInfo(currentUpgradeAvalible);
-        interactable.Interact();
-        
-        */
 
     }
 
@@ -105,20 +76,11 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
         //figure out way to determine the next price. either by formula or preset values
         indicatorImage.fillAmount = FILL_AMOUNTS[upgradeCount];
-        upgradeCost.text = costs[upgradeCount] + "";
-
-        /*
-        if (nextUpgrade != upgrades.Length)
+        if (upgradeCount > costs.Length)
         {
-
-            upgradeCost.text = upgrades[nextUpgrade].cost + "";
-            upgradeIcon = upgrades[nextUpgrade].icon;
-        } else
-        {
-            interactable.enabled = false;
-            //set it equal to finsihed graphic and info 
+            upgradeCost.text = "MAXED";
         }
-        */
+        upgradeCost.text = costs[upgradeCount] + "";
     }
 
     public void SelectPath()

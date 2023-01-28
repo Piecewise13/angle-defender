@@ -589,7 +589,7 @@ namespace Mirror.Weaver
                 worker.Emit(OpCodes.Ldflda, netIdField);
                 worker.Emit(OpCodes.Call, weaverTypes.generatedSyncVarDeserialize_NetworkIdentity);
             }
-            // TODO this only uses the persistent netId for types DERIVED FROM NB.
+            //this only uses the persistent netId for types DERIVED FROM NB.
             //      not if the type is just 'NetworkBehaviour'.
             //      this is what original implementation did too. fix it after.
             else if (syncVar.FieldType.IsDerivedFrom<NetworkBehaviour>())

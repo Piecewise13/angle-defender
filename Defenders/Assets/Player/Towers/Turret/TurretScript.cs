@@ -162,17 +162,17 @@ public class TurretScript : TowerParentScript
         {
             Destroy(barrelObjects[i]);
         }
-        print(turretObject);
+        //print(turretObject);
         Transform[] barrelPoints = FindSpawnPoints(turretObject).ToArray();
         barrelObjects = new GameObject[barrelPoints.Length];
-        print(barrelPoints.Length);
+        //print(barrelPoints.Length);
 
         for (int i = 0; i < barrelObjects.Length; i++)
         {
             barrelObjects[i] = Instantiate(model, barrelPoints[i]);
             
         }
-        print(barrelObjects.Length);
+        //print(barrelObjects.Length);
         bulletSpawnPoint = FindSpawnPoints(barrelObjects[0])[0];
     }
 
@@ -227,22 +227,7 @@ public class TurretScript : TowerParentScript
         //print(shootSpeedMultiplier + " " + anim.speed);
     }
 
-    private List<Transform> FindSpawnPoints(GameObject parent)
-    {
-        List<Transform> result = new List<Transform>();
-        foreach (Transform child in parent.transform)
-        {
-            if (child.CompareTag("SpawnPoint"))
-            {
-                result.Add(child);
-            }
-            print(child.gameObject);
-            result.AddRange(FindSpawnPoints(child.gameObject));
-        }
 
-        return result;
-
-    }
 
 
     public void SetDamageMultiplier(float value)

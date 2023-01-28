@@ -25,6 +25,7 @@ public class HammerThrowableScript : MonoBehaviour
         if (collision.gameObject.CompareTag("Tower"))
         {
             print("hit tower");
+
             towerScript = collision.gameObject.GetComponentInChildren<TowerParentScript>();
             towerScript.SwitchToTowerCamera(player);
         }

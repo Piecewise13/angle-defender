@@ -42,14 +42,12 @@ public class BulletForgeUI : MonoBehaviour
     public TMP_Text depositDiamondText;
 
 
-
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.SetActive(false);
-        forge = GetComponentInParent<FurnaceTower>();
+        //gameObject.SetActive(false);
+
         UpdateFuelMeter();
-        UpdateSoulFireMeter();
     }
 
     // Update is called once per frame
@@ -65,7 +63,7 @@ public class BulletForgeUI : MonoBehaviour
             return;
         }
 
-        if (((depositWoodAmount + num) * forge.woodFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        if (((depositWoodAmount + num) * forge.GetResourceFuelAmount(ResourceType.Wood)) + forge.GetFuelAmount() > forge.fuelMax)
         {
             return;
         }
@@ -87,7 +85,7 @@ public class BulletForgeUI : MonoBehaviour
             return;
         }
 
-        if (((depositIronAmount + num) * forge.ironFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        if (((depositIronAmount + num) * forge.GetResourceFuelAmount(ResourceType.Iron)) + forge.GetFuelAmount() > forge.fuelMax)
         {
             return;
         }
@@ -109,7 +107,7 @@ public class BulletForgeUI : MonoBehaviour
             return;
         }
 
-        if (((depositDiamondAmount + num) * forge.diamondFuelAmount) + forge.fuelAmount > forge.fuelMax)
+        if (((depositDiamondAmount + num) * forge.GetResourceFuelAmount(ResourceType.Diamond)) + forge.GetFuelAmount() > forge.fuelMax)
         {
             return;
         }
@@ -163,23 +161,15 @@ public class BulletForgeUI : MonoBehaviour
 
     public void UpdateFuelMeter()
     {
-        fuelSlider.value = (float)forge.fuelAmount / (float)forge.fuelMax;
-        fuelIndicator.text = forge.fuelAmount + "";
+        fuelSlider.value = (float)forge.GetFuelAmount() / (float)forge.fuelMax;
+        fuelIndicator.text = forge.GetFuelAmount() + "";
         UpdatePotentialFuelMeter();
     }
 
     void UpdatePotentialFuelMeter()
     {
-        float value = (depositWoodAmount * forge.woodFuelAmount) + (depositIronAmount * forge.ironFuelAmount) + (depositDiamondAmount * forge.diamondFuelAmount) + forge.fuelAmount;
+        float value = (depositWoodAmount * forge.GetResourceFuelAmount(ResourceType.Wood)) + (depositIronAmount * forge.GetResourceFuelAmount(ResourceType.Iron)) + (depositDiamondAmount * forge.GetResourceFuelAmount(ResourceType.Diamond)) + forge.GetFuelAmount();
         fuelPotSlider.value = value / forge.fuelMax;
-    }
-
-    public void UpdateSoulFireMeter()
-    {
-        fireSlider.value = (float)forge.fireStored / (float)forge.soulFireMax;
-        fireIndicator.text = forge.fireStored + "";
-
-
     }
 
 
@@ -217,7 +207,6 @@ public class BulletForgeUI : MonoBehaviour
         playerDiamondAmount = player.GetResourceAmount(ResourceType.Diamond);
         ResetValues();
         UpdateFuelMeter();
-        UpdateSoulFireMeter();
         UpdatePlayerValues();
         UpdateDepositValues();
 

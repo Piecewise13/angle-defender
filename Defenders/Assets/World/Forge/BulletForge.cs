@@ -75,7 +75,6 @@ public class BulletForge : MonoBehaviour
                         StopEyeFire();
                     }
 
-                    bulletForgeUI.UpdateSoulFireMeter();
                     bulletForgeUI.UpdateFuelMeter();
                     lastProductionTime = Time.time;
                 }
@@ -101,7 +100,6 @@ public class BulletForge : MonoBehaviour
                 {
                     player.SetSoulFire(playerTransferAmount);
                     fireStored -= playerTransferAmount;
-                    bulletForgeUI.UpdateSoulFireMeter();
                     if (fireStored < playerTransferAmount)
                     {
                         UpdateTransformers(false);
