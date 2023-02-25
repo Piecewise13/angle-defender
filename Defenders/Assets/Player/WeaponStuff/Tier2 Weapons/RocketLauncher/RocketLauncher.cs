@@ -29,14 +29,14 @@ public class RocketLauncher : BasicWeaponScript
                 RaycastHit hit;
                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layer))
                 {
-                    RocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<RocketScript>();
-                    script.destination = hit.point;
+                    BouncingRocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<BouncingRocketScript>();
+                    script.SetDestination(hit.point);
 
                     //print("test");
                 } else
                 {
-                    RocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<RocketScript>();
-                    script.destination = bulletSpawnPoint.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * 1000f;
+                    BouncingRocketScript script = Instantiate(rocketPrefab, bulletSpawnPoint.transform.position, bulletSpawnPoint.transform.rotation).GetComponent<BouncingRocketScript>();
+                    script.SetDestination(bulletSpawnPoint.transform.position * 1000f);
 
                 }
                 

@@ -146,93 +146,9 @@ public class WeaponInventoryManager : MonoBehaviour
                     }
                 }
 
-                if (!isRemoving)
-                {
-                    Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
-                    Vector3 loc = Vector3.zero;
-                    if (activeDefense == 0)
-                    {
-                        if (rotateNum % 4 == 0)
-                        {
-                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                        }
-                        else if (rotateNum % 4 == 1)
-                        {
-                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
-                        }
-                        else if (rotateNum % 4 == 2)
-                        {
-                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize - (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                        }
-                        else if (rotateNum % 4 == 3)
-                        {
-                            loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize - (gridSize / 2));
-                        }
-                    }
-                    else if (activeDefense == 1)
-                    {
-                        loc = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
-                    }
-                    else if (activeDefense == 2)
-                    {
-                        RaycastHit hitout;
 
-                        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, 512))
-                        {
-                            loc = hitout.point;
-                            defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hitout.normal) * defenseGhost.transform.rotation;
-                        }
-                    }
-
-                    defenseGhost.transform.position = loc;
-
-                    if (!defenseLocations.Contains(defenseGhost.transform.position))
-                    {
-                        //check if player can afford
-
-                        if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
-                        {
-                            ghostRenderer.SetMaterials(validMat);
-
-                            if (Input.GetButtonDown("Fire1") && freeToPlay)
-                            {
-                                Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
-                                defenseLocations.Add(defenseGhost.transform.position);
-                                player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
-
-                            }
-                        }
-                        else
-                        {
-                            ghostRenderer.SetMaterials(invalidMat);
-                            if (Input.GetButtonDown("Fire1") && freeToPlay)
-                            {
-                                StartCoroutine(player.hudScript.CantAffordResourcesFlash());
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        ghostRenderer.SetMaterials(invalidMat);
-
-                    }
-
-                    if (Input.GetButtonDown("RotateDefense"))
-                    {
-
-                        if (rotateNum % 2 == 0)
-                        {
-                            defenseGhost.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-                        }
-                        else
-                        {
-                            defenseGhost.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                        }
-                        rotateNum++;
-                    }
-                }
-                else
+                //If removing, then bring out the gun an
+                if (isRemoving)
                 {
                     RaycastHit hitray;
                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitray, range, removeLayer))
@@ -242,7 +158,100 @@ public class WeaponInventoryManager : MonoBehaviour
                             Destroy(hitray.collider.transform.root.gameObject);
                         }
                     }
+                    return;
                 }
+
+
+
+
+                Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
+                Vector3 girdLocationForDefense = Vector3.zero;
+
+                //if wall is active
+                if (activeDefense == 0)
+                {
+                    if (rotateNum % 4 == 0)
+                    {
+                        girdLocationForDefense = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize + (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    }
+                    else if (rotateNum % 4 == 1)
+                    {
+                        girdLocationForDefense = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize + (gridSize / 2));
+                    }
+                    else if (rotateNum % 4 == 2)
+                    {
+                        girdLocationForDefense = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize - (gridSize / 2), 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                    }
+                    else if (rotateNum % 4 == 3)
+                    {
+                        girdLocationForDefense = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize - (gridSize / 2));
+                    }
+                }
+                //if tower is active then set loc 
+                else if (activeDefense == 1)
+                {
+                    girdLocationForDefense = new Vector3(Mathf.RoundToInt(point.x / gridSize) * gridSize, 0, Mathf.RoundToInt(point.z / gridSize) * gridSize);
+                }
+
+                //if ladder is active then set the location on grid
+                else if (activeDefense == 2)
+                {
+                    RaycastHit hitout;
+
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, 512))
+                    {
+                        girdLocationForDefense = hitout.point;
+                        defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hitout.normal) * defenseGhost.transform.rotation;
+                    }
+                }
+
+                //set defense to the respective grid location
+                defenseGhost.transform.position = girdLocationForDefense;
+
+                if (!defenseLocations.Contains(defenseGhost.transform.position))
+                {
+                    if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
+                    {
+                        ghostRenderer.SetMaterials(validMat);
+
+                        if (Input.GetButtonDown("Fire1") && freeToPlay)
+                        {
+                            Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                            defenseLocations.Add(defenseGhost.transform.position);
+                            player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
+
+                        }
+                    }
+                    else
+                    {
+                        ghostRenderer.SetMaterials(invalidMat);
+                        if (Input.GetButtonDown("Fire1") && freeToPlay)
+                        {
+                            StartCoroutine(player.hudScript.CantAffordResourcesFlash());
+                        }
+                    }
+
+                }
+                else
+                {
+                    ghostRenderer.SetMaterials(invalidMat);
+
+                }
+
+                if (Input.GetButtonDown("RotateDefense"))
+                {
+
+                    if (rotateNum % 2 == 0)
+                    {
+                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+                    }
+                    else
+                    {
+                        defenseGhost.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    }
+                    rotateNum++;
+                }
+                
                 break;
 
 
@@ -341,11 +350,11 @@ public class WeaponInventoryManager : MonoBehaviour
                         }
                     }
                 }
-                
                 else
                 {
                     currentTowerScript.SetMaterials(invalidMat);
                 }
+
                 #endregion
                 break;
             default:

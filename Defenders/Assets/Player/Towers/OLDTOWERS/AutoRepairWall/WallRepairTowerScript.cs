@@ -32,7 +32,7 @@ public class WallRepairTowerScript : MonoBehaviour
                     bool bBlink = false;
                     foreach (var wall in wallsInRange)
                     {
-                        if (wall.Repair())
+                        if (wall.Repair(10f))
                         {
                             bBlink = true;
                         }

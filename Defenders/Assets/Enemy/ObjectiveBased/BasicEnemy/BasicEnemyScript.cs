@@ -138,7 +138,6 @@ public class BasicEnemyScript : ParentAIScript
         anim.SetBool("isWalking", false);
         agent.isStopped = true;
         canAttack = true;
-        print("start attack");
     }
 
     public void EndAttack()
@@ -148,7 +147,7 @@ public class BasicEnemyScript : ParentAIScript
         shouldAttack = false;
         canAttack = false;
         agent.isStopped = false;
-        print("end attack");
+
         UpdatePath();
     }
 
@@ -162,7 +161,6 @@ public class BasicEnemyScript : ParentAIScript
     {
         base.LeaveWall();
         EndAttack();
-        print("Leaving Wall");
-    }
+    } 
 
 }

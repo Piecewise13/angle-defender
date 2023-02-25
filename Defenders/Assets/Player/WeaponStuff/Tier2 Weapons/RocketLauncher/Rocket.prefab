@@ -53,7 +53,8 @@ MonoBehaviour:
   layerToHit:
     serializedVersion: 2
     m_Bits: 2056
-  damage: 100
+  damage: 20
+  freezeTime: 5
   explosion: {fileID: 8718186879607960226, guid: a617d3ea3ce0107499b6c56b0f8084e0,
     type: 3}
 --- !u!54 &3377387874846036602

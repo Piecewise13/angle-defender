@@ -7,7 +7,8 @@ public class GhostScript : MonoBehaviour
 
     private Renderer[] meshes;
     // Start is called before the first frame update
-    void Start()
+
+    private void Awake()
     {
         meshes = GetComponentsInChildren<Renderer>();
     }

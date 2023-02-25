@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public abstract class ParentAIScript : MonoBehaviour, Damageable
 {
     protected NavMeshAgent agent;
+    protected float speed;
     protected static EggScript eggScript;
     protected static GameObject egg;
     protected static ResourceSpawner resourceSpawner;
@@ -39,7 +40,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         egg = eggScript.transform.root.gameObject;
 
         agent = GetComponent<NavMeshAgent>();
-
+        speed = agent.speed;
         walls = FindObjectsOfType<WallDefenceScript>();
         path = new NavMeshPath();
         soulFireBallPrefab = Resources.Load("SoulFireBall");
@@ -107,6 +108,19 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         atWall = false;
     }
 
+    public void Freeze(float time)
+    {
+        agent.speed = speed * .5f;
+        Invoke("EndFreeze", time);
+    }
+
+    public void EndFreeze()
+    {
+        agent.speed = speed;
+    }
+
+
+
     public void Lure(Vector3 loc)
     {
         if (canBeLured)
@@ -116,9 +130,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         }
 
     }
-
-
-
 
     public void EndLure()
     {

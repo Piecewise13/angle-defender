@@ -17,6 +17,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     [Space(20)]
     [Header("Health Vars")]
     public float maxHealth;
+    private bool needsRepair;
     public float health { get; set; }
 
     public bool isDead { get; set; }
@@ -36,7 +37,9 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     private float lastRepairTime;
     public float rebuildDelay;
     private float startRebuildTime;
-    public float repairAmount;
+
+    private bool hasWallHealer;
+    private WallHealer_Script wallHealer;
 
 
 
@@ -62,6 +65,9 @@ public class WallDefenceScript : MonoBehaviour, Damageable
                 startRebuildTime = Time.time;
 
             }
+
+            //TODO implement new system that uses the utility feature to upgrade the wall
+            /*
             if (Input.GetButton("Use"))
             {
                 if (health < maxHealth)
@@ -86,43 +92,28 @@ public class WallDefenceScript : MonoBehaviour, Damageable
                     }
                 }
             }
+            */
         }
     }
 
-    public bool Repair()
+    public bool Repair(float repairAmount)
     {
         if (health >= maxHealth)
         {
             health = maxHealth;
             ChangeWallObject();
+
+            wallHealer.EndHealingService(this);
+
             return false;
         }
         else
         {
+           
             health += repairAmount;
             ChangeWallObject();
-
             return true;
         }
-        /*
-        if (health <= 0)
-        {
-            /*
-            if (startRebuildTime + rebuildDelay < Time.time)
-            {
-                Rebuild();
-                health += repairAmount;
-                ChangeWallObject();
-                return true;
-            }
-           
-        }
-        else
-        {
-
-
-        }
-      */
 
     }
 
@@ -160,6 +151,18 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         isDead = false;
     }
 
+    public void InWallHealerRange(WallHealer_Script script)
+    {
+        wallHealer = script;
+        hasWallHealer = true;
+    }
+
+    public void LostWallHealer()
+    {
+        wallHealer = null;
+        hasWallHealer = false;
+    }
+
     public void PlayerEnter(PlayerScript player)
     {
         this.player = player;
@@ -177,6 +180,12 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         if (!isDead)
         {
             health -= damage;
+
+            if (hasWallHealer)
+            {
+                wallHealer.WallNeedsHealing(this);
+            }
+
             ChangeWallObject();
 
             //print(wallMesh.activeSelf);
@@ -196,6 +205,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         collide.enabled = false;
         obstacle.enabled = false;
         isDead = true;
+        wallHealer.EndHealingService(this);
         Destroy(gameObject);
     }
 
@@ -207,12 +217,9 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         int index = Mathf.CeilToInt(Mathf.Lerp(wallObjects.Length - 1, 0, healthPercentage));
         //int index = Mathf.Clamp(Mathf.CeilToInt((1 - healthPercentage) * (wallObjects.Length)), 0, wallObjects.Length - 1);
 
-        print("Health %: " + healthPercentage + ", index: " + index);
-
         if (currentWall != index)
         {
             Destroy(wallObject);
-            print("trying to get: " + index);
             if (index < 0)
             {
                 return;
@@ -220,6 +227,11 @@ public class WallDefenceScript : MonoBehaviour, Damageable
             wallObject = Instantiate(wallObjects[index], wallHolder.transform);
             currentWall = index;
         }
+    }
+
+    public bool GetNeedsRepair()
+    {
+        return needsRepair;
     }
 
 }

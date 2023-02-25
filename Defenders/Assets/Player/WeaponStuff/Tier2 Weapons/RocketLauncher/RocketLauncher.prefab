@@ -94,7 +94,8 @@ MonoBehaviour:
   bulletCost: 40
   gunAnims: {fileID: 22100000, guid: 1976d9f09439a87498812904b968e4aa, type: 2}
   reloadDuration: 2
-  rocketPrefab: {fileID: 995391954510499669, guid: 7a0db6cc8a91e49a9883e471bc84542f,
+  weaponIcon: {fileID: 0}
+  rocketPrefab: {fileID: 8988207937918547101, guid: c63758b4a554a41de88d2d66bbb05daa,
     type: 3}
   rocketSpawn: {fileID: 2400987801437930234}
 --- !u!1001 &4142906730947629404

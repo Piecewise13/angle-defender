@@ -10,6 +10,8 @@ public class RocketScript : MonoBehaviour
     public float radius;
     public LayerMask layerToHit;
     public float damage;
+    public float freezeTime;
+    public GameObject freezeDecal;
 
     public GameObject explosion;
 
@@ -32,11 +34,15 @@ public class RocketScript : MonoBehaviour
         {
             try
             {
-                item.GetComponentInParent<Damageable>().TakeDamage(damage, item);
+                ParentAIScript script = item.GetComponentInParent<ParentAIScript>();
+                script.TakeDamage(damage, item);
+                script.Freeze(freezeTime);
+                
             }
             catch { }
         }
-        Instantiate(explosion, transform.position, Quaternion.Euler(Vector3.zero));
-        Destroy(gameObject);
+        //Instantiate(explosion, transform.position, Quaternion.Euler(Vector3.zero));
+        //Instantiate(freezeDecal, transform.position + Vector3.up * 5, Quaternion.Euler(Vector3.zero));
+        //Destroy(gameObject);
     }
 }

@@ -56,14 +56,13 @@ public class FurnaceTower : TowerParentScript
     [SerializeField] private float soulFireBallMinScaleFactor;
     [SerializeField] private float soulFireBallMaxScaleFactor;
 
+    public Animator anim;
+
     [Space(20)]
     [Header("Tower Components")]
     public GameObject forgeModel;
     public GameObject dispenserModel;
     //[Space(10)]
-
-
-
 
     private Transform[] soulfireSpawnPoints;
     private int dispenserTracker;
@@ -80,7 +79,9 @@ public class FurnaceTower : TowerParentScript
         soulfireSpawnPoints = FindSpawnPoints(dispenserObject).ToArray();
 
         outputSpeed = defaultOutputSpeed;
+
         fuelBurnAmount = defaultFuelBurnAmount;
+
         soulfireBallScale = Vector3.one * soulFireBallMinScaleFactor;
         soulFireOutputAmount = defaultSoulFireOutputAmount;
     }
@@ -103,11 +104,17 @@ public class FurnaceTower : TowerParentScript
                 //bulletForgeUI.UpdateFuelMeter();
                 
             }
+        } else
+        {
+            if(anim != null)
+            {
+                anim.SetBool("isBurning", false);
+            }
         }
 
 
 
-
+        //check that makes it impossible for player to open the furnace menu when the camera is enabled
         if (towerCamera.isActiveAndEnabled)
         {
             return;
@@ -130,12 +137,13 @@ public class FurnaceTower : TowerParentScript
         base.SetPlayer(player);
     }
 
+
     public void PlayerExit()
     {
         hasPlayer = false;
     }
 
-
+    //Called by the furnace UI when the player deposits resources into the tower
     public void DepositResources(ResourceType type, int num)
     {
         switch (type)
@@ -155,7 +163,15 @@ public class FurnaceTower : TowerParentScript
                 fuelAmount += diamondFuelAmount * num;
                 break;
         }
+
+        lastOutputTime = Time.time;
+        if (anim != null)
+        {
+            anim.SetBool("isBurning", true);
+        }
     }
+
+    /* UPGRADE FUNCTIONS */
 
     public void UpgradeEfficency(float factor)
     {
@@ -188,6 +204,9 @@ public class FurnaceTower : TowerParentScript
         //forgeFire.transform.SetParent(fireSpawnPoint);
         //forgeFire.transform.position = Vector3.zero;
 
+        anim = forgeObject.GetComponent<Animator>();
+
+
         dispenserSpawnPoint = spawnpoints[1];
         ChangeDispenser(dispenserModel);
 
@@ -206,7 +225,6 @@ public class FurnaceTower : TowerParentScript
 
     private void DispenseSoulFire()
     {
-        //TODO fix soulfire not colliding and shooting in random directions
         int dispenserIndex = dispenserTracker % soulfireSpawnPoints.Length;
         Transform spawnpoint = soulfireSpawnPoints[dispenserIndex];
         SoulFireBall script = Instantiate(soulFireBall, spawnpoint.position, spawnpoint.rotation).GetComponent<SoulFireBall>();
