@@ -201,7 +201,7 @@ public class UpgradeTreeScript : MonoBehaviour
 
     private void OnEnable()
     {
-        player = egg.player;
+        player = egg.GetPlayer();
         currentFireText.text = player.GetSoulFire() + "";
     }
 

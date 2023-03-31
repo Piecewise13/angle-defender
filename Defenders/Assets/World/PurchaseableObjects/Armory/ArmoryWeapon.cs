@@ -21,7 +21,7 @@ public class ArmoryWeapon : MonoBehaviour, Damageable
     {
         //print("hit " + hitCollider + ", gun: " + this.gun);
         //print("Weapon Rack: " + gun);
-        weaponManager.GiveNewGun(this.gun, wallTier);
+        //weaponManager.GiveNewGun(this.gun, wallTier);
     }
 
     // Start is called before the first frame update

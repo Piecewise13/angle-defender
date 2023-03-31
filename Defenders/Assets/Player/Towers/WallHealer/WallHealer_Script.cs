@@ -15,7 +15,7 @@ public class WallHealer_Script : TowerParentScript
     [Header("Antenna Vars")]
     public GameObject antennaModel;
     public GameObject antennaObject;
-    private Transform antennaSpawnPoint;
+    public Transform antennaSpawnPoint;
     public float wallSearchTime;
     private float lastSeachTime;
     public LayerMask defenseLayer;

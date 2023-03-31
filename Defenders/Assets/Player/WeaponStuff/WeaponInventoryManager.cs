@@ -17,13 +17,19 @@ public class WeaponInventoryManager : MonoBehaviour
      * WEAPON VARS
      */
     [Header("Weapons")]
-    public GameObject[] weapons;
-    private int weaponIndex;
 
-    public int unlockedTier = 0;
+    public GameObject[] equipedWeapons;
+    private WeaponInformation[] equipedWeaponInformation;
+    private int equipedWeaponIndex;
+
   
     public GameObject weaponRoot;
     private BasicWeaponScript equipedWeapon;
+
+
+    private List<WeaponInformation>[] weaponOptions = new List<WeaponInformation>[3];
+
+    [SerializeField] private int maxWeaponsToHold = 4;
 
     /*
      * TOWER VARS
@@ -71,21 +77,19 @@ public class WeaponInventoryManager : MonoBehaviour
 
 
     List<Vector3> defenseLocations = new List<Vector3>();
-
-
-
-
-
-    //public float damageMultiplier;
-
-
-
+    
 
     // Start is called before the first frame update
     void Start()
     {
         player = GetComponentInChildren<PlayerScript>();
         playerCamera = GetComponentInChildren<Camera>();
+        equipedWeaponInformation = new WeaponInformation[equipedWeapons.Length];
+
+        for (int i = 0; i < weaponOptions.Length; i++)
+        {
+            weaponOptions[i] = new List<WeaponInformation>();
+        }
         EquipWeapons();
     }
 
@@ -409,23 +413,23 @@ public class WeaponInventoryManager : MonoBehaviour
 
     void ChangeGun(int index)
     {
-        if (weapons[index] == null)
+        if (equipedWeapons[index] == null)
         {
             return;
         }
-        foreach (GameObject weapon in weapons)
+        foreach (GameObject weapon in equipedWeapons)
         {
             if (weapon != null)
                 weapon.SetActive(false);
         }
-        weaponIndex = index;
-        weapons[weaponIndex].SetActive(true);
+        equipedWeaponIndex = index;
+        equipedWeapons[equipedWeaponIndex].SetActive(true);
 
 
 
         try
         {
-            equipedWeapon = weapons[weaponIndex].GetComponent<BasicWeaponScript>();
+            equipedWeapon = equipedWeapons[equipedWeaponIndex].GetComponent<BasicWeaponScript>();
             player.hudScript.UpdateEquipedWeapon(index + 1);
             playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
@@ -440,20 +444,56 @@ public class WeaponInventoryManager : MonoBehaviour
         playerAnimator.SetTrigger("newGun");
     }
 
-    public void GiveNewGun(GameObject gun, int weaponTier)
+    //TODO make a system to interact with the inventory so that player can equip weapons from that menu using this function
+    public bool GiveNewGun(WeaponInformation weapon)
     {
-        //print(gun);
-        weaponIndex = weaponTier - 1;
-        Destroy(weapons[weaponIndex]);
-        weapons[weaponIndex] = Instantiate(gun, weaponRoot.transform);
-        weapons[weaponIndex].transform.localPosition = Vector3.zero;
-        BasicWeaponScript script = gun.GetComponent<BasicWeaponScript>();
+        int tier = weapon.tier;
+        if (weaponOptions[tier - 1].Count == maxWeaponsToHold)
+        {
+            return false;
+        }
 
-        player.hudScript.UpdateWeaponIcon(script.weaponIcon, weaponTier);
-
-        //print("length: " + weapons.Length);
-        ChangeGun(weaponIndex);
+        weaponOptions[tier - 1].Add(weapon);
+        return true;
     }
+
+
+   
+
+    public void EquipNewGun(WeaponInformation weapon)
+    {
+        equipedWeaponIndex = weapon.tier - 1;
+        Destroy(equipedWeapons[equipedWeaponIndex]);
+        equipedWeapons[equipedWeaponIndex] = Instantiate(weapon.weapon, weaponRoot.transform);
+        equipedWeapons[equipedWeaponIndex].transform.localPosition = Vector3.zero;
+        equipedWeaponInformation[equipedWeaponIndex] = weapon;
+
+        player.hudScript.UpdateWeaponIcon(weapon.icon, weapon.tier);
+
+        ChangeGun(equipedWeaponIndex);
+    }
+
+    public WeaponInformation GetEquipedWeaponInformation(int tier)
+    {
+        return equipedWeaponInformation[tier - 1];
+    }
+
+    //ABSOLUTLEY HATE THIS MORE THEN TRYING TO SPELL ABSOULTELY
+    public List<WeaponInformation> GetWeaponOptions(int tier)
+    {
+        WeaponInformation equiped = equipedWeaponInformation[tier - 1];
+        List<WeaponInformation> options = new List<WeaponInformation>();
+        foreach (var option in weaponOptions[tier - 1])
+        {
+            if (!option.Equals(equiped))
+            {
+                options.Add(option);
+            }
+        }
+
+        return options;
+    }
+
     #endregion
 
     #region TOWER METHODS
@@ -464,7 +504,7 @@ public class WeaponInventoryManager : MonoBehaviour
         player.lookScript.bUseAimSens = false;
         weaponRoot.SetActive(false);
         towerRoot.SetActive(true);
-        foreach (var item in weapons)
+        foreach (var item in equipedWeapons)
         {
             if (item != null)
             {

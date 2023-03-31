@@ -66,6 +66,7 @@ MonoBehaviour:
   gunAnims: {fileID: 22100000, guid: 38f9df665fa736642be46e9895904adf, type: 2}
   reloadDuration: 1.33333
   weaponIcon: {fileID: 21300000, guid: 75a93804af292244db48c948ed7e2000, type: 3}
+  bulletSystem: {fileID: 3591029895965573977}
 --- !u!1 &8757293545632558945
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +365,12 @@ PrefabInstance:
 --- !u!4 &2376563438333897564 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2155826120276878599, guid: 639102aecbb348c4d8ac98a27f2d424d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4400078083123449435}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3591029895965573977 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 920371626558098690, guid: 639102aecbb348c4d8ac98a27f2d424d,
     type: 3}
   m_PrefabInstance: {fileID: 4400078083123449435}
   m_PrefabAsset: {fileID: 0}

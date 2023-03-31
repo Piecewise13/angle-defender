@@ -34,9 +34,17 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Space(20)]
     [Header("HUD Vars")]
     public HUDScript hudScript;
-    [SerializeField] protected UpgradeTreeScript upgradeTree;
     [SerializeField] protected GameObject settingsMenu;
     protected bool inSettings;
+
+    /*
+     * INVENTORY VARS
+     */
+    [Space(20)]
+    [Header("Inventory Vars")]
+    public GameObject inventory;
+    protected Player_InventoryScript inventoryScript;
+    protected bool inInventory;
 
 
     /**
@@ -44,9 +52,10 @@ public class PlayerScript : MonoBehaviour, Damageable
      */
     [Space(20)]
     [Header("Movement Vars")]
+    [SerializeField] protected float defaultMovementSpeed;
     #region Movment Vars
     protected bool canMove = true;
-    [SerializeField] protected float defaultMovementSpeed;
+    
     protected float movementSpeedVar = 10f;
     [SerializeField] protected float jumpHeight;
     protected float forwardValue;
@@ -335,6 +344,13 @@ public class PlayerScript : MonoBehaviour, Damageable
             settingsMenu.SetActive(inSettings);
         }
 
+        if (Input.GetButtonDown("Inventory"))
+        {
+            inInventory = !inInventory;
+            openUIElement(inInventory);
+            inventory.SetActive(inInventory);
+        }
+
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
     }
 
@@ -387,7 +403,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
             health -= damage;
             hudScript.UpdateHealth();
-            lookScript.ShakeCamera(damage);
             if (health <= 0)
             {
                 Death();

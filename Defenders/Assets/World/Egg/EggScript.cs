@@ -7,8 +7,9 @@ public class EggScript : MonoBehaviour, Damageable
 
     private bool isOpen = false;
     private bool playerInTrigger = false;
-    public PlayerScript player;
+    private PlayerScript player;
     public HUDScript[] playerHuds;
+    public EggShopScript shop;
     public GameObject upgradeTree;
     public float maxHealth;
     private PlayerDataMangerScript playerData;
@@ -47,14 +48,18 @@ void Start()
         {
             if (Input.GetButtonDown("Use"))
             {
-                spawnResources(ResourceType.Wood);
-                print("Use Button");
 
                 //playerScript.upgradeTreeOpen(!isOpen);
                 isOpen = !isOpen;
                 upgradeTree.SetActive(isOpen);
                 player.openUIElement(isOpen);
-                
+                if (isOpen)
+                {
+                    shop.SetPlayerInShop(player);
+                } else
+                {
+                    shop.SetPlayerInShop(null);
+                }
 
 
             }
@@ -147,5 +152,10 @@ void Start()
     public void Death()
     {
         playerData.GameLost();
+    }
+
+    public PlayerScript GetPlayer()
+    {
+        return player;
     }
 }

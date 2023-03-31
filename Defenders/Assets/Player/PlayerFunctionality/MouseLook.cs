@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using EZCameraShake;
 
 public class MouseLook : MonoBehaviour
 {
@@ -15,8 +14,6 @@ public class MouseLook : MonoBehaviour
     public bool bUseAimSens;
 
     public float shakeDuration;
-
-    public CameraShaker shaker;
 
 
     [SerializeField]private bool canLook = true;
@@ -72,8 +69,4 @@ public class MouseLook : MonoBehaviour
         mouseSensitivity = SENS_DEFAULT * value;
     }
 
-    public void ShakeCamera(float magnitude)
-    {
-        shaker.ShakeOnce(magnitude / 5, 4f, .1f, 1);
-    }
 }

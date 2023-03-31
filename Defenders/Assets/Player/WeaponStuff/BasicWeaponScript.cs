@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BasicWeaponScript : MonoBehaviour
+public abstract class BasicWeaponScript : WeaponScript
 {
 
     //Damage
@@ -11,8 +11,7 @@ public abstract class BasicWeaponScript : MonoBehaviour
     public float damage;
     public static float damageMultiplier = 1;
     public LayerMask layer;
-
-    
+    public GameObject damageIndicator;
 
     //Bullet Tracer
     [Space(20)]
@@ -56,16 +55,20 @@ public abstract class BasicWeaponScript : MonoBehaviour
 
     [Space(20)]
     [Header("Component Vars")]
-    public Sprite weaponIcon;
-    protected static HUDScript hud;
-    protected Animator playerAnimator;
-    protected PlayerScript player;
-    protected WeaponInventoryManager inventory;
+
+
+
+
+
+    [Space(20)]
+    [Header("Weapon Prestiege Vars")]
+    [SerializeField] private float prestigeMax;
+    [SerializeField] private float prestigeGainRate;
+    private float prestigeEarned;
 
     protected float setupTimer;
-    
 
-    protected static bool canShoot = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -77,7 +80,8 @@ public abstract class BasicWeaponScript : MonoBehaviour
         inventory = GetComponentInParent<WeaponInventoryManager>();
         currentNumOfBullets = clipSize;
         cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
-        
+
+        damageIndicator = Resources.Load<GameObject>("WeaponResources/DamageIndicator/DamageIndicatorPrefab");
 
         EquipGun();
     }
@@ -112,29 +116,18 @@ public abstract class BasicWeaponScript : MonoBehaviour
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
             //print("hit gameobject: " + hit.collider.gameObject);
             StartCoroutine(SpawnTrail(trailObject, hit.point));
-            try
+            Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
+            if(hitGameobject != null)
             {
-
-                Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
-                //print("damageable gameobject: " + hitGameobject);
-
-
                 hitGameobject.TakeDamage(damage * (1 + damageMultiplier), hit.collider);
-                //print(damage * damageMultiplier);
-
+                SpawnDamageIndicator(hit.point, damage * (1 + damageMultiplier));
             }
-            catch (System.Exception)
-            {
-
-            }
-
 
         }
         else
         {
 
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-            //print("hit gameobject: " + hit.collider.gameObject);
             StartCoroutine(SpawnTrail(trailObject, playerCamera.transform.position + playerCamera.transform.forward * 500f ));
         }
 
@@ -204,11 +197,18 @@ public abstract class BasicWeaponScript : MonoBehaviour
         }
         //animator.SetBool("isShooting", false);
         trail.transform.position = point;
-        //Instantiate(ImpactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(trail.gameObject, trail.time);
 
     }
 
+
+    protected void SpawnDamageIndicator(Vector3 hitPos, float damage)
+    {
+        DamageIndicatorScript script = Instantiate(damageIndicator, hitPos, Quaternion.LookRotation((hitPos - transform.position).normalized)).GetComponent<DamageIndicatorScript>();
+        script.SetDamage(damage, Vector3.Distance(hitPos, transform.position));
+        
+        //player.hudScript.SpawnDamageIndicator(damage);
+    }
 
 
 
@@ -231,6 +231,17 @@ public abstract class BasicWeaponScript : MonoBehaviour
         player.lookScript.bUseAimSens = false;
         player.ChangeCameraZoom(1f);
     }
+
+    public float PrestigeProgress()
+    {
+        return prestigeEarned / prestigeMax;
+    }
+
+    public void IncreasePrestige()
+    {
+        prestigeEarned += prestigeGainRate;
+    }
+
 
     private void OnDestroy()
     {
