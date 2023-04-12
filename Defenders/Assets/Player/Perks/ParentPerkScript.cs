@@ -45,7 +45,7 @@ public abstract class ParentPerkScript : MonoBehaviour
         isAvailale = false;
         panelImage.color = new Color(.6f, .6f, .6f, .3f);
         panelImage.fillAmount = 1f;
-        longClick.canLongClick = false;
+        longClick.SetCanLongClick(false);
 
     }
 
@@ -55,7 +55,7 @@ public abstract class ParentPerkScript : MonoBehaviour
         isAvailale = false;
         panelImage.fillAmount = 1f;
         panelImage.color = new Color(.1f, .1f, .1f, .4f);
-        longClick.DisableLongClick();
+        longClick.SetCanLongClick(true);
 
     }
 

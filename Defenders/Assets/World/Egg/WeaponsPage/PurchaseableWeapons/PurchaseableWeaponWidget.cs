@@ -23,6 +23,8 @@ public class PurchaseableWeaponWidget : MonoBehaviour
 
     private PurchaseableWeaponPanelScript panelScript;
 
+    private LongClickButton_Image longClick;
+
     
 
 
@@ -30,6 +32,7 @@ public class PurchaseableWeaponWidget : MonoBehaviour
     void Start()
     {
         panelScript = GetComponentInParent<PurchaseableWeaponPanelScript>();
+        longClick = GetComponent<LongClickButton_Image>();
         holdIndicator.fillAmount = 0f;
     }
 
@@ -68,6 +71,7 @@ public class PurchaseableWeaponWidget : MonoBehaviour
 
     public void ShowWeaponInformation()
     {
+        longClick.SetCanLongClick(panelScript.GetPlayer().CanAffordSoulFire(information.cost));
 
     }
 

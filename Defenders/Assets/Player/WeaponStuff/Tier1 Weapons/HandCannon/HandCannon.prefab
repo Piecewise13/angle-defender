@@ -4890,10 +4890,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ff24f3ec15d45969646e3f7dc65971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tier: 0
+  weaponIcon: {fileID: 21300000, guid: 1c662e912753a944da984a0174d89b33, type: 3}
   damage: 30
   layer:
     serializedVersion: 2
     m_Bits: 2769
+  damageIndicator: {fileID: 0}
   bulletTrail: {fileID: 2440538135499922666, guid: 0e204fa6881014167b7c6bffc22ae9cb,
     type: 3}
   bulletSpawnPoint: {fileID: 7339140332679707682}
@@ -4908,7 +4911,8 @@ MonoBehaviour:
   bulletCost: 3
   gunAnims: {fileID: 22100000, guid: 97332f63b1ebe4144befec8c3a5e9ad6, type: 2}
   reloadDuration: 0
-  weaponIcon: {fileID: 21300000, guid: 1c662e912753a944da984a0174d89b33, type: 3}
+  prestigeMax: 0
+  prestigeGainRate: 0
 --- !u!1001 &5414677182728186801
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5006,11 +5010,21 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: -4683669308469848369, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 156a7107d3d384237a01523ad3e9c028, type: 2}
     - target: {fileID: -516098083770646512, guid: 46b412411ad257b419e291e8e5e067c3,
         type: 3}
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 882129737928793925, guid: 46b412411ad257b419e291e8e5e067c3,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 156a7107d3d384237a01523ad3e9c028, type: 2}
     - target: {fileID: 919132149155446097, guid: 46b412411ad257b419e291e8e5e067c3,
         type: 3}
       propertyPath: m_Name

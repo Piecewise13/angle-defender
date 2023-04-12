@@ -48,7 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b00f31ed484c4dcab925e06d9958593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  tier: 0
+  weaponIcon: {fileID: 21300000, guid: 316d4ea8b4fd6464c8df022e40c21437, type: 3}
+  damage: 20
   layer:
     serializedVersion: 2
     m_Bits: 2257
@@ -66,7 +68,8 @@ MonoBehaviour:
   bulletCost: 0
   gunAnims: {fileID: 22100000, guid: 0c52af83e161f41c79d51fd0fa617175, type: 2}
   reloadDuration: 2.5
-  weaponIcon: {fileID: 21300000, guid: 316d4ea8b4fd6464c8df022e40c21437, type: 3}
+  prestigeMax: 0
+  prestigeGainRate: 0
   bulletSystem: {fileID: 5737883128197352633}
 --- !u!1 &9218556060212924031
 GameObject:
@@ -267,6 +270,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: AssaultRifleFinalAlt
       objectReference: {fileID: 0}
+    - target: {fileID: 7071182760956848314, guid: ff5828271afb0ca4295e6c75dc76985a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a4cbac20b10d14939ab875a78f03443a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff5828271afb0ca4295e6c75dc76985a, type: 3}
 --- !u!4 &6760280952081803005 stripped

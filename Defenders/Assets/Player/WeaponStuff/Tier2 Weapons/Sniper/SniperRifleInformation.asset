@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5677bc5fe9dc4dcdad6a45277487216, type: 3}
   m_Name: SniperRifleInformation
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 75a93804af292244db48c948ed7e2000, type: 3}
+  icon: {fileID: 21300000, guid: c656317183ea14e04b87339971e509ee, type: 3}
   name: Sniper Rifle
   cost: 1200
   weapon: {fileID: 3630644321133714343, guid: ce017419348f6ec469bd71fe515b2372, type: 3}

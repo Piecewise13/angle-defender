@@ -17,6 +17,9 @@ public class PurchaseableWeaponPanelScript : MonoBehaviour
 
     public GameObject purchaseableWidgetPrefab;
 
+    public GameObject weaponInformationPanel;
+    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,5 +54,15 @@ public class PurchaseableWeaponPanelScript : MonoBehaviour
         PurchaseableWeaponWidget script = widget.GetComponent<PurchaseableWeaponWidget>();
         script.InitializeWidget(info);
         
+    }
+
+    public void DisplayWeaponInfo(Vector3 position)
+    {
+
+    }
+
+    public PlayerScript GetPlayer()
+    {
+        return eggShop.GetPlayer();
     }
 }

@@ -28,7 +28,7 @@ public class Perk_ResourceBuff : ParentPerkScript
         costText.text = soulFireCost + "";
         if (upgradeInt == 10)
         {
-            longClick.DisableLongClick();
+            //longClick.SetCanLongClick();
             isUnlocked = true;
         }
     }

@@ -17,7 +17,7 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
     public UnityEvent onLongClick;
     public UnityEvent onShortClick;
 
-    public bool canLongClick = false;
+    private bool canLongClick = true;
     private bool shouldReset = true;
 
     // Start is called before the first frame update
@@ -54,7 +54,7 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        print("pointer down");
+        //print("pointer down");
 
         pointerDownTimer = 0f;
         pointerDown = true;
@@ -69,7 +69,7 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
         }
 
         pointerDown = false;
-        print("pointer up");
+        //print("pointer up");
     }
 
     private void Reset()
@@ -85,11 +85,21 @@ public class LongClickButton_Image : MonoBehaviour, IPointerDownHandler, IPointe
         
     }
 
-    public void DisableLongClick()
+    public void SetCanLongClick(bool value)
     {
-        canLongClick = false;
-        holdImage.fillAmount = 1f;
-        shouldReset = false;
+        if (value)
+        {
+            shouldReset = true;
+            canLongClick = true;
+        } else
+        {
+            canLongClick = false;
+            holdImage.fillAmount = 0f;
+            shouldReset = false;
+        }
+
 
     }
+
+    
 }

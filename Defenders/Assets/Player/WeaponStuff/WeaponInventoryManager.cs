@@ -21,7 +21,7 @@ public class WeaponInventoryManager : MonoBehaviour
     public GameObject[] equipedWeapons;
     private WeaponInformation[] equipedWeaponInformation;
     private int equipedWeaponIndex;
-
+    public WeaponInformation basicPistol;
   
     public GameObject weaponRoot;
     private BasicWeaponScript equipedWeapon;
@@ -38,8 +38,8 @@ public class WeaponInventoryManager : MonoBehaviour
     [Header("Tower")]
     public GameObject[] towers;
 
-    public GameObject towerHammerPlayer;
-    public GameObject towerHammerThrow;
+    public GameObject towerWrenchPlayer;
+    public GameObject towerWrenchThrowable;
 
     public GameObject towerPlacerObject;
 
@@ -59,7 +59,10 @@ public class WeaponInventoryManager : MonoBehaviour
     [Header("Building")]
     public Defense[] defenses;
     private int activeDefense;
-    private bool isRemoving;
+    private bool isDefenseUtility;
+    public GameObject defenseUtilityObject;
+    [SerializeField] private float defenseUtilityRange;
+    public LayerMask defenseLayer;
 
     private int rotateNum;
     [SerializeField] private float range;
@@ -90,6 +93,7 @@ public class WeaponInventoryManager : MonoBehaviour
         {
             weaponOptions[i] = new List<WeaponInformation>();
         }
+        EquipNewGun(basicPistol);
         EquipWeapons();
     }
 
@@ -122,47 +126,71 @@ public class WeaponInventoryManager : MonoBehaviour
             case PlayerMode.Building:
                 if (Input.GetKeyDown("1"))
                 {
+                    if (isDefenseUtility)
+                    {
+                        UnequipBuildingUtility();
+                    } 
                     ChangeDefense(0);
                 }
                 if (Input.GetKeyDown("2"))
                 {
+                    if (isDefenseUtility)
+                    {
+                        UnequipBuildingUtility();
+                    }
                     ChangeDefense(1);
                 }
                 if (Input.GetKeyDown("3"))
                 {
+                    if (isDefenseUtility)
+                    {
+                        UnequipBuildingUtility();
+                    }
                     ChangeDefense(2);
                 }
                 if (Input.GetKeyDown("4"))
                 {
+                    if (isDefenseUtility)
+                    {
+                        UnequipBuildingUtility();
+                    }
                     ChangeDefense(3);
                 }
 
-                if (Input.GetButtonDown("Remover"))
+                if (Input.GetButtonDown("Utility"))
                 {
-                    isRemoving = !isRemoving;
-                    if (isRemoving)
+                    if (isDefenseUtility)
                     {
-                        Destroy(defenseGhost);
-                    }
-                    else
+                        UnequipBuildingUtility();
+                    } else
                     {
-                        StartBuilding();
+                        EquipBuildingUtility();
                     }
+                    
                 }
 
 
                 //If removing, then bring out the gun an
-                if (isRemoving)
+                if (isDefenseUtility)
                 {
-                    RaycastHit hitray;
-                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitray, range, removeLayer))
+                    if (Input.GetButtonDown("Fire1") && freeToPlay)
                     {
-                        if (Input.GetButtonDown("Fire1") && freeToPlay)
+                        playerAnimator.SetTrigger("UtilityUse");
+
+                        RaycastHit hit1;
+                        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit1 ,defenseUtilityRange, defenseLayer))
                         {
-                            Destroy(hitray.collider.transform.root.gameObject);
+                            WallDefenceScript wallScript = hit1.collider.GetComponentInParent<WallDefenceScript>();
+                            if (wallScript == null)
+                            {
+                                break;
+                            }
+                            defenseLocations.Remove(wallScript.transform.position);
+                            wallScript.Death();
+
                         }
                     }
-                    return;
+                    break;
                 }
 
 
@@ -290,8 +318,8 @@ public class WeaponInventoryManager : MonoBehaviour
                 {
                     if (Input.GetButtonDown("Fire1"))
                     {
-                        GameObject hammer = Instantiate(towerHammerThrow, towerRoot.transform.position, towerRoot.transform.rotation);
-                        hammer.GetComponent<HammerThrowableScript>().SetPlayer(player);
+                        GameObject hammer = Instantiate(towerWrenchThrowable, towerRoot.transform.position, towerRoot.transform.rotation);
+                        hammer.GetComponent<WrenchThrowableScript>().SetPlayer(player);
                     }
 
                     return;
@@ -373,6 +401,8 @@ public class WeaponInventoryManager : MonoBehaviour
         weaponRoot.SetActive(false);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(true);
+        defenseUtilityObject.SetActive(false);
+
         activeDefense = 0;
         defenseGhost = Instantiate(defenses[activeDefense].ghost);
         
@@ -387,8 +417,10 @@ public class WeaponInventoryManager : MonoBehaviour
         weaponRoot.SetActive(true);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(false);
+        isDefenseUtility = false;
         Destroy(defenseGhost);
     }
+
     void ChangeDefense(int index)
     {
         activeDefense = index;
@@ -396,6 +428,20 @@ public class WeaponInventoryManager : MonoBehaviour
         defenseGhost = Instantiate(defenses[activeDefense].ghost);
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
         print("change tower");
+    }
+
+    private void EquipBuildingUtility()
+    {
+        isDefenseUtility = true;
+        defenseUtilityObject.SetActive(true);
+        Destroy(defenseGhost);
+    }
+
+    private void UnequipBuildingUtility()
+    {
+        isDefenseUtility = false;
+        defenseUtilityObject.SetActive(false);
+        StartBuilding();
     }
 
     #endregion
@@ -525,7 +571,7 @@ public class WeaponInventoryManager : MonoBehaviour
     void ChangeTower(int index)
     {
         isTowerUtility = false;
-        towerHammerPlayer.SetActive(false);
+        towerWrenchPlayer.SetActive(false);
         towerPlacerObject.SetActive(true);
         towerIndex = index;
         if(currentTower != null)
@@ -542,7 +588,7 @@ public class WeaponInventoryManager : MonoBehaviour
     void EquipTowerUtility()
     {
         Destroy(currentTower);
-        towerHammerPlayer.SetActive(true);
+        towerWrenchPlayer.SetActive(true);
         towerPlacerObject.SetActive(false);
         isTowerUtility = true;
     }

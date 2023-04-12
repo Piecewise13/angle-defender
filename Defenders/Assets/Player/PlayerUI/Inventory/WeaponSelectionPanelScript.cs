@@ -52,6 +52,10 @@ public class WeaponSelectionPanelScript : MonoBehaviour
 
     public void SelectOption(int option)
     {
+        if (option >= weaponOptions.Count)
+        {
+            return;
+        }
         inventoryScript.ChangeWeapon(weaponOptions[option]);
     }
 

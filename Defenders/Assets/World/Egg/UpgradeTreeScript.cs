@@ -123,11 +123,11 @@ public class UpgradeTreeScript : MonoBehaviour
         //return false;
         if (perk.soulFireCost > player.GetSoulFire())
         {
-            perk.longClick.canLongClick = false;
+            perk.longClick.SetCanLongClick(false);
             StartCoroutine((perk.CostTextFlash()));
             return false;
         }
-        perk.longClick.canLongClick = true;
+        perk.longClick.SetCanLongClick(true);
 
         return true;
 

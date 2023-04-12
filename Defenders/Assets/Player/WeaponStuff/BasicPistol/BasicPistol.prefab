@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1173642830379763502}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.764, z: 8.06}
+  m_LocalPosition: {x: 0, y: -0.057, z: 0.489}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -77,7 +77,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 026676da522e8ed489e3224a830c8a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 5
+  tier: 0
+  weaponIcon: {fileID: 21300000, guid: 316d4ea8b4fd6464c8df022e40c21437, type: 3}
+  damage: 15
   layer:
     serializedVersion: 2
     m_Bits: 2769
@@ -95,7 +97,8 @@ MonoBehaviour:
   bulletCost: 0
   gunAnims: {fileID: 22100000, guid: 0c52af83e161f41c79d51fd0fa617175, type: 2}
   reloadDuration: 2
-  weaponIcon: {fileID: 21300000, guid: 316d4ea8b4fd6464c8df022e40c21437, type: 3}
+  prestigeMax: 0
+  prestigeGainRate: 0
   soulFireTubes:
   - {fileID: 3097927589643434137}
   - {fileID: 4252552401985760478}
@@ -212,6 +215,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 585278b08dc3d8347ae055f250c2a065, type: 2}
+    - target: {fileID: 882129737928793925, guid: ac623aa9d8231b642a052907bc75fd41,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5b11ac22ace0f432381b71739ff20d1e, type: 2}
     - target: {fileID: 919132149155446097, guid: ac623aa9d8231b642a052907bc75fd41,
         type: 3}
       propertyPath: m_Name

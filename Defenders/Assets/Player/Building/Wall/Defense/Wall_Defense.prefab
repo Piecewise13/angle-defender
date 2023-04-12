@@ -180,7 +180,6 @@ MonoBehaviour:
   collide: {fileID: 212890239724036832}
   repairTime: 0
   rebuildDelay: 0
-  repairAmount: 0
 --- !u!1001 &7009642289075681098
 PrefabInstance:
   m_ObjectHideFlags: 0

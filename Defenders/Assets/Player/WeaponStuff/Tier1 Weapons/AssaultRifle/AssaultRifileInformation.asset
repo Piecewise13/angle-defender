@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5677bc5fe9dc4dcdad6a45277487216, type: 3}
   m_Name: AssaultRifileInformation
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: f95dd5a3961954b2bb658eef45f76250, type: 3}
+  icon: {fileID: 21300000, guid: 1ce67b62dea8d44d1b904a65e71107a6, type: 3}
   name: Assault Rifle
   cost: 400
   weapon: {fileID: 2563056796498029265, guid: 2f0f1beed830846bdb2f65334ae97735, type: 3}

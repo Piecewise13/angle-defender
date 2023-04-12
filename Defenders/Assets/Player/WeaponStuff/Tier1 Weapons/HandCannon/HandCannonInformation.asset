@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5677bc5fe9dc4dcdad6a45277487216, type: 3}
   m_Name: HandCannonInformation
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 1c662e912753a944da984a0174d89b33, type: 3}
+  icon: {fileID: 21300000, guid: aa150ef9007074343813194350746d7e, type: 3}
   name: Hand Cannon
   cost: 350
   weapon: {fileID: 7339140334374079917, guid: bdd07be49df99424c9a6e255364ef976, type: 3}

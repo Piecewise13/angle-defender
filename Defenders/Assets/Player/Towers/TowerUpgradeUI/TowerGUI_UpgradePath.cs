@@ -12,7 +12,7 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
     private Sprite UnselectedBox;
 
     [Header("Indicator Box")]
-    public static float[] FILL_AMOUNTS = {0, 0.123f, 0.186f, 0.309f, 0.378f, 0.516f, 0.624f, 0.709f, 0.817f, 0.902f, 1f};
+    public static float[] FILL_AMOUNTS = {0, .386f, .65f, 1f};
     public Image indicatorImage;
     public Sprite maxedOutSprite;
 
@@ -33,7 +33,7 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
     private TowerGUI_Interactable interactable;
     private TowerGUIParent GUIParent;
-
+    const int UPGRADE_MAX = 3;
 
 
     // Start is called before the first frame update
@@ -56,7 +56,7 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
     public bool CanBuyUpgrade()
     {
-        return upgradeCount <= 10;
+        return upgradeCount <= UPGRADE_MAX;
     }
 
 

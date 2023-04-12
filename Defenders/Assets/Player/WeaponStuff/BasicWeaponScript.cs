@@ -9,9 +9,8 @@ public abstract class BasicWeaponScript : WeaponScript
     [Space(20)]
     [Header("Damage Vars")]
     public float damage;
-    public static float damageMultiplier = 1;
     public LayerMask layer;
-    public GameObject damageIndicator;
+    protected GameObject damageIndicator;
 
     //Bullet Tracer
     [Space(20)]
@@ -119,8 +118,8 @@ public abstract class BasicWeaponScript : WeaponScript
             Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
             if(hitGameobject != null)
             {
-                hitGameobject.TakeDamage(damage * (1 + damageMultiplier), hit.collider);
-                SpawnDamageIndicator(hit.point, damage * (1 + damageMultiplier));
+                hitGameobject.TakeDamage(damage, hit.collider);
+                SpawnDamageIndicator(hit.point, damage);
             }
 
         }
@@ -206,7 +205,7 @@ public abstract class BasicWeaponScript : WeaponScript
     {
         DamageIndicatorScript script = Instantiate(damageIndicator, hitPos, Quaternion.LookRotation((hitPos - transform.position).normalized)).GetComponent<DamageIndicatorScript>();
         script.SetDamage(damage, Vector3.Distance(hitPos, transform.position));
-        
+       
         //player.hudScript.SpawnDamageIndicator(damage);
     }
 
