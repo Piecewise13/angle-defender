@@ -16,10 +16,9 @@ public class TowerGUIParent : MonoBehaviour
 
     private TowerGUI_UpgradePath focusedUpgradePath;
     private PlayerScript player;
-    public TowerGUI_Interactable purchaseButtonInteractable;
 
 
-    private Button purchaseButton;
+    public Button purchaseButton;
     private Image purchaseImage;
     public TMP_Text textPrompt;
     public TMP_Text purchaseText;
@@ -50,7 +49,6 @@ public class TowerGUIParent : MonoBehaviour
         towerParent = GetComponentInParent<TowerParentScript>();
         eventSystem = EventSystem.current;
         raycaster = GetComponent<GraphicRaycaster>();
-        purchaseButton = purchaseButtonInteractable.GetComponent<Button>();
         purchasePanel.SetActive(false);
         purchasePanelRect = purchasePanel.GetComponent<RectTransform>();
         SetTowerValue(towerParent.GetTowerCost()); 
@@ -87,7 +85,6 @@ public class TowerGUIParent : MonoBehaviour
     //Called when the purchase button is pressed
     public void PurchaseUpgrade()
     {
-        //print("purchasing");
         if (focusedUpgradePath.CanBuyUpgrade())
         {
             SetTowerValue(focusedUpgradePath.GetCurrentCost());
@@ -112,22 +109,18 @@ public class TowerGUIParent : MonoBehaviour
 
         focusedUpgradePath = upgradePath;
         focusedUpgradePath.SelectPath();
+        purchasePanel.SetActive(true);
+        purchasePanelRect.position = focusedUpgradePath.GetComponent<RectTransform>().position + Vector3.right * purchaseOffset;
+        print(player.CanAffordSoulFire(focusedUpgradePath.GetCurrentCost()));
+        print(player.GetSoulFire());
         if (player.CanAffordSoulFire(focusedUpgradePath.GetCurrentCost()))
         {
-            //RectTransform rectTransform = upgradePath.GetComponent<RectTransform>();
-            purchasePanel.SetActive(true);
             purchaseText.text = focusedUpgradePath.descriptionText;
-            //purchasePanel.transform.position = upgradePath.transform.position + (transform.right * purchaseOffset * -1);
-            purchasePanelRect.position = focusedUpgradePath.GetComponent<RectTransform>().position + Vector3.right * purchaseOffset;
-            //purchaseButtonInteractable.enabled = true;
-            //purchaseButton.interactable = true;
-
-
+            purchaseButton.interactable = true;
         } else
         {
-            purchasePanel.SetActive(false);
-            //purchaseButtonInteractable.enabled = false;
-            //purchaseButton.interactable = true;
+            purchaseText.text = "CAN'T AFFORD";
+            purchaseButton.interactable = false;
         }
         
     }
@@ -182,5 +175,10 @@ public class TowerGUIParent : MonoBehaviour
     public void SetPlayer(PlayerScript player)
     {
         this.player = player;
+    }
+
+    public void OnEnable()
+    {
+        playerSoulFireText.text = player.GetSoulFire() + "";
     }
 }

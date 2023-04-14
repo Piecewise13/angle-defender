@@ -215,7 +215,7 @@ public class WallHealer_Script : TowerParentScript
     {
         DestroyImmediate(antennaObject);
         antennaModel = model;
-        antennaObject = Instantiate(antennaModel, antennaSpawnPoint.position, antennaSpawnPoint.rotation);
+        antennaObject = Instantiate(antennaModel, antennaSpawnPoint);
     }
 
     //Change the robot when repair amount is upgraded

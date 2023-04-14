@@ -8,11 +8,11 @@ public class TurretUpgradePath_Speed : TowerGUI_UpgradePath
 
     private int modelsIndex;
 
-    public GameObject currentTurret;
-
     private Animator anim;
 
     private TurretScript turret;
+
+    public float[] speedValues;
 
     int modelCount = 0;
 
@@ -25,18 +25,12 @@ public class TurretUpgradePath_Speed : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        print(modelCount);
-        if (modelCount == 3)
-        {
-            modelCount = 0;
-            //change model and animation for model
-            
-            turret.ChangeBody(models[modelsIndex]);
-            modelsIndex++;
-        }
-        modelCount++;
+        //change model and animation for model
 
-        turret.SetSpeedMultiplier(SpeedFormula());
+        turret.ChangeBody(models[modelsIndex]);
+        modelsIndex++;
+
+        turret.SetSpeedMultiplier(speedValues[upgradeCount - 1]);
 
         //turret.SetAnimator(anim);
 

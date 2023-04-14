@@ -14,14 +14,10 @@ public class TurretUpgradePath_Range : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        if (upgradeCount % models.Length == 0)
-        {
-            //change model and animation for model
-            
-            turret.ChangeBarrels(models[modelsIndex]);
-            modelsIndex++;
-        }
-        turret.SetSeachRadius(rangeValues[upgradeCount]);
+        //print("md" + modelsIndex);
+        turret.ChangeBarrels(models[modelsIndex]);
+        modelsIndex++;
+        turret.SetSeachRadius(rangeValues[upgradeCount - 1]);
         //print("Setting range multiplier to " + rangeValues[upgradeCount]);
     }
 

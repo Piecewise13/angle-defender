@@ -14,14 +14,9 @@ public class WallHealerUpgradePath_Speed : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        if (upgradeCount % models.Length == 0)
-        {
-            //change model and animation for model
-
-            wallHealer.ChangeStorage(models[modelsIndex]);
-            wallHealer.IncreaseMaxRobots();
-            modelsIndex++;
-        }
+        wallHealer.ChangeStorage(models[modelsIndex]);
+        wallHealer.IncreaseMaxRobots();
+        modelsIndex++;
         wallHealer.UpgradeSpeed(speedValues[upgradeCount]);
         //print("Setting range multiplier to " + rangeValues[upgradeCount]);
     }

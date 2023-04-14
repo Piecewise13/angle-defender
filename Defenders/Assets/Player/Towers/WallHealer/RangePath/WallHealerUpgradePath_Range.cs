@@ -14,14 +14,9 @@ public class WallHealerUpgradePath_Range : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        if (upgradeCount % models.Length == 0)
-        {
-            //change model and animation for model
-
-            wallHealer.ChangeAntenna(models[modelsIndex]);
-            modelsIndex++;
-        }
-        wallHealer.UpgradeRange(rangeValues[upgradeCount]);
+        wallHealer.ChangeAntenna(models[modelsIndex]);
+        modelsIndex++;
+        wallHealer.UpgradeRange(rangeValues[upgradeCount - 1]);
         //print("Setting range multiplier to " + rangeValues[upgradeCount]);
     }
 

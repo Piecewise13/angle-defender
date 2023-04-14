@@ -56,18 +56,16 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
     public bool CanBuyUpgrade()
     {
-        return upgradeCount <= UPGRADE_MAX;
+        return upgradeCount < UPGRADE_MAX;
     }
 
 
     public void Upgrade()
     {
         upgradeCount++;
-
-
-
         ChangeUpgradeInfo();
         SpecialFunctionality();
+        GUIParent.FocusUpgrade(this);
 
     }
 
@@ -76,9 +74,10 @@ public abstract class TowerGUI_UpgradePath : MonoBehaviour
 
         //figure out way to determine the next price. either by formula or preset values
         indicatorImage.fillAmount = FILL_AMOUNTS[upgradeCount];
-        if (upgradeCount > costs.Length)
+        if (upgradeCount >= costs.Length)
         {
             upgradeCost.text = "MAXED";
+            return;
         }
         upgradeCost.text = costs[upgradeCount] + "";
     }
