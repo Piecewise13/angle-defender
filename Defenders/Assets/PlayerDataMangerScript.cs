@@ -10,17 +10,14 @@ public class PlayerDataMangerScript : MonoBehaviour
     private int monsterBeaten;
 
 
+    PlayerScript[] players;
+
 
     // Start is called before the first frame update
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        players = FindObjectsOfType<PlayerScript>();
     }
 
     public void GameWon()
@@ -41,6 +38,14 @@ public class PlayerDataMangerScript : MonoBehaviour
         if (monsterBeaten >= monstersToBeat)
         {
             GameWon();
+        }
+    }
+
+    public void GiveSoulFire(float amount)
+    {
+        foreach (var item in players)
+        {
+            item.SetSoulFire((int)(amount / players.Length));
         }
     }
 

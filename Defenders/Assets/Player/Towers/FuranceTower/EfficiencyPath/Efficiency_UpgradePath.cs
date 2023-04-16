@@ -15,14 +15,10 @@ public class Efficiency_UpgradePath : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        if (upgradeCount % models.Length == 0)
-        {
-            //change model and animation for model
+        //change model and animation for model
 
-            furnance.ChangeForge(models[modelsIndex]);
-            modelsIndex++;
-        }
-
+        furnance.ChangeForge(models[modelsIndex]);
+        modelsIndex++;
         furnance.UpgradeEfficency(efficiencyValues[upgradeCount]);
     }
 

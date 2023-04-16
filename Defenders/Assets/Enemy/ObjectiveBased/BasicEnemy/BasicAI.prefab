@@ -73,6 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 10
+  soulFireWorth: 20
   masterAI: {fileID: 0}
   canBeLured: 1
   attackTime: 1

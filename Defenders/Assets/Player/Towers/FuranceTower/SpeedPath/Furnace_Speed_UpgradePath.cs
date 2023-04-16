@@ -14,13 +14,8 @@ public class Furnace_Speed_UpgradePath : TowerGUI_UpgradePath
 
     public override void SpecialFunctionality()
     {
-        if (upgradeCount % models.Length == 0)
-        {
-            //change model and animation for model
-
-            furnance.ChangeDispenser(models[modelsIndex]);
-            modelsIndex++;
-        }
+        furnance.ChangeDispenser(models[modelsIndex]);
+        modelsIndex++;
 
         furnance.UpgradeSpeed(speedValues[upgradeCount]);
     }

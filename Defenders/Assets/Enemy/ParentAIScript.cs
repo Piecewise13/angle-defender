@@ -14,7 +14,8 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     [SerializeField] protected float attackDamage;
     protected WallDefenceScript targetWall;
     protected NavMeshPath path;
-    protected static Object soulFireBallPrefab;
+    //protected static Object soulFireBallPrefab;
+    [SerializeField] private int soulFireWorth;
 
     public MasterAI masterAI;
     public static WallDefenceScript[] walls;
@@ -23,7 +24,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     [SerializeField]protected bool canBeLured;
     protected bool atWall;
 
-
+    private PlayerDataMangerScript playerDataManager;
 
 
     public float health { get; set; }
@@ -43,13 +44,14 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         speed = agent.speed;
         walls = FindObjectsOfType<WallDefenceScript>();
         path = new NavMeshPath();
-        soulFireBallPrefab = Resources.Load("SoulFireBall");
+        //soulFireBallPrefab = Resources.Load("SoulFireBall");
         masterAI = FindObjectOfType<MasterAI>();
+        playerDataManager = FindObjectOfType<PlayerDataMangerScript>();
     }
 
 
 
-    public WallDefenceScript GetClosestWall(Vector3 refPos)
+    protected WallDefenceScript GetClosestWall(Vector3 refPos)
     {
         int closestIndex = 0;
         float distance = float.MaxValue;
@@ -66,7 +68,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         return walls[closestIndex];
     }
 
-    public WallDefenceScript GetRandomWall()
+    protected WallDefenceScript GetRandomWall()
     {
         if (targetWall != null)
         {
@@ -148,7 +150,8 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
 
     public virtual void Death()
     {
-        Instantiate(soulFireBallPrefab, transform.position + Vector3.up * 2f, transform.rotation);
+        //Instantiate(soulFireBallPrefab, transform.position + Vector3.up * 2f, transform.rotation);
+        playerDataManager.GiveSoulFire(soulFireWorth);
         masterAI.Enemy_Killed(gameObject);
         Destroy(gameObject);
     }

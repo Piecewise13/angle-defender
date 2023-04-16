@@ -136,23 +136,13 @@ public class TurretScript : TowerParentScript
     
     public void Shoot()
     {
+        if (target == null)
+        {
+            return;
+        }
         target.TakeDamage(baseDamage * damageMultiplier, null);
         trailObject = Instantiate(bulletTrail, bulletSpawnPoint.position, Quaternion.identity);
         StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
-
-        /*
-        if (forge.WithdrawFire(1))
-        {
-            particles.Play();
-            target.TakeDamage(damage, null);
-            trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
-            StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up  * 1.5f));
-        } else
-        {
-            particles.Stop();
-        }
-
-        */
     }
 
     public void ChangeBarrels(GameObject model)
