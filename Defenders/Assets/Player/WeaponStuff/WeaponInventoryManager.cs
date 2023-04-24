@@ -6,7 +6,7 @@ public class WeaponInventoryManager : MonoBehaviour
 {
 
     private PlayerMode mode;
-
+    private PlayerDataMangerScript dataManager;
     private PlayerScript player;
     public Animator playerAnimator;
     private Camera playerCamera;
@@ -85,6 +85,7 @@ public class WeaponInventoryManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        dataManager = FindObjectOfType<PlayerDataMangerScript>();
         player = GetComponentInChildren<PlayerScript>();
         playerCamera = GetComponentInChildren<Camera>();
         equipedWeaponInformation = new WeaponInformation[equipedWeapons.Length];
@@ -185,7 +186,7 @@ public class WeaponInventoryManager : MonoBehaviour
                             {
                                 break;
                             }
-                            defenseLocations.Remove(wallScript.transform.position);
+                            dataManager.RemoveDefenseLocation(wallScript.transform.position);
                             wallScript.Death();
 
                         }
@@ -240,7 +241,7 @@ public class WeaponInventoryManager : MonoBehaviour
                 //set defense to the respective grid location
                 defenseGhost.transform.position = girdLocationForDefense;
 
-                if (!defenseLocations.Contains(defenseGhost.transform.position))
+                if (!dataManager.DefenseAlreadyAtLoc(defenseGhost.transform.position))
                 {
                     if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
                     {
@@ -249,7 +250,7 @@ public class WeaponInventoryManager : MonoBehaviour
                         if (Input.GetButtonDown("Fire1") && freeToPlay)
                         {
                             Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
-                            defenseLocations.Add(defenseGhost.transform.position);
+                            dataManager.AddDefenseLocation(defenseGhost.transform.position);
                             player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
 
                         }

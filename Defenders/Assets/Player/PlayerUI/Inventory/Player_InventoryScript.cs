@@ -20,7 +20,6 @@ public class Player_InventoryScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.SetActive(false);
         selectionPanelScript = selectionPanel.GetComponent<WeaponSelectionPanelScript>();
         selectionPanel.gameObject.SetActive(false);
         

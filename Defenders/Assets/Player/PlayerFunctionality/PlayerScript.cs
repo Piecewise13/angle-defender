@@ -44,7 +44,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("Inventory Vars")]
     public GameObject inventory;
     protected Player_InventoryScript inventoryScript;
-    protected bool inInventory;
+    protected bool inInventory = false;
 
 
     /**
@@ -347,6 +347,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         if (Input.GetButtonDown("Inventory"))
         {
             inInventory = !inInventory;
+            
             openUIElement(inInventory);
             inventory.SetActive(inInventory);
         }

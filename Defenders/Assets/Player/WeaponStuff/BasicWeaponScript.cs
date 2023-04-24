@@ -142,15 +142,19 @@ public abstract class BasicWeaponScript : WeaponScript
     {
         StopAim();
         int numBullets = player.GetSoulFire();
-        if (numBullets <= 0)
+        if (bulletCost > 0)
         {
-            numBullets = 0;
-            return;
+            if (numBullets <= 0)
+            {
+                numBullets = 0;
+                return;
+            }
+            if (numBullets < bulletCost)
+            {
+                return;
+            }
         }
-        if (numBullets < bulletCost)
-        {
-            return;
-        }
+
        if ((clipSize - currentNumOfBullets) * bulletCost > numBullets)
         {
             currentNumOfBullets += numBullets / bulletCost;

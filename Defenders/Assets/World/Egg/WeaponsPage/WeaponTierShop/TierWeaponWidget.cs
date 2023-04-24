@@ -50,7 +50,7 @@ public class TierWeaponWidget : MonoBehaviour
         {
             player.weaponManager.GiveNewGun(item);
         }
-
+        player.SetSoulFire(-cost);
         purchasedImage.SetActive(true);
         longClick.SetCanLongClick(false);
         canPurchase = false;

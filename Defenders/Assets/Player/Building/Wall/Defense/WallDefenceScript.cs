@@ -41,6 +41,9 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     private bool hasWallHealer;
     private WallHealer_Script wallHealer;
 
+    //MISC VARS
+    public static PlayerDataMangerScript dataManager;
+
 
 
     // Start is called before the first frame update
@@ -52,6 +55,11 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         cost.Add(ResourceType.Wood, 10);
         cost.Add(ResourceType.Iron, 0);
         cost.Add(ResourceType.Diamond, 0);
+
+        if (dataManager == null)
+        {
+            dataManager = FindObjectOfType<PlayerDataMangerScript>();
+        }
     }
 
     // Update is called once per frame
@@ -209,7 +217,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         {
             wallHealer.EndHealingService(this);
         }
-
+        dataManager.RemoveDefenseLocation(gameObject.transform.position);
         Destroy(gameObject);
     }
 

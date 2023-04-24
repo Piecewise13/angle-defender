@@ -4000,7 +4000,7 @@ MonoBehaviour:
     type: 3}
   dispenserModel: {fileID: 3853943093647752557, guid: f66bc75038a4a4835a61f064f9dee7d9,
     type: 3}
-  launchForce: 15
+  launchForce: 7.5
   dispenserSpawnPoint: {fileID: 4693539017632131410}
   forgeObject: {fileID: 3798348583099903554}
   dispenserObject: {fileID: 3676091182430029838}

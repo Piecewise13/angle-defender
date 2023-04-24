@@ -12,6 +12,8 @@ public class PlayerDataMangerScript : MonoBehaviour
 
     PlayerScript[] players;
 
+    HashSet<Vector3> defenseLocations = new HashSet<Vector3>();
+
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +49,21 @@ public class PlayerDataMangerScript : MonoBehaviour
         {
             item.SetSoulFire((int)(amount / players.Length));
         }
+    }
+
+    public void AddDefenseLocation(Vector3 loc)
+    {
+        defenseLocations.Add(loc);
+    }
+
+    public bool DefenseAlreadyAtLoc(Vector3 loc)
+    {
+        return defenseLocations.Contains(loc);
+    }
+
+    public void RemoveDefenseLocation(Vector3 loc)
+    {
+        defenseLocations.Remove(loc);
     }
 
 }

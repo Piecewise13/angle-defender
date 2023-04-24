@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d000ef11dcea45218c8b22428235589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tier: 0
+  weaponIcon: {fileID: 0}
   damage: 0
   layer:
     serializedVersion: 2
@@ -63,7 +65,8 @@ MonoBehaviour:
   bulletCost: 40
   gunAnims: {fileID: 22100000, guid: 1976d9f09439a87498812904b968e4aa, type: 2}
   reloadDuration: 2
-  weaponIcon: {fileID: 0}
+  prestigeMax: 0
+  prestigeGainRate: 0
   rocketPrefab: {fileID: 995391954510499669, guid: 84c800667a77b4d4ca37c9e247f74436,
     type: 3}
 --- !u!1 &6101615191514827400
@@ -184,6 +187,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: RocketLauncher
       objectReference: {fileID: 0}
+    - target: {fileID: 1129496810705857465, guid: 64f89818668304e2f872e1a802bf348b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 976250e7320d54d7db606d21bd1abfad, type: 2}
+    - target: {fileID: 7202271454713460447, guid: 64f89818668304e2f872e1a802bf348b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 976250e7320d54d7db606d21bd1abfad, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64f89818668304e2f872e1a802bf348b, type: 3}
 --- !u!4 &2983839266499259088 stripped
