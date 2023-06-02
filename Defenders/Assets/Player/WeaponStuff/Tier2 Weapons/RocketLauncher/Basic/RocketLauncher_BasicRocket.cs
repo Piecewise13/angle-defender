@@ -24,7 +24,8 @@ public class RocketLauncher_BasicRocket : RocketScript
             foreach (var item in hits)
             {
                 ParentAIScript script = item.GetComponentInParent<ParentAIScript>();
-                script.TakeDamage(damage, item);
+                //TODO MAKE IT SO THAT A DAMAGE MARKER SPAWNS ON DAMAGE
+                script.GiveDamage(damage);
             }
         }
 

@@ -106,16 +106,12 @@ public class ZepplinScript : ParentAIScript
     }
 
 
-
-    public override void TakeDamage(float damage, Collider hitCollider)
+    public override void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
     {
+        base.GiveDamage(damage, hitCollider, out damageGiven, out crit);
         if (hitCollider.Equals(zepplinCollider))
         {
-            health -= damage;
-            if (health <= 0)
-            {
-                Death();
-            }
+            GiveDamage(damage);
             return;
         }
 
@@ -128,7 +124,6 @@ public class ZepplinScript : ParentAIScript
             speed += 1;
             Destroy(hitCollider.gameObject);
         }
-
     }
 
     public override void Death()

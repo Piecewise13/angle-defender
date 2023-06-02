@@ -79,10 +79,10 @@ public class BasicEnemyScript : ParentAIScript
                     if (attackTime + timeLastAttack < Time.time)
                     {
                         transform.LookAt(agent.destination);
-                        anim.SetTrigger("Attack");
+                        anim.SetBool("isAttacking", true);
                         if (attackTarget != null)
                         {
-                            attackTarget.TakeDamage(attackDamage, null);
+                            attackTarget.GiveDamage(attackDamage);
                         }
 
                         timeLastAttack = Time.time;
@@ -147,7 +147,7 @@ public class BasicEnemyScript : ParentAIScript
         shouldAttack = false;
         canAttack = false;
         agent.isStopped = false;
-
+        anim.SetBool("isAttacking", false);
         UpdatePath();
     }
 

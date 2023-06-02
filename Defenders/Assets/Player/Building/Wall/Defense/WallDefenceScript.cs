@@ -183,28 +183,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         hasPlayer = false;
     }
 
-    public void TakeDamage(float damage, Collider hitCollider)
-    {
-        if (!isDead)
-        {
-            health -= damage;
-
-            if (hasWallHealer)
-            {
-                wallHealer.WallNeedsHealing(this);
-            }
-
-            ChangeWallObject();
-
-            //print(wallMesh.activeSelf);
-            //print("Wall taking damage health: " + health);
-            if (health <= 0.0f)
-            {
-                Death();
-            }
-        }
-    }
-
     public void Death()
     {
         health = 0f;
@@ -246,6 +224,34 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         return needsRepair;
     }
 
+    public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        GiveDamage(damage);
+        damageGiven = damage;
+        crit = false;
+    }
+
+    public void GiveDamage(float damage)
+    {
+        if (!isDead)
+        {
+            health -= damage;
+
+            if (hasWallHealer)
+            {
+                wallHealer.WallNeedsHealing(this);
+            }
+
+            ChangeWallObject();
+
+            //print(wallMesh.activeSelf);
+            //print("Wall taking damage health: " + health);
+            if (health <= 0.0f)
+            {
+                Death();
+            }
+        }
+    }
 }
 
 public interface repairable

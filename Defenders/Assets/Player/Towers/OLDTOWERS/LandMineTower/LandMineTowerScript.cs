@@ -24,14 +24,16 @@ public class LandMineTowerScript : MonoBehaviour
 
     public void Explode()
     {
+        /*
         Collider[] enemies = Physics.OverlapSphere(transform.position, radius, layer);
         foreach (var item in enemies)
         {
             ParentAIScript script = item.GetComponentInParent<ParentAIScript>();
-            script.TakeDamage(damage, item);
+            script.GiveDamage(damage, item, 
         }
         Instantiate(explosion, transform.position, transform.rotation);
         Destroy(gameObject);
+        */
     }
 
 }

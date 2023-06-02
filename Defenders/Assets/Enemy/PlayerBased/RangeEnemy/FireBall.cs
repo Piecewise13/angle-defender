@@ -47,7 +47,7 @@ public class FireBall : MonoBehaviour
         {
             try
             {
-                item.GetComponentInParent<Damageable>().TakeDamage(damage, item);
+                item.GetComponentInParent<Damageable>().GiveDamage(damage);
                 print(item);
             }
             catch { }

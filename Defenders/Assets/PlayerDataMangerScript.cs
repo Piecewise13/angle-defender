@@ -18,7 +18,7 @@ public class PlayerDataMangerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         players = FindObjectsOfType<PlayerScript>();
     }
 

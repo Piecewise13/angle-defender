@@ -12,7 +12,11 @@ public class GlobalCodeObjects : MonoBehaviour
 
 public interface Damageable
 {
-    void TakeDamage(float damage, Collider hitCollider);
+    //returns the damage given 
+    void GiveDamage(float damage,
+                     Collider hitCollider,
+                     out float damageGiven, out bool crit);
+    void GiveDamage(float damage);
     void Death();
 
     float health { get; set;}

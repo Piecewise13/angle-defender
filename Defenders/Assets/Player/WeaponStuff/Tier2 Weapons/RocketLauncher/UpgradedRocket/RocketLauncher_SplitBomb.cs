@@ -34,7 +34,8 @@ public class RocketLauncher_SplitBomb : MonoBehaviour
             foreach (var item in hits)
             {
                 ParentAIScript script = item.GetComponentInParent<ParentAIScript>();
-                script.TakeDamage(damage, item);
+                //TODO SPAWN DAMAGE MARKER FOR WHEN ROCKET DAMAGES ENEMY
+                script.GiveDamage(damage);
             }
         }
 

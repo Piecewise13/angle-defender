@@ -398,19 +398,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
-    public void TakeDamage(float damage, Collider hitCollider)
-    {
-        if (!isDead)
-        {
-            health -= damage;
-            hudScript.UpdateHealth();
-            if (health <= 0)
-            {
-                Death();
-            }
-        }
-    }
-
     public void Death()
     {
         if (isDead)
@@ -649,6 +636,26 @@ public class PlayerScript : MonoBehaviour, Damageable
     public bool GetIsOnLadder()
     {
         return isOnLadder;
+    }
+
+    public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        GiveDamage(damage);
+        damageGiven = damage;
+        crit = false;
+    }
+
+    public void GiveDamage(float damage)
+    {
+        if (!isDead)
+        {
+            health -= damage;
+            hudScript.UpdateHealth();
+            if (health <= 0)
+            {
+                Death();
+            }
+        }
     }
 
     #endregion

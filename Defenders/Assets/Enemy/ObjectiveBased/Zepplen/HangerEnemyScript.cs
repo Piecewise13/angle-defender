@@ -97,7 +97,7 @@ public class HangerEnemyScript : PlayerBasedAIParent
     {
         print("Attacking the player");
         anim.SetTrigger("Attack");
-        player.TakeDamage(attackDamage, null);
+        player.GiveDamage(attackDamage);
     }
 
     private void StopAttack()

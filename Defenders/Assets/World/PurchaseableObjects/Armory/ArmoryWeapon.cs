@@ -36,4 +36,14 @@ public class ArmoryWeapon : MonoBehaviour, Damageable
     {
         //print("gun: " + gun);
     }
+
+    public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void GiveDamage(float damage)
+    {
+        throw new System.NotImplementedException();
+    }
 }

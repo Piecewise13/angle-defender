@@ -17,6 +17,8 @@ public class DamageIndicatorScript : MonoBehaviour
     private Vector3 moveDir;
     public static float normalDist = 30;
 
+    private Color critColor = new Color(0.9405066f, 0.03146139f, 0.9528302f);
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,5 +52,10 @@ public class DamageIndicatorScript : MonoBehaviour
         transform.localScale = Vector3.one * (distance / normalDist);
         speed *= (distance / normalDist);
         //text.CrossFadeAlpha(1, .1f, false);
-    }    
+    }
+
+    public void IsCrit()
+    {
+        text.color = critColor;
+    }
 }

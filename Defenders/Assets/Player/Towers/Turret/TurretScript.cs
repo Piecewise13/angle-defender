@@ -140,7 +140,7 @@ public class TurretScript : TowerParentScript
         {
             return;
         }
-        target.TakeDamage(baseDamage * damageMultiplier, null);
+        target.GiveDamage(baseDamage * damageMultiplier);
         trailObject = Instantiate(bulletTrail, bulletSpawnPoint.position, Quaternion.identity);
         StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
     }

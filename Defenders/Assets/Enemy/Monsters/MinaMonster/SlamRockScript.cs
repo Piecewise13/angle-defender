@@ -68,7 +68,7 @@ public class SlamRockScript : MonoBehaviour
             foreach (var item in players)
             {
                 PlayerScript player = item.GetComponentInParent<PlayerScript>();
-                player.TakeDamage(damage, null);
+                player.GiveDamage(damage);
             }
         }
         Instantiate(slamParticle, transform.position, Quaternion.Euler(Vector3.zero));

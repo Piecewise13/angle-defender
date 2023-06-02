@@ -16,14 +16,6 @@ public class StartWaveScript : MonoBehaviour, Damageable
         throw new System.NotImplementedException();
     }
 
-    public void TakeDamage(float damage, Collider hitCollider)
-    {
-        //master.Start_Wave();
-        hammerAnim.SetTrigger("HammerFall");
-        gameObject.SetActive(false);
-    }
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -35,5 +27,19 @@ public class StartWaveScript : MonoBehaviour, Damageable
     void Update()
     {
         
+    }
+
+    public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        damageGiven = 0;
+        crit = false;
+        GiveDamage(damage);
+    }
+
+    public void GiveDamage(float damage)
+    {
+        //master.Start_Wave();
+        hammerAnim.SetTrigger("HammerFall");
+        gameObject.SetActive(false);
     }
 }

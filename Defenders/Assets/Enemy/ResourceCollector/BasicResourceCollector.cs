@@ -71,7 +71,7 @@ public class BasicResourceCollector : ParentAIScript
             anim.SetBool("isCollecting", shouldCollect);
             if (lastAttackTime + resourceCollectionDelay < Time.time)
             {
-                targetScript.TakeDamage(attackDamage, null);
+                targetScript.GiveDamage(attackDamage);
                 lastAttackTime = Time.time;
             }
         }
@@ -100,7 +100,7 @@ public class BasicResourceCollector : ParentAIScript
         targetType = type;
         shouldCollect = true;
         timer = 0f;
-        targetResource = resourceSpawner.GetClostestResourceOfType(transform.position, type);
+        //targetResource = resourceSpawner.GetClostestResourceOfType(transform.position, type);
 
 
         targetScript = targetResource.GetComponentInChildren<Damageable>();

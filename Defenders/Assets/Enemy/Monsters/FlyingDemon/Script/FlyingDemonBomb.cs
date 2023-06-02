@@ -35,7 +35,7 @@ public class FlyingDemonBomb : MonoBehaviour
             {
                 try
                 {
-                    item.GetComponentInParent<Damageable>().TakeDamage(damage, item);
+                    item.GetComponentInParent<Damageable>().GiveDamage(damage);
                 } catch { }
             }
             Instantiate(explosion, transform.position, Quaternion.Euler(Vector3.zero));

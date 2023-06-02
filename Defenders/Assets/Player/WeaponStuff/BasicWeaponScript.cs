@@ -118,8 +118,12 @@ public abstract class BasicWeaponScript : WeaponScript
             Damageable hitGameobject = hit.collider.gameObject.GetComponentInParent<Damageable>();
             if(hitGameobject != null)
             {
-                hitGameobject.TakeDamage(damage, hit.collider);
-                SpawnDamageIndicator(hit.point, damage);
+                float damageGiven;
+                bool crit;
+                hitGameobject.GiveDamage(damage, hit.collider, out damageGiven, out crit);
+
+                SpawnDamageIndicator(hit.point, damageGiven, crit);
+
             }
 
         }
@@ -205,11 +209,15 @@ public abstract class BasicWeaponScript : WeaponScript
     }
 
 
-    protected void SpawnDamageIndicator(Vector3 hitPos, float damage)
+    protected void SpawnDamageIndicator(Vector3 hitPos, float damage, bool crit)
     {
+
         DamageIndicatorScript script = Instantiate(damageIndicator, hitPos, Quaternion.LookRotation((hitPos - transform.position).normalized)).GetComponent<DamageIndicatorScript>();
         script.SetDamage(damage, Vector3.Distance(hitPos, transform.position));
-       
+        if (crit)
+        {
+            script.IsCrit();
+        }
         //player.hudScript.SpawnDamageIndicator(damage);
     }
 

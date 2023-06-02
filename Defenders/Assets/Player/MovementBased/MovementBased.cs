@@ -212,7 +212,7 @@ public class MovementBased : PlayerScript
         foreach (Collider item in colliders)
         {
             Damageable script = item.GetComponentInParent<Damageable>();
-            script.TakeDamage(groundSlamDamage, item);
+            script.GiveDamage(groundSlamDamage);
         }
     }
 }

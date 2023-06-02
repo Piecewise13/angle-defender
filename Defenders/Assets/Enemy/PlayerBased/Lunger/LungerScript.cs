@@ -59,7 +59,7 @@ public class LungerScript : PlayerBasedAIParent
             if (lastAttack + attackDelay < Time.time)
             {
                 
-                attackTarget.TakeDamage(attackDamage, null);
+                attackTarget.GiveDamage(attackDamage);
                 lastLungeAttackTime = Time.time;
                 lastAttack = Time.time;
                 print("attack");

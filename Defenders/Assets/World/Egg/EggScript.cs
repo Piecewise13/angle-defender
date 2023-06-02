@@ -121,7 +121,7 @@ void Start()
         {
             ParentAIScript enemyScript = other.transform.root.gameObject.GetComponentInChildren<ParentAIScript>();
 
-            TakeDamage(enemyScript.health / 2, null);
+            GiveDamage(enemyScript.health / 2);
             enemyScript.ReachedEgg();
         }
     }
@@ -134,8 +134,24 @@ void Start()
         }
     }
 
+    public void Death()
+    {
+        playerData.GameLost();
+    }
 
-    public void TakeDamage(float damage, Collider hitCollider)
+    public PlayerScript GetPlayer()
+    {
+        return player;
+    }
+
+    public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        damageGiven = 0;
+        crit = false;
+        GiveDamage(damage);
+    }
+
+    public void GiveDamage(float damage)
     {
         health -= damage;
         foreach (var item in playerHuds)
@@ -147,15 +163,5 @@ void Start()
         {
             Death();
         }
-    }
-
-    public void Death()
-    {
-        playerData.GameLost();
-    }
-
-    public PlayerScript GetPlayer()
-    {
-        return player;
     }
 }

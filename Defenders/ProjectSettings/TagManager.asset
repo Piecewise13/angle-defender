@@ -8,13 +8,13 @@ TagManager:
   - Wall
   - Resource
   - Enemy
-  - Head
   - Body
   - Ground
   - Monster
   - Floor
   - SpawnPoint
   - Tower
+  - Crit
   layers:
   - Default
   - TransparentFX

@@ -102,7 +102,7 @@ public class SniperScript : BasicWeaponScript
                 //print("damageable gameobject: " + hitGameobject);
 
 
-                hitGameobject.TakeDamage(damage, hit.collider);
+                hitGameobject.GiveDamage(damage);
                 //print(damage * damageMultiplier);
 
             }

@@ -310,7 +310,7 @@ public class FlyingDemonScript : PlayerBasedAIParent
 
     public void EndWallAttack()
     {
-        targetWall.TakeDamage(wallDamage, null);
+        targetWall.GiveDamage(wallDamage);
         anim.SetBool("isWallAttack", false);
         print("end attack");
         SetNewMoveGoal((targetWall.transform.position + (Extns.xz3(targetWall.transform.position) - Extns.xz3(wallInitPos)).normalized * wallAttackDistance / 2f) + (Vector3.up * wallAttackHeight));

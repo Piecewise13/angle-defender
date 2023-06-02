@@ -109,7 +109,7 @@ public class MiniTowerScript : MonoBehaviour
                 isShooting = false;
                 return;
             }
-            target.TakeDamage(damage, null);
+            target.GiveDamage(damage);
             trailObject = Instantiate(bulletTrail, bulletSpawnPoint.transform.position, Quaternion.identity);
             StartCoroutine(SpawnTrail(trailObject, target.transform.position + Vector3.up * 1.5f));
             bulletsLeft--;

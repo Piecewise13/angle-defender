@@ -30,6 +30,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public float health { get; set; }
     public bool isDead { get ; set ; }
 
+    [SerializeField] private float damageMultiplier;
 
 
     // Start is called before the first frame update
@@ -76,21 +77,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         }
         
         return walls[Random.Range(0, walls.Length)];
-
-
-        //int closestIndex = 0;
-        //float distance = float.MaxValue;
-        //for (int i = 0; i < walls.Length; i++)
-        //{
-        //    float currentDist = Vector3.Distance(transform.position, walls[i].transform.position);
-        //    if (currentDist < distance)
-        //    {
-
-        //        closestIndex = i;
-        //        distance = currentDist;
-        //    }
-        //}
-        //return walls[closestIndex];
     }
 
 
@@ -138,15 +124,19 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         inLure = false;
     }
 
-    public virtual void TakeDamage(float damage, Collider hitCollider)
+    protected void GoToEgg()
     {
-        health -= damage;
-        if (health <= 0f)
+        if (egg == null)
         {
-            
-            Death();
+            return;
         }
-    } 
+
+        if (agent == null)
+        {
+            return;
+        }
+        agent.SetDestination(egg.transform.position);
+    }
 
     public virtual void Death()
     {
@@ -162,4 +152,25 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         //START A COUROTINE TO MAKE COOL EFFECTS AND SHIT
     }
 
+    public virtual void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
+    {
+        crit = hitCollider.tag == "Crit";
+        damageGiven = damage;
+        if (crit)
+        {
+            damageGiven = damage * damageMultiplier;
+        }
+        GiveDamage(damage);
+        
+    }
+
+    public virtual void GiveDamage(float damage)
+    {
+        health -= damage;
+        if (health <= 0f)
+        {
+
+            Death();
+        }
+    }
 }
