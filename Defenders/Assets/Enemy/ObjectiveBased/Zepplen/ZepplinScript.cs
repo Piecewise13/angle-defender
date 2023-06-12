@@ -61,7 +61,7 @@ public class ZepplinScript : ParentAIScript
             //make it smoothly go down the more it's shot
 
             transform.position += (transform.forward * speed * Time.deltaTime);
-            transform.position = xz(transform.position) + (Vector3.up * Mathf.Lerp(initY, 0, 1f - (health / maxHealth)));
+            transform.position = transform.position.xz3() + (Vector3.up * Mathf.Lerp(initY, 0, 1f - (health / maxHealth)));
             //print(Vector3.MoveTowards(transform.position, xz(egg.transform.position), speed * Time.deltaTime) + (Vector3.up * Mathf.Lerp(initY, 0, 1f - (health / maxHealth))));
             // + (transform.up * Mathf.Lerp(, 0f, ));
         }
@@ -134,7 +134,7 @@ public class ZepplinScript : ParentAIScript
         {
             item.gameObject.GetComponentInParent<Damageable>().Death();
         }
-        Destroy(gameObject);
+        base.Death();
 
     }
 

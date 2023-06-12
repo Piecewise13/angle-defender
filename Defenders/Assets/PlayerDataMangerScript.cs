@@ -12,7 +12,11 @@ public class PlayerDataMangerScript : MonoBehaviour
 
     PlayerScript[] players;
 
+    HUDScript[] playerHUDs;
+
     HashSet<Vector3> defenseLocations = new HashSet<Vector3>();
+
+    private int roundNumber;
 
 
     // Start is called before the first frame update
@@ -20,6 +24,7 @@ public class PlayerDataMangerScript : MonoBehaviour
     {
         //DontDestroyOnLoad(gameObject);
         players = FindObjectsOfType<PlayerScript>();
+        playerHUDs = FindObjectsOfType<HUDScript>();
     }
 
     public void GameWon()
@@ -40,6 +45,23 @@ public class PlayerDataMangerScript : MonoBehaviour
         if (monsterBeaten >= monstersToBeat)
         {
             GameWon();
+        }
+    }
+
+    public void UpdateRoundNumber()
+    {
+        roundNumber++;
+        foreach (var item in playerHUDs)
+        {
+            item.UpdateRoundsCounter(roundNumber);
+        }
+    }
+
+    public void UpdateEnemiesLeft(int number)
+    {
+        foreach (var item in playerHUDs)
+        {
+            item.UpdateEnemiesCounter(number);
         }
     }
 

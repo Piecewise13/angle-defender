@@ -45,14 +45,18 @@ public class TierWeaponWidget : MonoBehaviour
 
     public void PurchaseWeaponTier()
     {
+        longClick.SetCanLongClick(false);
         PlayerScript player = eggShop.GetPlayer();
         foreach (var item in weapons)
         {
+            
             player.weaponManager.GiveNewGun(item);
         }
+        
         player.SetSoulFire(-cost);
+        
         purchasedImage.SetActive(true);
-        longClick.SetCanLongClick(false);
+
         canPurchase = false;
     }
 

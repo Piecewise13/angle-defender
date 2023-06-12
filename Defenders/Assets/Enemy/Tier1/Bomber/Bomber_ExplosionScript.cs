@@ -10,15 +10,28 @@ public class Bomber_ExplosionScript : MonoBehaviour
 
     public LayerMask layersToHit;
 
+    bool canDamagePlayer = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        Collider[] hit = Physics.OverlapSphere(transform.position, range, layersToHit);
+        //TODO WILL NOT WORK WITH MULTIPLAYER
+        Collider[] hit = Physics.OverlapSphere(transform.position, range, LayerMask.GetMask("Player"));
+        foreach (var obj in hit)
+        {
+            print("Player in range");
+            if (Physics.Linecast(transform.position + Vector3.up * 2, obj.transform.position, LayerMask.GetMask("Defense")))
+            {
+                canDamagePlayer = false;
+            }
+        }
+
+        hit = Physics.OverlapSphere(transform.position, range, layersToHit);
         foreach (var obj in hit)
         {
             if (obj.transform.root.CompareTag("Player"))
             {
-                if (Physics.Linecast(transform.position + Vector3.up * 2, obj.transform.position, LayerMask.GetMask("Defense")))
+                if (!canDamagePlayer)
                 {
                     continue;
                 }
@@ -26,7 +39,14 @@ public class Bomber_ExplosionScript : MonoBehaviour
 
             Damageable damageScript = obj.transform.root.GetComponentInChildren<Damageable>();
             damageScript.GiveDamage(damage);
-            Destroy(gameObject);
+            
         }
+
+        Invoke("Remove", 5f);
+    }
+
+    private void Remove()
+    {
+        Destroy(gameObject);
     }
 }

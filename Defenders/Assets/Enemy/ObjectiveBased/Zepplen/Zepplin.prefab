@@ -51,6 +51,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 1000
   attackDamage: 0
+  soulFireWorth: 50
+  masterAI: {fileID: 0}
+  canBeLured: 0
+  damageMultiplier: 0
   hangerPrefab: {fileID: 5940262310254289350, guid: 15f1f1ddbee4cb74da66ff5944b63a16,
     type: 3}
   hangers:

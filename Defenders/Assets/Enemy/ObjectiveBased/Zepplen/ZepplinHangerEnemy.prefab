@@ -110,7 +110,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50
   attackDamage: 20
+  soulFireWorth: 10
+  masterAI: {fileID: 0}
   canBeLured: 1
+  damageMultiplier: 0
   playerRange: 100
   playerMask:
     serializedVersion: 2

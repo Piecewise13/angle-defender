@@ -8,6 +8,8 @@ public class BomberAIScript : ParentAIScript
 
     public GameObject explosion;
 
+    int explosionCount = 0;
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -45,13 +47,18 @@ public class BomberAIScript : ParentAIScript
 
     private void Explode()
     {
-        print("explodddddd");
+        if (explosionCount >= 1)
+        {
+            return;
+        }
+        explosionCount++;
         Instantiate(explosion, transform.position, transform.rotation);
         base.Death();
     }
 
     public override void AtWall(WallDefenceScript wall)
     {
+        soulFireWorth = 0;
         base.AtWall(wall);
         Explode();
 
@@ -71,7 +78,6 @@ public class BomberAIScript : ParentAIScript
     public override void Death()
     {
         Explode();
-        base.Death();
     }
 
 }

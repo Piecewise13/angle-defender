@@ -64,6 +64,10 @@ public class WeaponInventoryManager : MonoBehaviour
     [SerializeField] private float defenseUtilityRange;
     public LayerMask defenseLayer;
 
+    public float defenseRotationSpeed;
+    private float latchAngle;
+    Collider hitCollider = null;
+
     private int rotateNum;
     [SerializeField] private float range;
 
@@ -75,6 +79,8 @@ public class WeaponInventoryManager : MonoBehaviour
     public Material validMat;
     public Material invalidMat;
     private GhostScript ghostRenderer;
+    Vector3 placeLocation = Vector3.up * -500;
+    private bool isLatched = false;
 
     public LayerMask removeLayer;
 
@@ -195,7 +201,196 @@ public class WeaponInventoryManager : MonoBehaviour
                 }
 
 
+                bool validPlacement = true;
+                defenseGhost.transform.position = placeLocation;
+                if (activeDefense == 0)
+                {
+                    RaycastHit hitout;
 
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hitout, range, defenseLayer))
+                    {    
+                        if (!isLatched) {
+                            if (hitout.collider.CompareTag("Ground"))
+                            {
+                                print("world location");
+                                placeLocation = hitout.point;
+                                validPlacement = true;
+                            }
+                            else if (hitout.collider.CompareTag("Wall"))
+                            {
+                                isLatched = true;
+                                print("hitting wall");
+                                placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
+                                hitCollider = hitout.collider;
+                                validPlacement = true;
+                            }
+                        }
+
+                        if (Input.GetButton("RotateDefense"))
+                        {
+                            if (isLatched)
+                            {
+                                /*OLD METHOD
+                                latchAngle += defenseRotationSpeed * Time.deltaTime;
+                                */
+                                RaycastHit rotHit;
+                                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
+                                {
+                                    print("rotating defense");
+                                    Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
+                                    Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
+                                    placeLocation = location;
+                                }
+                                else
+                                {
+                                    isLatched = false;
+                                }
+                                
+                                defenseGhost.transform.LookAt(hitCollider.transform.position.xz3(), Vector3.up);
+
+                            }
+                            else
+                            {
+                                print("rotate defense");
+                                defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
+                            }
+                        } else
+                        {
+                            isLatched = false;
+                        }
+                    }
+                    else
+                    {
+                        validPlacement = false;
+                        isLatched = false;
+                    }
+                }
+                else if (activeDefense == 1)
+                {
+                    RaycastHit towerHit;
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out towerHit, range, LayerMask.GetMask("Defense", "Ground")))
+                    {
+                        if (towerHit.collider.gameObject.CompareTag("Wall"))
+                        {
+                            validPlacement = true;
+                            placeLocation = towerHit.point.xz3();
+                            defenseGhost.transform.rotation = towerHit.collider.transform.root.rotation;
+                        }
+                        else if (towerHit.collider.gameObject.CompareTag("Ground"))
+                        {
+                            validPlacement = false;
+                            placeLocation = towerHit.point;
+                        }
+                    }
+                }
+                else if (activeDefense == 2)
+                {
+                    RaycastHit hitout;
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hitout, range, defenseLayer))
+                    {
+                        if (!isLatched)
+                        {
+                            if (hitout.collider.CompareTag("Ground"))
+                            {
+                                print("world location");
+                                placeLocation = hitout.point;
+                                validPlacement = true;
+                            }
+                            else if (hitout.collider.CompareTag("Wall"))
+                            {
+                                isLatched = true;
+                                print("hitting wall");
+                                placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
+                                hitCollider = hitout.collider;
+                                validPlacement = true;
+                            }
+                        }
+
+                        if (Input.GetButton("RotateDefense"))
+                        {
+                            if (isLatched)
+                            {
+                                /*OLD METHOD
+                                latchAngle += defenseRotationSpeed * Time.deltaTime;
+                                */
+                                RaycastHit rotHit;
+                                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
+                                {
+                                    print("rotating defense");
+                                    Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
+                                    Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
+                                    placeLocation = location;
+                                }
+                                else
+                                {
+                                    isLatched = false;
+                                }
+
+                                defenseGhost.transform.LookAt(hitCollider.transform.position.xz3(), Vector3.up);
+
+                            }
+                            else
+                            {
+                                print("rotate defense");
+                                defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
+                            }
+                        }
+                        else
+                        {
+                            isLatched = false;
+                        }
+                    }
+                    else
+                    {
+                        validPlacement = false;
+                        isLatched = false;
+                    }
+
+                }
+                else if (activeDefense == 3)
+                {
+                    RaycastHit hitout;
+
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, LayerMask.GetMask("Defense")))
+                    {
+                        placeLocation = hitout.point;
+                        defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hitout.normal) * defenseGhost.transform.rotation;
+                        validPlacement = true;
+                    }
+                }
+
+                if (validPlacement)
+                {
+                    ghostRenderer.SetMaterials(validMat);
+                } else
+                {
+                    ghostRenderer.SetMaterials(invalidMat);
+                }
+
+
+                if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
+                {
+                    ghostRenderer.SetMaterials(validMat);
+
+                    if (Input.GetButtonDown("Fire1") && freeToPlay)
+                    {
+                        Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                        dataManager.AddDefenseLocation(defenseGhost.transform.position);
+                        player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
+                        latchAngle = 0;
+                    }
+                }
+                else
+                {
+                    ghostRenderer.SetMaterials(invalidMat);
+                    if (Input.GetButtonDown("Fire1") && freeToPlay)
+                    {
+                        StartCoroutine(player.hudScript.CantAffordResourcesFlash());
+                    }
+                }
+
+                #region
+                /*** OLD SYSTEM 
 
                 Vector3 point = playerCamera.transform.position + playerCamera.transform.TransformDirection(Vector3.forward) * range;
                 Vector3 girdLocationForDefense = Vector3.zero;
@@ -231,7 +426,7 @@ public class WeaponInventoryManager : MonoBehaviour
                 {
                     RaycastHit hitout;
 
-                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, 512))
+                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hitout, range, LayerMask.GetMask("Defense")))
                     {
                         girdLocationForDefense = hitout.point;
                         defenseGhost.transform.rotation = Quaternion.FromToRotation(defenseGhost.transform.forward, hitout.normal) * defenseGhost.transform.rotation;
@@ -284,7 +479,8 @@ public class WeaponInventoryManager : MonoBehaviour
                     }
                     rotateNum++;
                 }
-                
+                ***/
+                #endregion
                 break;
 
 
@@ -409,7 +605,9 @@ public class WeaponInventoryManager : MonoBehaviour
         
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
         rotateNum = 0;
-        
+        isLatched = false;
+        hitCollider = null;
+
     }
 
     private void StopBuilding()
@@ -471,17 +669,14 @@ public class WeaponInventoryManager : MonoBehaviour
         }
         equipedWeaponIndex = index;
         equipedWeapons[equipedWeaponIndex].SetActive(true);
-
-
+        player.hudScript.UpdateEquipedWeapon(equipedWeaponInformation[index].tier);
 
         try
         {
             equipedWeapon = equipedWeapons[equipedWeaponIndex].GetComponent<BasicWeaponScript>();
-            player.hudScript.UpdateEquipedWeapon(index + 1);
             playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
-            //equipedWeapon.SetPlayer(player);
-            //BasicWeaponScript.damageMultiplier = damageMultiplier;
+            player.hudScript.UpdateClipSize(equipedWeapon.clipSize);
         }
         catch
         {
@@ -491,10 +686,12 @@ public class WeaponInventoryManager : MonoBehaviour
         playerAnimator.SetTrigger("newGun");
     }
 
-    //TODO make a system to interact with the inventory so that player can equip weapons from that menu using this function
+   
     public bool GiveNewGun(WeaponInformation weapon)
     {
         int tier = weapon.tier;
+        print(tier);
+        print(weaponOptions.Length);
         if (weaponOptions[tier - 1].Count == maxWeaponsToHold)
         {
             return false;
@@ -519,7 +716,7 @@ public class WeaponInventoryManager : MonoBehaviour
 
         ChangeGun(equipedWeaponIndex);
     }
-
+    
     public WeaponInformation GetEquipedWeaponInformation(int tier)
     {
         return equipedWeaponInformation[tier - 1];

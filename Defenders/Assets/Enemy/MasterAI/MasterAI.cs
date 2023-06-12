@@ -10,9 +10,10 @@ public class MasterAI : MonoBehaviour
     public EnemySpawnData[] enemysT3;
 
 
-
+    private int maxRoundNumber;
 
     [SerializeField] private float difficulty;
+    [SerializeField] private AnimationCurve T1Curve;
 
     int waveNum = 0;
     public List<GameObject> ai = new List<GameObject>();
@@ -31,6 +32,7 @@ public class MasterAI : MonoBehaviour
     public int numberKilled;
     public int totalToSpawn;
     private int killedMOE = 5;
+    private int numberLeft;
 
 
     public GameObject startWaveObjcet;
@@ -42,6 +44,7 @@ public class MasterAI : MonoBehaviour
     public Animator chaliceAnim;
 
     public ResourceSpawner resourceSpawner;
+    private PlayerDataMangerScript playerData;
 
 
     
@@ -49,6 +52,7 @@ public class MasterAI : MonoBehaviour
     void Start()
     {
         resourceSpawner = FindObjectOfType<ResourceSpawner>();
+        playerData = FindObjectOfType<PlayerDataMangerScript>();
     }
 
     // Update is called once per frame
@@ -102,10 +106,12 @@ public class MasterAI : MonoBehaviour
         startWaveObjcet.SetActive(false);
         fireParticles.Play();
         waveNum++;
+        playerData.UpdateRoundNumber();
         Update_Number();
 
         totalToSpawn = 0;
         numberKilled = 0;
+
         for (int i = 0; i < spawnNumber.Length; i++)
         {
             totalToSpawn += spawnNumber[i];
@@ -135,9 +141,12 @@ public class MasterAI : MonoBehaviour
         resourceSpawner.DespawnResources();
     }
 
+
+    //TODO MAKE THIS USE ANIMATION CURVES INSTEAD OF FORMULAS
     private void Update_Number()
     {
-        spawnNumber[0] = (int)(3f * difficulty * waveNum) + (int)(5 * difficulty) + 10;
+        //spawnNumber[0] = (int)(3f * difficulty * waveNum) + (int)(5 * difficulty) + 10;
+        spawnNumber[0] = (int)T1Curve.Evaluate((float)maxRoundNumber / (float)waveNum);
         if(waveNum >= 5)
         {
             spawnNumber[1] = (int)(2f * difficulty * waveNum) + (int)(5 * difficulty);
@@ -159,9 +168,11 @@ public class MasterAI : MonoBehaviour
         {
             ai.Remove(obj);
             numberKilled++;
+            numberLeft--;
+            playerData.UpdateEnemiesLeft(ai.Count);
         }
 
-        if (totalToSpawn - numberKilled <= killedMOE)
+        if (ai.Count < 3)
         {
             End_Wave();
         }
@@ -176,6 +187,8 @@ public class MasterAI : MonoBehaviour
         SpawnBallScript script = Instantiate(spawnBall, spawnBallSpawnPoint.position, spawnBallSpawnPoint.rotation).GetComponent<SpawnBallScript>();
         script.enemy = enemysT1[index].prefab;
         script.masterAI = this;
+        numberLeft++;
+        playerData.UpdateEnemiesLeft(numberLeft);
     }
 
     private void SpawnT2()
@@ -183,6 +196,8 @@ public class MasterAI : MonoBehaviour
         print("SpawnT2");
         int index = Random.Range(0, enemysT2.Length);
         Instantiate(enemysT2[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        numberLeft++;
+        playerData.UpdateEnemiesLeft(numberLeft);
     }
 
     private void SpawnT3()
@@ -190,6 +205,8 @@ public class MasterAI : MonoBehaviour
         print("SpawnT3");
         int index = Random.Range(0, enemysT3.Length);
         Instantiate(enemysT3[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        numberLeft++;
+        playerData.UpdateEnemiesLeft(numberLeft);
     }
 
 

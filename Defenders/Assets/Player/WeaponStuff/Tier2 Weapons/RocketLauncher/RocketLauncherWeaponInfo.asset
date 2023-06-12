@@ -16,4 +16,4 @@ MonoBehaviour:
   name: RocketLauncher
   cost: 1000
   weapon: {fileID: 2400987802387876045, guid: d1c36feb389074c0a93d8cfe2c706623, type: 3}
-  tier: 0
+  tier: 2

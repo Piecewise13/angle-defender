@@ -15,7 +15,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     protected WallDefenceScript targetWall;
     protected NavMeshPath path;
     //protected static Object soulFireBallPrefab;
-    [SerializeField] private int soulFireWorth;
+    [SerializeField] protected int soulFireWorth;
 
     public MasterAI masterAI;
     public static WallDefenceScript[] walls;

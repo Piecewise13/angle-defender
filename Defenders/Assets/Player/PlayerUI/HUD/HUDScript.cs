@@ -23,24 +23,7 @@ public class HUDScript : MonoBehaviour
     public RectTransform diamondChangePos;
     public GameObject changeValue;
 
-    [Space(20)]
-    [Header("Weapon Vars")]
-    public Image primaryImage;
-    public LayoutElement primaryElement;
-    public Image secondaryImage;
-    public LayoutElement secondaryElement;
-    public Image specialImage;
-    public LayoutElement specialElement;
-    [Space(10)]
-    public float bigWidth;
-    public float bigHeight;
-    [Space(10)]
-    public float smallWidth;
-    public float smallHeight;
-    [Space(5)]
-    [Header("Misc Weapon Vars")]
-    public GameObject damageIndicator;
-    public Transform damageIndicatorSpawn;
+
 
 
 
@@ -69,6 +52,39 @@ public class HUDScript : MonoBehaviour
     [SerializeField] private float modeAnimationTime;
     [SerializeField] private float modeAnimationSpeed;
 
+    [Space(20)]
+    [Header("Weapon Vars")]
+    public Image primaryImage;
+    public Image secondaryImage;
+    public Image specialImage;
+    [Space(5)]
+    public Transform selectedWeaponImage;
+    [Space(10)]
+    public TMP_Text bulletsLeft;
+    public TMP_Text clipSizeText;
+
+    [Space(10)]
+    [Header("DefenseVars")]
+    public Image wallImage;
+    public Image towerImage;
+    public Image ladderImage;
+    [Space(5)]
+    public GameObject selectedDefenseImage;
+
+    [Space(5)]
+    [Header("Misc Weapon Vars")]
+    public GameObject damageIndicator;
+    public Transform damageIndicatorSpawn;
+
+    [Space(10)]
+    [Header("Mode Info Panels")]
+    public GameObject weaponsModeInformation;
+    public GameObject defenseModeInformation;
+
+    [Space(20)]
+    [Header("Game Data")]
+    public TMP_Text roundsCounter;
+    public TMP_Text enemiesCounter;
 
     // Start is called before the first frame update
     void Start()
@@ -81,12 +97,7 @@ public class HUDScript : MonoBehaviour
         UpdateHealth();
         currentRect = weaponsIcon.GetComponent<RectTransform>();
         currentInitPos = currentRect.localPosition;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        UpdateEquipedWeapon(1);
     }
 
     public void UpdateSoulFireValues()
@@ -137,58 +148,94 @@ public class HUDScript : MonoBehaviour
         }
     }
 
-    public void UpdateWeaponIcon(Sprite weaponIcon, int tier)
-    {
-        print("updating icon: " + tier);
-        if (tier == 1)
-        {
-            primaryImage.sprite = weaponIcon;
-        } else if (tier == 2){
-            print("updating image");
-            secondaryImage.sprite = weaponIcon;
-        } else if(tier == 3)
-        {
-            specialImage.sprite = weaponIcon;
-        }
-    }
+
 
     public void UpdatePlayerMode(PlayerMode newMode)
     {
         StartCoroutine(PlayerModeSwitchAnimation(newMode));
     }
 
-
-    public void UpdateEquipedWeapon(int tier)
+    #region WEAPONS INFORMATION
+    //Updates the weapon for a specified tier
+    public void UpdateWeaponIcon(Sprite weaponIcon, int tier)
     {
+        print("updating icon: " + tier);
         if (tier == 1)
         {
-            primaryElement.preferredHeight = bigHeight;
-            primaryElement.preferredWidth = bigWidth;
-
-            secondaryElement.preferredHeight = smallHeight;
-            secondaryElement.preferredWidth = smallWidth;
-            specialElement.preferredHeight = smallHeight;
-            specialElement.preferredWidth = smallWidth;
-        } else if (tier == 2)
-        {
-            primaryElement.preferredHeight = smallHeight;
-            primaryElement.preferredWidth = smallWidth;
-
-            secondaryElement.preferredHeight = bigHeight;
-            secondaryElement.preferredWidth = bigWidth;
-
-            specialElement.preferredHeight = smallHeight;
-            specialElement.preferredWidth = smallWidth;
-        } else
-        {
-            primaryElement.preferredHeight = smallHeight;
-            primaryElement.preferredWidth = smallWidth;
-            secondaryElement.preferredHeight = smallHeight;
-            secondaryElement.preferredWidth = smallWidth;
-
-            specialElement.preferredHeight = bigHeight;
-            specialElement.preferredWidth = bigWidth;
+            primaryImage.sprite = weaponIcon;
         }
+        else if (tier == 2)
+        {
+            print("updating image");
+            secondaryImage.sprite = weaponIcon;
+        }
+        else if (tier == 3)
+        {
+            specialImage.sprite = weaponIcon;
+        }
+    }
+
+    //Changes which weapon is equiped and show be shown as such in the HUD
+    public void UpdateEquipedWeapon(int tier)
+    {
+        
+        switch (tier)
+        {
+            case 1:
+                selectedWeaponImage.transform.position = primaryImage.transform.position;
+                break;
+            case 2:
+                selectedWeaponImage.transform.position = secondaryImage.transform.position;
+                break;
+            case 3:
+                selectedWeaponImage.transform.position = specialImage.transform.position;
+                break;
+            default:
+                break;
+        }
+        
+    }
+
+    //Changes the clip size for when a new weapon is equiped
+    public void UpdateClipSize(int number)
+    {
+        clipSizeText.text = "" + number;
+    }
+
+    //Updates the bullet counter
+    public void UpdateBulletCount(int count)
+    {
+        bulletsLeft.text = "" + count;
+    }
+    #endregion
+
+    public void ChangeEquipedDefense(int defense)
+    {
+        switch (defense)
+        {
+            case 0:
+                selectedDefenseImage.transform.position = wallImage.transform.position;
+                break;
+            case 1:
+                selectedDefenseImage.transform.position = towerImage.transform.position;
+                break;
+            case 2:
+                selectedDefenseImage.transform.position = ladderImage.transform.position;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void UpdateRoundsCounter(int number)
+    {
+        roundsCounter.text = "" + number;
+    }
+
+
+    public void UpdateEnemiesCounter(int number)
+    {
+        enemiesCounter.text = "" + number;
     }
 
     public void SpawnDamageIndicator(float damage)
@@ -218,12 +265,16 @@ public class HUDScript : MonoBehaviour
                 //bottom = towerIcon.GetComponent<RectTransform>();
                 //top = buildingIcon.GetComponent<RectTransform>();
                 moveRect = weaponsIcon.GetComponent<RectTransform>();
+                weaponsModeInformation.SetActive(true);
+                defenseModeInformation.SetActive(false);
                 break;
             case PlayerMode.Building:
                 //middle = buildingIcon.GetComponent<RectTransform>();
                 //bottom = weaponsIcon.GetComponent<RectTransform>();
                 //top = towerIcon.GetComponent<RectTransform>();
                 moveRect = buildingIcon.GetComponent<RectTransform>();
+                weaponsModeInformation.SetActive(false);
+                defenseModeInformation.SetActive(true);
                 break;
             case PlayerMode.Tower:
                 //middle = towerIcon.GetComponent<RectTransform>();

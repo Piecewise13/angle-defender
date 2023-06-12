@@ -138,6 +138,7 @@ public abstract class BasicWeaponScript : WeaponScript
         lastShootTime = Time.time;
         AddRecoil();
         currentNumOfBullets -= 1;
+        player.hudScript.UpdateBulletCount(currentNumOfBullets);
 
 
     }
@@ -173,7 +174,7 @@ public abstract class BasicWeaponScript : WeaponScript
         isReloading = true;
         startReloadTime = Time.time;
         playerAnimator.SetBool("isReloading", true);
-
+        
 
 
     }
@@ -187,7 +188,7 @@ public abstract class BasicWeaponScript : WeaponScript
         playerAnimator.SetBool("isReloading", false);
         isReloading = false;
         canShoot = true;
-
+        player.hudScript.UpdateBulletCount(currentNumOfBullets);
     }
 
 
