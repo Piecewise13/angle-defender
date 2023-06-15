@@ -23,9 +23,7 @@ public class EggScript : MonoBehaviour, Damageable
 
    
     [SerializeField]private float resourceSpawnRate;
-    private float woodLastSpawnTime;
-    private float ironLastSpawnTime;
-    private float diamondLastSpawnTime;
+    private float lastResourceSpawnTime;
 
     private int upgradeNumber;
 
@@ -65,42 +63,19 @@ void Start()
             }
         }
 
-        if (resourceSpawnRate + woodLastSpawnTime < Time.time)
+        if (resourceSpawnRate + lastResourceSpawnTime < Time.deltaTime)
         {
-            spawnResources(ResourceType.Wood);
-            woodLastSpawnTime = Time.time;
-        }
-        if (resourceSpawnRate * 3 + ironLastSpawnTime < Time.time)
-        {
-            spawnResources(ResourceType.Iron);
-            ironLastSpawnTime = Time.time;
-        }
-        if (resourceSpawnRate * 10 + diamondLastSpawnTime < Time.time)
-        {
-            spawnResources(ResourceType.Diamond);
-            diamondLastSpawnTime = Time.time;
+            SpawnResource();
+            lastResourceSpawnTime = Time.time;
         }
     }
 
-    public void spawnResources(ResourceType type)
+    public void SpawnResource()
     {
-        GameObject ingot = null;
-        switch (type)
-        {
-            case ResourceType.Wood:
-                ingot = Instantiate(woodIngot, ingotSpawnPoint.position, ingotSpawnPoint.rotation);
-                break;
-            case ResourceType.Iron:
-                ingot = Instantiate(ironIngot, ingotSpawnPoint.position, ingotSpawnPoint.rotation);
-                break;
-            case ResourceType.Diamond:
-                ingot = Instantiate(diamondIngot, ingotSpawnPoint.position, ingotSpawnPoint.rotation);
-                break;
-        }
-
+        GameObject ingot = Instantiate(diamondIngot, ingotSpawnPoint.position, ingotSpawnPoint.rotation);
 
         //Vector3.up
-        ingot.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-3,3), 10f, Random.Range(-3, 3)), ForceMode.Impulse);
+        ingot.GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(-4,4), 10f, Random.Range(-4, 4)), ForceMode.Impulse);
     }
 
     public void UpgradeResourceRate(int upgradeNum)

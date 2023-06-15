@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 4146463213058125699}
   m_Layer: 15
   m_Name: BuildingSnap
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

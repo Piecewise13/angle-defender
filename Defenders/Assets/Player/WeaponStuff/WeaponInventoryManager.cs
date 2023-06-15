@@ -522,6 +522,8 @@ public class WeaponInventoryManager : MonoBehaviour
                     return;
                 }
 
+                validPlacement = true;
+
                 RaycastHit hit;
                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, range, possibleLayers))
                 {
@@ -529,25 +531,27 @@ public class WeaponInventoryManager : MonoBehaviour
                     int objLayer = (1 << hit.collider.gameObject.layer);
                     if ((currentTowerScript.placementLayers.value & objLayer) <= 0)
                     {
-                        currentTowerScript.SetMaterials(invalidMat);
+                        validPlacement = false;
                         return;
                     }
 
                     if (!player.CanAffordSoulFire(currentTowerScript.GetTowerCost()))
                     {
-                        currentTowerScript.SetMaterials(invalidMat);
+                        validPlacement = false;
                         return;
                     }
 
-
-                    currentTowerScript.SetMaterials(validMat);
                     if (currentTowerScript.GetIsSnapping())
                     {
+                        if (!hit.collider.gameObject.CompareTag("SpawnPoint"))
+                        {
+                            return;
+                        }
                         currentTower.transform.position = hit.collider.transform.position;
 
                         if (snappableTowers.Contains(currentTower.transform.position))
                         {
-                            currentTowerScript.SetMaterials(invalidMat);
+                            validPlacement = false;
                             return;
                         }
 
@@ -560,13 +564,15 @@ public class WeaponInventoryManager : MonoBehaviour
                             SpawnNewTower();
                             print("placing at snap");
                         }
+
+
                     }
                     else
                     {
                         //HIGH HIGH PROBABILITY THAT THIS WILL FAIL WITH OTHER TOWERS CHECK THIS WITH FURNACE
                         if (hit.collider.gameObject.layer.Equals(LayerMask.NameToLayer("Tower")))
                         {
-                            currentTowerScript.SetMaterials(invalidMat);
+                            validPlacement = false;
                             return;
                         }
 
@@ -581,8 +587,18 @@ public class WeaponInventoryManager : MonoBehaviour
                 }
                 else
                 {
+                    validPlacement = false;
+                }
+
+                if (validPlacement)
+                {
+                    currentTowerScript.SetMaterials(validMat);
+                } else
+                {
                     currentTowerScript.SetMaterials(invalidMat);
                 }
+
+
 
                 #endregion
                 break;
