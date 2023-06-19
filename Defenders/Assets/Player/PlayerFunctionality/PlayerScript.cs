@@ -491,6 +491,11 @@ public class PlayerScript : MonoBehaviour, Damageable
         return false;
     }
 
+    public bool CanAffordResources(int diamondCost)
+    {
+        return diamondAmount >= diamondCost;
+    }
+
     public bool CanAffordSoulFire(int cost)
     {
         return soulFire >= cost;

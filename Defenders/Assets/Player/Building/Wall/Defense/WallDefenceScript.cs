@@ -9,6 +9,11 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     public ResourceType type;
     public static Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 
+    public static bool showIndicators;
+
+    public GameObject latch1;
+    public GameObject latch2;
+
     [Space(20)]
     [Header("Wall Vars")]
     public GameObject[] wallObjects;
@@ -21,7 +26,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     public float health { get; set; }
 
     public bool isDead { get; set; }
-
+    
 
     [Header("Component Vars")]
     public GameObject wallHolder;
@@ -43,7 +48,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
     //MISC VARS
     public static PlayerDataMangerScript dataManager;
-
+    private static EggScript egg;
 
 
     // Start is called before the first frame update
@@ -56,6 +61,18 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         cost.Add(ResourceType.Iron, 0);
         cost.Add(ResourceType.Diamond, 0);
 
+        if (egg == null)
+        {
+            egg = FindObjectOfType<EggScript>();
+        }
+
+        Vector3 eggPos = egg.transform.position;
+        float angle = Vector3.Angle(transform.right, (transform.position - eggPos).normalized);
+        print(angle);
+        if (angle < 90f)
+        {
+            transform.Rotate(Vector3.up, 180f);
+        }
         if (dataManager == null)
         {
             dataManager = FindObjectOfType<PlayerDataMangerScript>();
@@ -102,6 +119,8 @@ public class WallDefenceScript : MonoBehaviour, Damageable
             }
             */
         }
+        latch1.SetActive(showIndicators);
+        latch2.SetActive(showIndicators);
     }
 
     public bool Repair(float repairAmount)
@@ -177,11 +196,13 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         hasPlayer = true;
     }
 
+
     public void PlayerExit()
     {
         this.player = null;
         hasPlayer = false;
     }
+
 
     public void Death()
     {
@@ -195,7 +216,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
         {
             wallHealer.EndHealingService(this);
         }
-        dataManager.RemoveDefenseLocation(gameObject.transform.position);
+        dataManager.WallDestroyed(gameObject);
         Destroy(gameObject);
     }
 

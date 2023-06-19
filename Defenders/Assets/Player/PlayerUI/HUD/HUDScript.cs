@@ -23,10 +23,6 @@ public class HUDScript : MonoBehaviour
     public RectTransform diamondChangePos;
     public GameObject changeValue;
 
-
-
-
-
     [Header("Player Variables")]
     public Slider healthSlider;
     public TMP_Text healthText;
@@ -51,6 +47,12 @@ public class HUDScript : MonoBehaviour
     [SerializeField] private int modeSpace;
     [SerializeField] private float modeAnimationTime;
     [SerializeField] private float modeAnimationSpeed;
+    [Space(15)]
+    public GameObject entityCostObject;
+    public TMP_Text costValue;
+    public Image costIcon;
+    public Sprite soulFireIcon;
+    public Sprite resourceIcon;
 
     [Space(20)]
     [Header("Weapon Vars")]
@@ -80,6 +82,11 @@ public class HUDScript : MonoBehaviour
     [Header("Mode Info Panels")]
     public GameObject weaponsModeInformation;
     public GameObject defenseModeInformation;
+    public Animator informationPanelAnim;
+    public float switchTime;
+    private float switchTimer;
+    private bool shouldSwitch;
+    private Transform informationPanel;
 
     [Space(20)]
     [Header("Game Data")]
@@ -98,6 +105,28 @@ public class HUDScript : MonoBehaviour
         currentRect = weaponsIcon.GetComponent<RectTransform>();
         currentInitPos = currentRect.localPosition;
         UpdateEquipedWeapon(1);
+    }
+
+    public void Update()
+    {
+        //doesn't work
+        if (!shouldSwitch)
+        {
+            return;
+        }
+
+        if (switchTimer <= switchTime)
+        {
+            print(informationPanel);
+            informationPanel.localScale.Set(Mathf.Lerp(0f, 1f, switchTimer / switchTime), 1f, 1f);
+            switchTimer += Time.deltaTime;
+        } else
+        {
+            
+            shouldSwitch = false;
+            print("End Switch");
+        } 
+        
     }
 
     public void UpdateSoulFireValues()
@@ -149,10 +178,37 @@ public class HUDScript : MonoBehaviour
     }
 
 
-
+    //TODO MAKE A COOL ANIMATION OR SOMETHING HERE
     public void UpdatePlayerMode(PlayerMode newMode)
     {
-        StartCoroutine(PlayerModeSwitchAnimation(newMode));
+        print("Start Switch");
+        informationPanelAnim.SetTrigger("ModeSwitch");
+        switch (newMode)
+        {
+            case PlayerMode.Weapons:
+                weaponsIcon.SetActive(true);
+                towerIcon.SetActive(false);
+                weaponsModeInformation.SetActive(true);
+                informationPanel = weaponsModeInformation.transform;
+                break;
+            case PlayerMode.Defense:
+                weaponsIcon.SetActive(false);
+                buildingIcon.SetActive(true);
+                weaponsModeInformation.SetActive(false);
+                defenseModeInformation.SetActive(true);
+                informationPanel = defenseModeInformation.transform;
+
+                break;
+            case PlayerMode.Tower:
+                towerIcon.SetActive(true);
+                buildingIcon.SetActive(false);
+                defenseModeInformation.SetActive(false);
+                break;
+            default:
+                break;
+        }
+
+
     }
 
     #region WEAPONS INFORMATION
@@ -225,6 +281,7 @@ public class HUDScript : MonoBehaviour
             default:
                 break;
         }
+
     }
 
     public void UpdateRoundsCounter(int number)
@@ -243,6 +300,13 @@ public class HUDScript : MonoBehaviour
         //Instantiate(damageIndicator, damageIndicatorSpawn.position + Vector3.up * 20f, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<DamageIndicatorScript>().SetDamage(damage);
     }
 
+    public void SwitchPlayerMode()
+    {
+
+    }
+
+    //I LIKE THE WAY IT SWITCHES BUT MAKE IT SWITCH SMOOTHER
+    /*
     private IEnumerator PlayerModeSwitchAnimation(PlayerMode newMode)
     {
         bool hasSwitched = false;
@@ -311,6 +375,27 @@ public class HUDScript : MonoBehaviour
         yield return null;
 
     }
+    */
+    public void PlacingEntity(bool isSoulFire, int cost)
+    {
+        entityCostObject.SetActive(true);
+        if (isSoulFire)
+        {
+            costIcon.sprite = soulFireIcon;
+        } else
+        {
+            costIcon.sprite = resourceIcon;
+        }
+
+        costValue.text = "" + cost;
+
+    }
+
+    public void StopPlacingEntity()
+    {
+        entityCostObject.SetActive(false);
+    }
+
 
     public IEnumerator CantAffordResourcesFlash()
     {

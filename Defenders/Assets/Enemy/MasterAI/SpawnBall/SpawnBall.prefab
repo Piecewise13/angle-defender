@@ -146,7 +146,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 0}
-  force: 10
+  force: 5
+  masterAI: {fileID: 0}
 --- !u!54 &2202755960555162776
 Rigidbody:
   m_ObjectHideFlags: 0

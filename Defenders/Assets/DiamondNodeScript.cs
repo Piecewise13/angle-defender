@@ -32,6 +32,7 @@ public class DiamondNodeScript : MonoBehaviour, Damageable
 
     public void dropResource()
     {
+        print("Spawning");
         Instantiate(objectSpawn, spawnLocation.transform.position, spawnLocation.transform.rotation);
     }
 
@@ -39,6 +40,7 @@ public class DiamondNodeScript : MonoBehaviour, Damageable
 
     public void Death()
     {
+        print("Death");
         //TODO MAKE SHATTER PARTICLE EFFECT
         spawner.RemoveResource(this);
         dropResource();

@@ -64,6 +64,7 @@ public class WeaponInventoryManager : MonoBehaviour
     [SerializeField] private float defenseUtilityRange;
     public LayerMask defenseLayer;
 
+
     public float defenseRotationSpeed;
     private float latchAngle;
     Collider hitCollider = null;
@@ -81,6 +82,8 @@ public class WeaponInventoryManager : MonoBehaviour
     private GhostScript ghostRenderer;
     Vector3 placeLocation = Vector3.up * -500;
     private bool isLatched = false;
+    private GameObject hitTowerWall;
+
 
     public LayerMask removeLayer;
 
@@ -116,9 +119,10 @@ public class WeaponInventoryManager : MonoBehaviour
         {
             return;
         }
-
+        WallDefenceScript.showIndicators = false;
         switch (mode)
         {
+
             case PlayerMode.Weapons:
                 if (Input.GetKeyDown("1"))
                 {
@@ -130,7 +134,7 @@ public class WeaponInventoryManager : MonoBehaviour
                     ChangeGun(1);
                 }
                 break;
-            case PlayerMode.Building:
+            case PlayerMode.Defense:
                 if (Input.GetKeyDown("1"))
                 {
                     if (isDefenseUtility)
@@ -192,7 +196,7 @@ public class WeaponInventoryManager : MonoBehaviour
                             {
                                 break;
                             }
-                            dataManager.RemoveDefenseLocation(wallScript.transform.position);
+                            dataManager.WallDestroyed(wallScript.gameObject);
                             wallScript.Death();
 
                         }
@@ -202,9 +206,13 @@ public class WeaponInventoryManager : MonoBehaviour
 
 
                 bool validPlacement = true;
+                hitTowerWall = null;
+                WallDefenceScript.showIndicators = false;
+
                 defenseGhost.transform.position = placeLocation;
                 if (activeDefense == 0)
                 {
+                    WallDefenceScript.showIndicators = true;
                     RaycastHit hitout;
 
                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hitout, range, defenseLayer))
@@ -214,14 +222,19 @@ public class WeaponInventoryManager : MonoBehaviour
                             {
                                 print("world location");
                                 placeLocation = hitout.point;
+                                WallDefenceScript.showIndicators = true;
                                 validPlacement = true;
                             }
                             else if (hitout.collider.CompareTag("Wall"))
                             {
+                                WallDefenceScript.showIndicators = false;
                                 isLatched = true;
+                                
                                 print("hitting wall");
                                 placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
+                                
                                 hitCollider = hitout.collider;
+                                defenseGhost.transform.LookAt(hitCollider.transform.position.xz3(), Vector3.up);
                                 validPlacement = true;
                             }
                         }
@@ -230,6 +243,7 @@ public class WeaponInventoryManager : MonoBehaviour
                         {
                             if (isLatched)
                             {
+                                WallDefenceScript.showIndicators = false;
                                 /*OLD METHOD
                                 latchAngle += defenseRotationSpeed * Time.deltaTime;
                                 */
@@ -243,6 +257,7 @@ public class WeaponInventoryManager : MonoBehaviour
                                 }
                                 else
                                 {
+                                    WallDefenceScript.showIndicators = true;
                                     isLatched = false;
                                 }
                                 
@@ -257,6 +272,7 @@ public class WeaponInventoryManager : MonoBehaviour
                         } else
                         {
                             isLatched = false;
+
                         }
                     }
                     else
@@ -272,7 +288,8 @@ public class WeaponInventoryManager : MonoBehaviour
                     {
                         if (towerHit.collider.gameObject.CompareTag("Wall"))
                         {
-                            validPlacement = true;
+                            hitTowerWall = towerHit.collider.transform.root.gameObject;
+                            validPlacement = !dataManager.TowerAlreadyPlacedOnWall(hitTowerWall);
                             placeLocation = towerHit.point.xz3();
                             defenseGhost.transform.rotation = towerHit.collider.transform.root.rotation;
                         }
@@ -280,7 +297,14 @@ public class WeaponInventoryManager : MonoBehaviour
                         {
                             validPlacement = false;
                             placeLocation = towerHit.point;
+                        } else
+                        {
+                            validPlacement = false;
                         }
+                    }
+                    else
+                    {
+                        validPlacement = false;
                     }
                 }
                 else if (activeDefense == 2)
@@ -368,15 +392,22 @@ public class WeaponInventoryManager : MonoBehaviour
                 }
 
 
-                if (player.CanAffordResources(defenses[activeDefense].woodCost, defenses[activeDefense].ironCost, defenses[activeDefense].diamondCost))
+                if (player.CanAffordResources(defenses[activeDefense].diamondCost) && validPlacement)
                 {
                     ghostRenderer.SetMaterials(validMat);
 
                     if (Input.GetButtonDown("Fire1") && freeToPlay)
                     {
+                        if (hitTowerWall != null)
+                        {
+                            dataManager.AddTowerPlacedOnWall(hitTowerWall);
+                        }
+                        
+
                         Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
-                        dataManager.AddDefenseLocation(defenseGhost.transform.position);
-                        player.SetResourceAmount(-defenses[activeDefense].woodCost, -defenses[activeDefense].ironCost, -defenses[activeDefense].diamondCost);
+
+
+                        player.SetResourceAmount(ResourceType.Diamond, -defenses[activeDefense].diamondCost);
                         latchAngle = 0;
                     }
                 }
@@ -611,6 +642,7 @@ public class WeaponInventoryManager : MonoBehaviour
 
     private void StartBuilding()
     {
+
         weaponRoot.SetActive(false);
         towerRoot.SetActive(false);
         defenseRoot.SetActive(true);
@@ -620,6 +652,7 @@ public class WeaponInventoryManager : MonoBehaviour
         defenseGhost = Instantiate(defenses[activeDefense].ghost);
         
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
+        player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
         rotateNum = 0;
         isLatched = false;
         hitCollider = null;
@@ -634,6 +667,7 @@ public class WeaponInventoryManager : MonoBehaviour
         defenseRoot.SetActive(false);
         isDefenseUtility = false;
         Destroy(defenseGhost);
+        player.hudScript.StopPlacingEntity();
     }
 
     void ChangeDefense(int index)
@@ -642,6 +676,7 @@ public class WeaponInventoryManager : MonoBehaviour
         Destroy(defenseGhost);
         defenseGhost = Instantiate(defenses[activeDefense].ghost);
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
+        player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
         print("change tower");
     }
 
@@ -668,7 +703,7 @@ public class WeaponInventoryManager : MonoBehaviour
         towerRoot.SetActive(false);
         weaponRoot.SetActive(true);
         Destroy(currentTower);
-
+        player.hudScript.StopPlacingEntity();
         ChangeGun(0);
     }
 
@@ -771,6 +806,7 @@ public class WeaponInventoryManager : MonoBehaviour
                 item.SetActive(false);
             }
         }
+
         ChangeTower(0);
         
     }
@@ -780,6 +816,7 @@ public class WeaponInventoryManager : MonoBehaviour
         currentTower = Instantiate(towers[towerIndex]);
         currentTowerScript = currentTower.GetComponent<TowerParentScript>();
         currentTowerScript.SetMaterials(invalidMat);
+        player.hudScript.PlacingEntity(true, currentTowerScript.GetTowerCost());
     }
 
     void ChangeTower(int index)
@@ -794,6 +831,7 @@ public class WeaponInventoryManager : MonoBehaviour
         }
 
         SpawnNewTower();
+        
         //TODO make a cool animation and play it here
 
 
@@ -825,10 +863,10 @@ public class WeaponInventoryManager : MonoBehaviour
         switch (mode)
         {
             case PlayerMode.Weapons:
-                mode = PlayerMode.Building;
+                mode = PlayerMode.Defense;
                 StartBuilding();
                 break;
-            case PlayerMode.Building:
+            case PlayerMode.Defense:
                 mode = PlayerMode.Tower;
                 StopBuilding();
                 EquipTower();
@@ -861,13 +899,13 @@ public class Defense
     public GameObject ghost;
     public GameObject defense;
 
-    public int woodCost, ironCost, diamondCost;
+    public int diamondCost;
 
 }
 
 public enum PlayerMode
 {
     Weapons,
-    Building,
+    Defense,
     Tower
 }

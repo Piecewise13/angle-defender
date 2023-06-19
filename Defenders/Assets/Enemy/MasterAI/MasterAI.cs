@@ -8,14 +8,26 @@ public class MasterAI : MonoBehaviour
     public EnemySpawnData[] enemysT1;
     public EnemySpawnData[] enemysT2;
     public EnemySpawnData[] enemysT3;
+    public EnemySpawnData[] enemysT4;
 
 
-    private int maxRoundNumber;
+    [SerializeField] private int maxRoundNumber;
 
+    [Space(20)]
+    [Header("Spawn Data")]
     [SerializeField] private float difficulty;
     [SerializeField] private AnimationCurve T1Curve;
+    [SerializeField] private int maxNumberT1;
+    [SerializeField] private AnimationCurve T2Curve;
+    [SerializeField] private int maxNumberT2;
+    [SerializeField] private AnimationCurve T3Curve;
+    [SerializeField] private int maxNumberT3;
+    [SerializeField] private AnimationCurve T4Curve;
+    [SerializeField] private int maxNumberT4;
 
-    int waveNum = 0;
+    [Space(20)]
+    [Header("Round Data")]
+    int roundNumber = 0;
     public List<GameObject> ai = new List<GameObject>();
 
     public int[] spawnNumber = new int[4];
@@ -53,6 +65,11 @@ public class MasterAI : MonoBehaviour
     {
         resourceSpawner = FindObjectOfType<ResourceSpawner>();
         playerData = FindObjectOfType<PlayerDataMangerScript>();
+        for (int i = 0; i < spawnTime.Length; i++)
+        {
+            Update_SpawnTime(i);
+        }
+       
     }
 
     // Update is called once per frame
@@ -105,7 +122,7 @@ public class MasterAI : MonoBehaviour
         ai.Clear();
         startWaveObjcet.SetActive(false);
         fireParticles.Play();
-        waveNum++;
+        roundNumber++;
         playerData.UpdateRoundNumber();
         Update_Number();
 
@@ -146,14 +163,20 @@ public class MasterAI : MonoBehaviour
     private void Update_Number()
     {
         //spawnNumber[0] = (int)(3f * difficulty * waveNum) + (int)(5 * difficulty) + 10;
-        spawnNumber[0] = (int)T1Curve.Evaluate((float)maxRoundNumber / (float)waveNum);
-        if(waveNum >= 5)
+        print((int)T1Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+
+        spawnNumber[0] = Mathf.CeilToInt((float)maxNumberT1 * T1Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+        if(roundNumber >= 3)
         {
-            spawnNumber[1] = (int)(2f * difficulty * waveNum) + (int)(5 * difficulty);
+            spawnNumber[1] = Mathf.CeilToInt((float)maxNumberT2 * T2Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
         }
-        if (waveNum >= 10)
+        if (roundNumber >= 7)
         {
-            spawnNumber[2] = (int)(difficulty * waveNum) - (int)(4 * difficulty);
+            spawnNumber[2] = Mathf.CeilToInt((float)maxNumberT3 * T3Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+        }
+        if (roundNumber >= 10)
+        {
+            spawnNumber[3] = Mathf.CeilToInt((float)maxNumberT4 * T4Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
         }
     }
 
@@ -195,7 +218,10 @@ public class MasterAI : MonoBehaviour
     {
         print("SpawnT2");
         int index = Random.Range(0, enemysT2.Length);
-        Instantiate(enemysT2[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        //Instantiate(enemysT1[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        SpawnBallScript script = Instantiate(spawnBall, spawnBallSpawnPoint.position, spawnBallSpawnPoint.rotation).GetComponent<SpawnBallScript>();
+        script.enemy = enemysT2[index].prefab;
+        script.masterAI = this;
         numberLeft++;
         playerData.UpdateEnemiesLeft(numberLeft);
     }
@@ -204,7 +230,10 @@ public class MasterAI : MonoBehaviour
     {
         print("SpawnT3");
         int index = Random.Range(0, enemysT3.Length);
-        Instantiate(enemysT3[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        //Instantiate(enemysT1[index].prefab, spawnPoints[Random.Range(0, spawnPoints.Length)].position, Quaternion.Euler(Vector3.zero));
+        SpawnBallScript script = Instantiate(spawnBall, spawnBallSpawnPoint.position, spawnBallSpawnPoint.rotation).GetComponent<SpawnBallScript>();
+        script.enemy = enemysT3[index].prefab;
+        script.masterAI = this;
         numberLeft++;
         playerData.UpdateEnemiesLeft(numberLeft);
     }

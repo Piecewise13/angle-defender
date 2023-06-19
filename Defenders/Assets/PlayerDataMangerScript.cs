@@ -14,7 +14,7 @@ public class PlayerDataMangerScript : MonoBehaviour
 
     HUDScript[] playerHUDs;
 
-    HashSet<Vector3> defenseLocations = new HashSet<Vector3>();
+    HashSet<GameObject> defenseLocations = new HashSet<GameObject>();
 
     private int roundNumber;
 
@@ -73,19 +73,19 @@ public class PlayerDataMangerScript : MonoBehaviour
         }
     }
 
-    public void AddDefenseLocation(Vector3 loc)
+    public void AddTowerPlacedOnWall(GameObject wall)
     {
-        defenseLocations.Add(loc);
+        defenseLocations.Add(wall);
     }
 
-    public bool DefenseAlreadyAtLoc(Vector3 loc)
+    public bool TowerAlreadyPlacedOnWall(GameObject wall)
     {
-        return defenseLocations.Contains(loc);
+        return defenseLocations.Contains(wall);
     }
 
-    public void RemoveDefenseLocation(Vector3 loc)
+    public void WallDestroyed(GameObject wall)
     {
-        defenseLocations.Remove(loc);
+        defenseLocations.Remove(wall);
     }
 
 }
