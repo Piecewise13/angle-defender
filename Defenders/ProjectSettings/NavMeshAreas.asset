@@ -11,10 +11,10 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: Base
+  - name: Resource Spawn
     cost: 1
-  - name: 
-    cost: 1
+  - name: Low Cost
+    cost: 2
   - name: 
     cost: 1
   - name: 

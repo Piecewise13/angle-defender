@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 769c38d12a61f2744b472d0a892e2abc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
+  maxHealth: 500
   attackDamage: 0
   soulFireWorth: 50
   masterAI: {fileID: 0}

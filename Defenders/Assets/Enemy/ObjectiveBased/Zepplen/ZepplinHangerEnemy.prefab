@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b5cadd6cff7f84e8d55745ebd032f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
+  maxHealth: 30
   attackDamage: 20
   soulFireWorth: 10
   masterAI: {fileID: 0}

@@ -168,15 +168,16 @@ public class MasterAI : MonoBehaviour
         spawnNumber[0] = Mathf.CeilToInt((float)maxNumberT1 * T1Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
         if(roundNumber >= 3)
         {
-            spawnNumber[1] = Mathf.CeilToInt((float)maxNumberT2 * T2Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+            spawnNumber[1] = Mathf.CeilToInt((float)maxNumberT2 * T2Curve.Evaluate((float)(roundNumber - 3) / (float)(maxRoundNumber - 3)));
         }
         if (roundNumber >= 7)
         {
-            spawnNumber[2] = Mathf.CeilToInt((float)maxNumberT3 * T3Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+            print((float) T3Curve.Evaluate((float)(roundNumber - 7) / (float)(maxRoundNumber - 7)));
+            spawnNumber[2] = Mathf.CeilToInt((float)maxNumberT3 * T3Curve.Evaluate((float)(roundNumber - 7) / (float)(maxRoundNumber - 7)));
         }
         if (roundNumber >= 10)
         {
-            spawnNumber[3] = Mathf.CeilToInt((float)maxNumberT4 * T4Curve.Evaluate((float)roundNumber / (float)maxRoundNumber));
+            spawnNumber[3] = Mathf.CeilToInt((float)maxNumberT4 * T4Curve.Evaluate((float)(roundNumber - 10) / (float)(maxRoundNumber - 10)));
         }
     }
 
