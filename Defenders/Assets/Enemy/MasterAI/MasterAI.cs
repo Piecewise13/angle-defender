@@ -127,7 +127,7 @@ public class MasterAI : MonoBehaviour
         Update_Number();
 
         totalToSpawn = 0;
-        numberKilled = 0;
+
 
         for (int i = 0; i < spawnNumber.Length; i++)
         {
@@ -156,6 +156,7 @@ public class MasterAI : MonoBehaviour
         fireParticles.Stop();
         chaliceAnim.SetBool("isSwinging", false);
         resourceSpawner.DespawnResources();
+        numberKilled = 0;
     }
 
 
@@ -196,6 +197,10 @@ public class MasterAI : MonoBehaviour
             playerData.UpdateEnemiesLeft(ai.Count);
         }
 
+        if (numberKilled < 7)
+        {
+            return;
+        }
         if (ai.Count < 3)
         {
             End_Wave();

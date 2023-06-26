@@ -4892,11 +4892,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tier: 0
   weaponIcon: {fileID: 21300000, guid: 1c662e912753a944da984a0174d89b33, type: 3}
-  damage: 30
+  damage: 45
   layer:
     serializedVersion: 2
     m_Bits: 2769
-  damageIndicator: {fileID: 0}
   bulletTrail: {fileID: 2440538135499922666, guid: 0e204fa6881014167b7c6bffc22ae9cb,
     type: 3}
   bulletSpawnPoint: {fileID: 7339140332679707682}

@@ -15,5 +15,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 5d5e4c97064314c91b561e6a3b332459, type: 3}
   name: RocketLauncher
   cost: 1000
-  weapon: {fileID: 2400987802387876045, guid: d1c36feb389074c0a93d8cfe2c706623, type: 3}
+  weapon: {fileID: 1117294781373058452, guid: 7f15a045a08914c62851d89e600078e3, type: 3}
   tier: 2
