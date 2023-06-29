@@ -7,7 +7,7 @@ using TMPro;
 public class WorkBenchScript : MonoBehaviour
 {
     [Header("Player Info")]
-    public WeaponInventoryManager playerInventory;
+    public ModeManager playerInventory;
     public PlayerScript player;
 
 
@@ -69,7 +69,7 @@ public class WorkBenchScript : MonoBehaviour
         {
             hasPlayer = true;
             player = other.GetComponentInParent<PlayerScript>();
-            playerInventory = other.GetComponentInParent<WeaponInventoryManager>();
+            playerInventory = other.GetComponentInParent<ModeManager>();
 
         }
     }

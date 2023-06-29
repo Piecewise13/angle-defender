@@ -14,7 +14,7 @@ public class Player_InventoryScript : MonoBehaviour
     public RectTransform[] equipedWeaponsTransforms;
     private Image[] equipedWeaponsImages;
 
-    private WeaponInventoryManager inventoryManager;
+    private ModeManager inventoryManager;
 
 
     // Start is called before the first frame update
@@ -28,7 +28,7 @@ public class Player_InventoryScript : MonoBehaviour
         {
             equipedWeaponsImages[i] = equipedWeaponsTransforms[i].GetComponent<Image>();
         }
-        inventoryManager = GetComponentInParent<WeaponInventoryManager>();
+        inventoryManager = GetComponentInParent<ModeManager>();
     }
 
 

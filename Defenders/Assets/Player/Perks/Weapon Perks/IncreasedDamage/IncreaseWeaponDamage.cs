@@ -5,7 +5,7 @@ using UnityEngine;
 public class IncreaseWeaponDamage : ParentPerkScript
 {
 
-    private WeaponInventoryManager manager;
+    private ModeManager manager;
 
     public override void UnlockUpgrade(PlayerScript player)
     {
@@ -18,7 +18,7 @@ public class IncreaseWeaponDamage : ParentPerkScript
     new void Start()
     {
         base.Start();
-        manager = GetComponentInParent<WeaponInventoryManager>();
+        manager = GetComponentInParent<ModeManager>();
     }
 
     // Update is called once per frame

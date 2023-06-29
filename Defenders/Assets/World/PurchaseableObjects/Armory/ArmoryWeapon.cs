@@ -7,7 +7,7 @@ public class ArmoryWeapon : MonoBehaviour, Damageable
     public float health { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public bool isDead { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-    WeaponInventoryManager weaponManager;
+    ModeManager weaponManager;
     
     [SerializeField] private GameObject gun;
     public int wallTier;
@@ -27,7 +27,7 @@ public class ArmoryWeapon : MonoBehaviour, Damageable
     // Start is called before the first frame update
     void Start()
     {
-        weaponManager = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<WeaponInventoryManager>();
+        weaponManager = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<ModeManager>();
         
     }
 

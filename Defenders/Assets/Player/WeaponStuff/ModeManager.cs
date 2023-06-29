@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponInventoryManager : MonoBehaviour
+public class ModeManager : MonoBehaviour
 {
 
     private PlayerMode mode;
@@ -69,7 +69,6 @@ public class WeaponInventoryManager : MonoBehaviour
     private float latchAngle;
     Collider hitCollider = null;
 
-    private int rotateNum;
     [SerializeField] private float range;
 
     public GameObject defenseRoot;
@@ -85,10 +84,7 @@ public class WeaponInventoryManager : MonoBehaviour
     private GameObject hitTowerWall;
 
 
-    public LayerMask removeLayer;
 
-
-    List<Vector3> defenseLocations = new List<Vector3>();
     
 
     // Start is called before the first frame update
@@ -653,7 +649,6 @@ public class WeaponInventoryManager : MonoBehaviour
         
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
         player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
-        rotateNum = 0;
         isLatched = false;
         hitCollider = null;
 

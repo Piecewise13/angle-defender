@@ -76,7 +76,7 @@ public abstract class BasicWeaponScript : WeaponScript
         playerAnimator = GetComponentInParent<Animator>();
         player = GetComponentInParent<PlayerScript>();
         hud = GameObject.FindObjectOfType<HUDScript>();
-        inventory = GetComponentInParent<WeaponInventoryManager>();
+        inventory = GetComponentInParent<ModeManager>();
         currentNumOfBullets = clipSize;
         cameraRotator = playerCamera.gameObject.transform.parent.gameObject;
 

@@ -9,7 +9,7 @@ public abstract class WeaponScript : MonoBehaviour
     protected PlayerScript player;
     protected static HUDScript hud;
     protected Animator playerAnimator;
-    protected WeaponInventoryManager inventory;
+    protected ModeManager inventory;
 
     protected static bool canShoot = false;
 

@@ -8,7 +8,7 @@ public class ThrowableTowerScript : MonoBehaviour
 
     public GameObject towerThrowable;
 
-    public WeaponInventoryManager playerInventory;
+    public ModeManager playerInventory;
     public bool canFire;
 
     private Rigidbody rb;

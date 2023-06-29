@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7258181566349922604}
   - component: {fileID: 5986944410529324681}
   - component: {fileID: 8426535556788038211}
+  - component: {fileID: 3960064039089164426}
   m_Layer: 0
   m_Name: PillarSlab_Long
   m_TagString: Untagged
@@ -83,3 +84,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3960064039089164426
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8066488997274389398}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.33054686, y: 0.039999995, z: 0.009999999}
+  m_Center: {x: -0.014659792, y: 0.000000044703484, z: 2.3283062e-10}

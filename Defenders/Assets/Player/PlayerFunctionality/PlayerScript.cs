@@ -10,13 +10,13 @@ public class PlayerScript : MonoBehaviour, Damageable
      * PLAYER COMPONENTS VARS
      */
     [Header("Component Vars")]
-    public CharacterController controller;
-    public Camera playerCamera;
+    [HideInInspector]public Camera playerCamera;
     [SerializeField] protected Transform groundCheck;
     [HideInInspector] public MouseLook lookScript;
-    public WeaponInventoryManager weaponManager;
-    public Animator animator;
+    [HideInInspector] public ModeManager weaponManager;
+    [HideInInspector]public Animator animator;
     public GameObject deathScreen;
+    private Rigidbody rigidbody;
 
     [Space(20)]
     [Header("Weapon Vars")]
@@ -26,7 +26,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected float defaultFov = 60f;
     protected float zoomSpeed = 10f;
     protected float targetFOV = 60f;
-    [SerializeField] protected int soulFire;
+
 
     /*
      * HUD SCRIPTS
@@ -36,6 +36,8 @@ public class PlayerScript : MonoBehaviour, Damageable
     public HUDScript hudScript;
     [SerializeField] protected GameObject settingsMenu;
     protected bool inSettings;
+    public float defaultCameraShakeMagnitude;
+    public float defaultCameraShakeDuration;
 
     /*
      * INVENTORY VARS
@@ -55,7 +57,9 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected float defaultMovementSpeed;
     #region Movment Vars
     protected bool canMove = true;
-    
+
+    [SerializeField] protected float groundDrag;
+    [SerializeField] protected float airMovementSpeedMultiplier;
     protected float movementSpeedVar = 10f;
     [SerializeField] protected float jumpHeight;
     protected float forwardValue;
@@ -69,6 +73,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
+    private bool shouldControlSpeed;
 
 
     [Space(10)]
@@ -93,22 +98,33 @@ public class PlayerScript : MonoBehaviour, Damageable
     //Dash Vars
     [SerializeField] protected float dashTime;
     protected float startDashTime;
-    [SerializeField] protected float dashSpeed;
-    [SerializeField] protected int dashCost;
+    [SerializeField] protected float dashForce;
     protected bool canDash = true;
     protected bool isDashing;
     protected Vector3 initForward;
     public GameObject dashTrigger;
 
 
+    /*
+    * GRAPPLING HOOK
+    */
     [Space(10)]
-    [Header("ABH Vars")]
-    //ABH
-    [SerializeField] protected int tickMax;
-    [SerializeField] protected int abhCount;
-    protected bool canABH;
-    protected int tickCounter;
-    protected bool shouldADH;
+    [SerializeField] private float grapplingHookSpeed;
+    [SerializeField] private float grapplingHookRange;
+    [SerializeField] private float grapplingHookForce;
+    [SerializeField] private float grapplingSwingSpeed;
+    [Space(10)]
+    public LineRenderer grapplingHookLine;
+    public GameObject grapplingHookObject;
+    public LayerMask grapplingLayers;
+    public Transform grapplingHookShootPoint;
+    private bool isGrapplingActive;
+    private bool isGrapplingShooting = false;
+    private bool isGrapplingAttached = false;
+    private bool isGrapplingRetracting = false;
+    private Vector3 grapplePoint;
+    private SpringJoint grappleJoint;
+
 
     protected bool firstPerkUnlocked = false;
     protected bool secondPerkUnlocked = false;
@@ -137,6 +153,8 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected int ironAmount;
     [SerializeField] protected int diamondAmount;
 
+    [SerializeField] protected int soulFire;
+
     #endregion
 
 
@@ -159,15 +177,17 @@ public class PlayerScript : MonoBehaviour, Damageable
 
 
 
+
     // Start is called before the first frame update
     protected void Start()
     {
 
         lookScript = GetComponentInChildren<MouseLook>();
-        controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
-        weaponManager = GetComponent<WeaponInventoryManager>();
+        weaponManager = GetComponent<ModeManager>();
         animator = GetComponent<Animator>();
+        rigidbody = GetComponent<Rigidbody>();
+        rigidbody.freezeRotation = true;
 
         //upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
@@ -188,24 +208,26 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        if (isGrounded && velocity.y < 0)
+        if (isGrounded)
         {
+
             if (isOnLadder)
             {
-                velocity.y = 0;
+                rigidbody.useGravity = false;
             }
             else
             {
-                velocity.y = -2f;
+                rigidbody.useGravity = true;
             }
             canJump = true;
             canWallKick = true;
+            rigidbody.drag = groundDrag;
+            movementSpeedVar = defaultMovementSpeed;
 
+        } else
+        {
+            rigidbody.drag = 0;
         }
-
-
-
-
 
 
         if (isSonicEffect)
@@ -225,11 +247,11 @@ public class PlayerScript : MonoBehaviour, Damageable
             forwardValue = Input.GetAxis("Vertical");
             sideValue = Input.GetAxis("Horizontal");
 
-
+            //TODO FIX LADDER MOVEMENT
             if (!isOnLadder)
             {
                 moveDir = forwardValue * transform.forward + sideValue * transform.right;
-                movementSpeedVar = defaultMovementSpeed;
+                //movementSpeedVar = defaultMovementSpeed;
             }
             else
             {
@@ -246,6 +268,27 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isWalking", false);
 
             }
+            //DASH FUNCTIONALITY
+            if (Input.GetButtonDown("Dash"))
+            {
+                if (canDash)
+                {
+                    canDash = false;
+                    startDashTime = Time.time;
+                    rigidbody.velocity = Vector3.zero;
+                    rigidbody.AddForce(transform.forward * dashForce, ForceMode.Impulse);
+                    movementSpeedVar = 30f;
+                }
+            }
+
+            if (!canDash)
+            {
+                if (startDashTime + dashTime < Time.time)
+                {
+                    canDash = true;
+                }
+            }
+
 
             if (firstPerkUnlocked)
             {
@@ -264,70 +307,60 @@ public class PlayerScript : MonoBehaviour, Damageable
                     }
                 }
 
-                if (Input.GetButtonDown("Dash"))
-                {
-                    if (!isDashing && soulFire >= dashCost)
-                    {
-                        dashTrigger.SetActive(true);
-                        isDashing = true;
-                        SetSoulFire(-dashCost);
-                        startDashTime = Time.time;
-                        initForward = transform.forward;
-                    }
-                }
+
             }
 
             if (Input.GetButtonDown("Jump") && canJump)
             {
-                if (shouldADH)
-                {
-
-
-                    movementSpeedVar = (movementSpeedVar * 1.2f);
-                    abhCount++;
-
-
-                }
-                else
-                {
-                    movementSpeedVar = defaultMovementSpeed;
-                }
-                tickCounter = 0;
-                canJump = false;
-                velocity.y = jumpHeight;
+                Jump();
 
                 animator.SetTrigger("isJumping");
             }
 
-            if (isDashing)
-            {
-                if (dashTime + startDashTime > Time.time)
-                {
-                    print("should be actually dashing");
-                    controller.Move(initForward * dashSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    dashTrigger.SetActive(false);
-                    isDashing = false;
-                }
 
-            }
-            else
+            /*
+             * GRAPPLING HOOK
+             */
+            #region GRAPPLING HOOK
+            if (Input.GetButtonDown("GrapplingHook") && !isGrapplingActive)
             {
-                controller.Move(moveDir * movementSpeedVar * Time.deltaTime);
+                isGrapplingAttached = ShootGrapplingHook();
+            }
+
+            if (Input.GetButtonUp("GrapplingHook") && isGrapplingActive)
+            {
+                RetractGrapplingHook();
+            }
+
+            if (isGrapplingShooting)
+            {
+
+                if (Vector3.Distance(grapplingHookLine.GetPosition(1), grapplePoint) < .5f)
+                {
+                    if (isGrapplingAttached)
+                    {
+                        GrapplingAttached();
+                    }
+                    else
+                    {
+                        RetractGrapplingHook();
+                    }
+
+                }
+            }
+
+            if (isGrapplingRetracting)
+            {
+                grapplingHookLine.SetPosition(1, Vector3.MoveTowards(grapplingHookLine.GetPosition(1), grapplingHookShootPoint.position, Time.deltaTime * grapplingHookSpeed));
+                if (Vector3.Distance(grapplingHookLine.GetPosition(1), grapplingHookShootPoint.position) < .5f)
+                {
+                    GrapplingStop();
+                }
             }
         }
 
-        if (!isOnLadder)
-        {
-            velocity.y += gravity * Time.deltaTime;
-
-        }
-
-        controller.Move(velocity * Time.deltaTime);
         #endregion
-
+        #endregion
 
         if (isDead)
         {
@@ -353,49 +386,163 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
 
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
+
+        SpeedControl();
+    }
+
+    public void LateUpdate()
+    {
+        if (isGrapplingActive)
+        {
+            grapplingHookLine.SetPosition(0, grapplingHookShootPoint.position);
+
+            if (isGrapplingShooting)
+            {
+                grapplingHookLine.SetPosition(1, Vector3.MoveTowards(grapplingHookLine.GetPosition(1), grapplePoint, Time.deltaTime * grapplingHookSpeed * 2f));
+            }
+        }
     }
 
     public void FixedUpdate()
     {
-        if (forwardValue == -1f)
+        if (canMove)
         {
-            if (!isGrounded && !canJump)
-            {
-                canABH = true;
-                tickCounter = 0;
-            }
-            else
-
-
-            if (canABH)
-            {
-                if (isGrounded)
-                {
-                    if (tickCounter > tickMax)
-                    {
-                        print("lost abh");
-                        movementSpeedVar = defaultMovementSpeed;
-                        shouldADH = false;
-                        canABH = false;
-                        tickCounter = 0;
-                        abhCount = 1;
-                    }
-                    else
-                    {
-
-                        shouldADH = true;
-                        tickCounter++;
-                    }
-                }
-
-            }
-
+            MovePlayer();
         }
-        else
+    }
+
+
+    private bool ShootGrapplingHook()
+    {
+
+        isGrapplingAttached = false;
+        isGrapplingShooting = true;
+        isGrapplingRetracting = false;
+        isGrapplingActive = true;
+        grapplingHookObject.SetActive(true);
+        grapplingHookLine.positionCount = 2;
+        for (int i = 0; i < grapplingHookLine.positionCount; i++)
         {
-            shouldADH = false;
-            movementSpeedVar = defaultMovementSpeed;
+            grapplingHookLine.SetPosition(i, transform.position);
         }
+
+
+        RaycastHit hit;
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, grapplingHookRange, grapplingLayers))
+        {
+            grapplePoint = hit.point;
+            
+            return true;
+        }
+
+        grapplePoint = playerCamera.transform.position + playerCamera.transform.forward * grapplingHookRange;
+        return false;
+    }
+
+
+    private void GrapplingAttached()
+    {
+        /*
+        isGrapplingActive = true;
+        isGrapplingAttached = false;
+        isGrapplingRetracting = false;
+        grapplingHookObject.SetActive(true);
+        grapplingHookLine.enabled = true;
+        for (int i = 0; i < grapplingHookLine.positionCount; i++)
+        {
+            grapplingHookLine.SetPosition(i, transform.position);
+        }
+        */
+
+        isGrapplingShooting = false;
+        shouldControlSpeed = false;
+
+        grappleJoint = gameObject.AddComponent<SpringJoint>();
+        grappleJoint.autoConfigureConnectedAnchor = false;
+        grappleJoint.connectedAnchor = grapplePoint;
+
+        float distance = Vector3.Distance(transform.position, grapplePoint);
+
+        grappleJoint.maxDistance = distance * .6f;
+        grappleJoint.minDistance = distance * .2f;
+
+        //change these
+        grappleJoint.spring = 4.5f;
+        grappleJoint.damper = 8f;
+        grappleJoint.massScale = 4.5f;
+
+        movementSpeedVar = grapplingSwingSpeed;
+
+        print("Grapple attached");
+
+    }
+
+    private void RetractGrapplingHook()
+    {
+        print("retract");
+        isGrapplingShooting = false;
+        isGrapplingRetracting = true;
+
+        if(isGrapplingAttached)
+            Destroy(grappleJoint);
+
+        isGrapplingAttached = false;
+
+
+    }
+
+    private void GrapplingStop()
+    {
+        isGrapplingActive = false;
+        isGrapplingRetracting = false;
+        isGrapplingAttached = false;
+        isGrapplingShooting = false;
+
+        grapplingHookLine.positionCount = 0;
+        grapplingHookObject.SetActive(false);
+        print("grapple stop");
+    }
+
+    private void MovePlayer()
+    {
+        if (isGrapplingAttached)
+        {
+            return;
+        }
+        if (isGrounded)
+        {
+            rigidbody.AddForce(moveDir.normalized * movementSpeedVar * 10f, ForceMode.Force);
+        } else
+        {
+            rigidbody.AddForce(moveDir.normalized * movementSpeedVar * 10f * airMovementSpeedMultiplier, ForceMode.Force);
+        }
+    }
+
+    private void SpeedControl()
+    {
+        print(movementSpeedVar);
+        Vector3 flatVelo = rigidbody.velocity.xz3();
+        if (flatVelo.magnitude > movementSpeedVar)
+        {
+
+            Vector3 limitedVel = flatVelo.normalized * movementSpeedVar;
+            rigidbody.velocity = new Vector3(limitedVel.x, rigidbody.velocity.y, limitedVel.z);
+        }
+
+
+    }
+
+    private void Jump()
+    {
+        rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
+
+        rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
+        canJump = false;
+    }
+
+    private void ResetJump()
+    {
+        canJump = true;
     }
 
     public void Death()
@@ -409,7 +556,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         respawnTime = respawnSlope * deathCount + 5f;
         deathCount++;
-        controller.enabled = false;
         ChangeCameraZoom(1f);
         SetAllBoolsFalse();
         isDead = true;
@@ -435,7 +581,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         //play respawn anim probably a courotine
         deathScreen.SetActive(false);
         transform.position = spawnPoint.position;
-        controller.enabled = true;
         health = maxHealth;
         isDead = false;
         canJump = true;
@@ -460,6 +605,8 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
 
     }
+
+
 
     public void SonicAttackEffect()
     {
@@ -656,6 +803,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
             health -= damage;
             hudScript.UpdateHealth();
+            lookScript.CameraShake(defaultCameraShakeDuration, defaultCameraShakeMagnitude);
             if (health <= 0)
             {
                 Death();
