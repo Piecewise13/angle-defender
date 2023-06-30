@@ -36,7 +36,7 @@ public class PurchaseableWeaponPanelScript : MonoBehaviour
             return false;
         }
         player.SetSoulFire(-weapon.cost);
-        return eggShop.GetPlayer().weaponManager.GiveNewGun(weapon);
+        return eggShop.GetPlayer().modeManager.GiveNewGun(weapon);
 
     }
 

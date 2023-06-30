@@ -13,7 +13,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [HideInInspector]public Camera playerCamera;
     [SerializeField] protected Transform groundCheck;
     [HideInInspector] public MouseLook lookScript;
-    [HideInInspector] public ModeManager weaponManager;
+    [HideInInspector] public ModeManager modeManager;
     [HideInInspector]public Animator animator;
     public GameObject deathScreen;
     private Rigidbody rigidbody;
@@ -184,7 +184,7 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         lookScript = GetComponentInChildren<MouseLook>();
         playerCamera = GetComponentInChildren<Camera>();
-        weaponManager = GetComponent<ModeManager>();
+        modeManager = GetComponent<ModeManager>();
         animator = GetComponent<Animator>();
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.freezeRotation = true;
@@ -526,9 +526,15 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
 
             Vector3 limitedVel = flatVelo.normalized * movementSpeedVar;
+
             rigidbody.velocity = new Vector3(limitedVel.x, rigidbody.velocity.y, limitedVel.z);
         }
-
+        //fix damamge multiplier
+        if (modeManager.GetPlayerMode() == PlayerMode.Weapons)
+        {
+            modeManager.GetEquipedWeapon().SetDamageMultiplier((flatVelo.magnitude / defaultMovementSpeed));
+            hudScript.UpdateDamageMultiplier((flatVelo.magnitude / defaultMovementSpeed));
+        }
 
     }
 
@@ -660,7 +666,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             lookScript.setCanLook(false);
             canMove = false;
             //weaponManager.canShoot(false);
-            weaponManager.SetFreeToPlay(false);
+            modeManager.SetFreeToPlay(false);
         }
         else
         {
@@ -669,7 +675,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             lookScript.setCanLook(true);
             canMove = true;
 
-            weaponManager.SetFreeToPlay(true);
+            modeManager.SetFreeToPlay(true);
         }
     }
 

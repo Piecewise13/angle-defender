@@ -9,6 +9,7 @@ public abstract class BasicWeaponScript : WeaponScript
     [Space(20)]
     [Header("Damage Vars")]
     public float damage;
+    public float damageMultiplier = 1f;
     public LayerMask layer;
     protected GameObject damageIndicator;
 
@@ -120,7 +121,7 @@ public abstract class BasicWeaponScript : WeaponScript
             {
                 float damageGiven;
                 bool crit;
-                hitGameobject.GiveDamage(damage, hit.collider, out damageGiven, out crit);
+                hitGameobject.GiveDamage(damage * damageMultiplier, hit.collider, out damageGiven, out crit);
 
                 SpawnDamageIndicator(hit.point, damageGiven, crit);
 
@@ -252,6 +253,11 @@ public abstract class BasicWeaponScript : WeaponScript
     public void IncreasePrestige()
     {
         prestigeEarned += prestigeGainRate;
+    }
+
+    public void SetDamageMultiplier(float multiplier)
+    {
+        damageMultiplier = multiplier;
     }
 
 

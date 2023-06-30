@@ -885,6 +885,16 @@ public class ModeManager : MonoBehaviour
         canShoot(value);
     }
 
+    public BasicWeaponScript GetEquipedWeapon()
+    {
+        return equipedWeapon;
+    }
+
+    public PlayerMode GetPlayerMode()
+    {
+        return mode;
+    }
+
 
 }
 

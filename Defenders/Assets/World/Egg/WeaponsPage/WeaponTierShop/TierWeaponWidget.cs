@@ -50,7 +50,7 @@ public class TierWeaponWidget : MonoBehaviour
         foreach (var item in weapons)
         {
             
-            player.weaponManager.GiveNewGun(item);
+            player.modeManager.GiveNewGun(item);
         }
         
         player.SetSoulFire(-cost);

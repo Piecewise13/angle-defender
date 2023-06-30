@@ -65,6 +65,8 @@ public class HUDScript : MonoBehaviour
     public TMP_Text bulletsLeft;
     public TMP_Text clipSizeText;
 
+    public TMP_Text damageMultiplier;
+
     [Space(10)]
     [Header("DefenseVars")]
     public Image wallImage;
@@ -282,6 +284,11 @@ public class HUDScript : MonoBehaviour
                 break;
         }
 
+    }
+
+    public void UpdateDamageMultiplier(float multiplier)
+    {
+        damageMultiplier.text = "x" + multiplier;
     }
 
     public void UpdateRoundsCounter(int number)

@@ -145,9 +145,9 @@ public class TowerGUIParent : MonoBehaviour
     public void SellTower()
     {
         player.SetSoulFire(sellValue);
-        player.weaponManager.TowerRemoved(gameObject);
+        player.modeManager.TowerRemoved(gameObject);
         towerParent.SwitchFromTowerCamera(player);
-        player.weaponManager.TowerRemoved(towerParent.gameObject);
+        player.modeManager.TowerRemoved(towerParent.gameObject);
         Destroy(towerParent.gameObject);
     }
 
