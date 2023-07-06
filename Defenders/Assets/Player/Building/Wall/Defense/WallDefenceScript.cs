@@ -68,7 +68,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
 
         Vector3 eggPos = egg.transform.position;
         float angle = Vector3.Angle(transform.right, (transform.position - eggPos).normalized);
-        print(angle);
         if (angle < 90f)
         {
             transform.Rotate(Vector3.up, 180f);

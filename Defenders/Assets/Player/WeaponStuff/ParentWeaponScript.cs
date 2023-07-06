@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BasicWeaponScript : WeaponScript
+public abstract class ParentWeaponScript : WeaponScript
 {
 
     //Damage
@@ -53,9 +53,6 @@ public abstract class BasicWeaponScript : WeaponScript
     protected bool isReloading;
     protected float startReloadTime;
 
-    [Space(20)]
-    [Header("Component Vars")]
-
 
 
 
@@ -71,7 +68,7 @@ public abstract class BasicWeaponScript : WeaponScript
 
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         playerCamera = gameObject.GetComponentInParent<Camera>();
         playerAnimator = GetComponentInParent<Animator>();

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using Tutorial;
 using UnityEngine;
 
 public class PlayerScript : MonoBehaviour, Damageable
@@ -219,7 +219,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             {
                 rigidbody.useGravity = true;
             }
-            canJump = true;
+            ResetJump();
             canWallKick = true;
             rigidbody.drag = groundDrag;
             movementSpeedVar = defaultMovementSpeed;
@@ -275,9 +275,10 @@ public class PlayerScript : MonoBehaviour, Damageable
                 {
                     canDash = false;
                     startDashTime = Time.time;
+                    rigidbody.useGravity = false;
                     rigidbody.velocity = Vector3.zero;
                     rigidbody.AddForce(transform.forward * dashForce, ForceMode.Impulse);
-                    movementSpeedVar = 30f;
+                    movementSpeedVar = 40f;
                 }
             }
 
@@ -285,6 +286,8 @@ public class PlayerScript : MonoBehaviour, Damageable
             {
                 if (startDashTime + dashTime < Time.time)
                 {
+                    rigidbody.useGravity = true;
+                    rigidbody.velocity = Vector3.zero;
                     canDash = true;
                 }
             }
@@ -487,8 +490,6 @@ public class PlayerScript : MonoBehaviour, Damageable
             Destroy(grappleJoint);
 
         isGrapplingAttached = false;
-
-
     }
 
     private void GrapplingStop()
@@ -520,7 +521,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void SpeedControl()
     {
-        print(movementSpeedVar);
         Vector3 flatVelo = rigidbody.velocity.xz3();
         if (flatVelo.magnitude > movementSpeedVar)
         {
@@ -532,9 +532,20 @@ public class PlayerScript : MonoBehaviour, Damageable
         //fix damamge multiplier
         if (modeManager.GetPlayerMode() == PlayerMode.Weapons)
         {
-            modeManager.GetEquipedWeapon().SetDamageMultiplier((flatVelo.magnitude / defaultMovementSpeed));
-            hudScript.UpdateDamageMultiplier((flatVelo.magnitude / defaultMovementSpeed));
+            hudScript.damageMultiplier.gameObject.SetActive(true);
+            float multiplier = Mathf.Lerp(1f, 2f, flatVelo.magnitude / grapplingSwingSpeed);
+            multiplier = Mathf.Round(multiplier * 10f) / 10f;
+            modeManager.GetEquipedWeapon().SetDamageMultiplier(multiplier);
+            hudScript.UpdateDamageMultiplier(multiplier);
+        } else
+        {
+            hudScript.damageMultiplier.gameObject.SetActive(false);
         }
+
+    }
+
+    private void ResetDash()
+    {
 
     }
 
@@ -567,7 +578,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         isDead = true;
         canMove = false;
         canJump = false;
-        soulFire = 0;
+        soulFire = soulFire / 2;
         animator.SetBool("isDead", true);
         //deathCam.enabled = true;
         //playerCamera.enabled = false;
@@ -589,7 +600,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         transform.position = spawnPoint.position;
         health = maxHealth;
         isDead = false;
-        canJump = true;
+        ResetJump();
         canMove = true;
         hudScript.UpdateHealth();
         hudScript.UpdateSoulFireValues();

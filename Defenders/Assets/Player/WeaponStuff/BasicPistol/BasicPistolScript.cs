@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicPistolScript : BasicWeaponScript
+public class BasicPistolScript : ParentWeaponScript
 {
 
     public GameObject[] soulFireTubes;

@@ -12,7 +12,7 @@ public class WeaponInformation : ScriptableObject
     public GameObject weapon;
     public int tier;
 
-    public bool Equals(WeaponScript other)
+    public bool Equals(ParentWeaponScript other)
     {
         return this.name.Equals(other.name);
     }

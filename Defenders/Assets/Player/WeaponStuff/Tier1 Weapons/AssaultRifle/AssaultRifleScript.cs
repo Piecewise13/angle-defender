@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AssaultRifleScript : BasicWeaponScript
+public class AssaultRifleScript : ParentWeaponScript
 {
 
     public ParticleSystem bulletSystem;

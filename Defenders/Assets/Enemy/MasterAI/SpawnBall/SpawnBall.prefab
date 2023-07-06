@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 650118613363227355}
   - component: {fileID: 7478225138060823846}
   - component: {fileID: 7843491052719552108}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 4460378376804723812}
   - component: {fileID: 2202755960555162776}
   - component: {fileID: 638048088523415906}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpawnBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,6 +243,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Fire
+      objectReference: {fileID: 0}
+    - target: {fileID: 8678038946313731548, guid: 7fcf2e225c7434d0d8fe6987a8e4489d,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8678038946313731549, guid: 7fcf2e225c7434d0d8fe6987a8e4489d,
         type: 3}

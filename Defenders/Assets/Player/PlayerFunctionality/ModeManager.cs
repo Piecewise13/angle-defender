@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Tutorial;
 using UnityEngine;
+
 
 public class ModeManager : MonoBehaviour
 {
@@ -24,7 +26,7 @@ public class ModeManager : MonoBehaviour
     public WeaponInformation basicPistol;
   
     public GameObject weaponRoot;
-    private BasicWeaponScript equipedWeapon;
+    private ParentWeaponScript equipedWeapon;
 
 
     private List<WeaponInformation>[] weaponOptions = new List<WeaponInformation>[3];
@@ -719,7 +721,7 @@ public class ModeManager : MonoBehaviour
 
         try
         {
-            equipedWeapon = equipedWeapons[equipedWeaponIndex].GetComponent<BasicWeaponScript>();
+            equipedWeapon = equipedWeapons[equipedWeaponIndex].GetComponent<ParentWeaponScript>();
             playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
             equipedWeapon.EquipGun();
             player.hudScript.UpdateClipSize(equipedWeapon.clipSize);
@@ -876,7 +878,7 @@ public class ModeManager : MonoBehaviour
 
     public void canShoot(bool value)
     {
-        BasicWeaponScript.SetCanShoot(value);
+        ParentWeaponScript.SetCanShoot(value);
     }
 
     public void SetFreeToPlay(bool value)
@@ -885,7 +887,7 @@ public class ModeManager : MonoBehaviour
         canShoot(value);
     }
 
-    public BasicWeaponScript GetEquipedWeapon()
+    public ParentWeaponScript GetEquipedWeapon()
     {
         return equipedWeapon;
     }

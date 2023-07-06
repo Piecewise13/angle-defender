@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SniperScript : BasicWeaponScript
+public class SniperScript : ParentWeaponScript
 {
 
     bool isAiming;

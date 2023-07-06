@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HandCannonScript : BasicWeaponScript
+public class HandCannonScript : ParentWeaponScript
 {
 
     // Update is called once per frame

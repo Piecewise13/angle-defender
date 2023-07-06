@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpgradedRocketLauncher : BasicWeaponScript
+public class UpgradedRocketLauncher : ParentWeaponScript
 {
     public GameObject rocketPrefab;
     public Transform rocketSpawn;

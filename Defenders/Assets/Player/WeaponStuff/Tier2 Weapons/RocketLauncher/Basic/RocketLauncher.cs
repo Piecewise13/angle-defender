@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RocketLauncher : BasicWeaponScript
+public class RocketLauncher : ParentWeaponScript
 {
 
     public GameObject rocketPrefab;

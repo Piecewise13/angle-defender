@@ -37,17 +37,35 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public void Start()
     {
         health = maxHealth;
-        resourceSpawner = FindObjectOfType<ResourceSpawner>();
-        eggScript = FindObjectOfType<EggScript>();
-        egg = eggScript.transform.root.gameObject;
+        if (resourceSpawner == null)
+        {
+            resourceSpawner = FindObjectOfType<ResourceSpawner>();
+        }
+
+        
+        if (eggScript == null)
+        {
+            eggScript = FindObjectOfType<EggScript>();
+            egg = eggScript.transform.root.gameObject;
+        }
+
 
         agent = GetComponent<NavMeshAgent>();
         speed = agent.speed;
+
         walls = FindObjectsOfType<WallDefenceScript>();
         path = new NavMeshPath();
         //soulFireBallPrefab = Resources.Load("SoulFireBall");
-        masterAI = FindObjectOfType<MasterAI>();
-        playerDataManager = FindObjectOfType<PlayerDataMangerScript>();
+        if (masterAI == null)
+        {
+            masterAI = FindObjectOfType<MasterAI>();
+        }
+
+        if (playerDataManager == null)
+        {
+            playerDataManager = FindObjectOfType<PlayerDataMangerScript>();
+        }
+
     }
 
 

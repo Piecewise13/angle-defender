@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class HUDScript : MonoBehaviour
 {
 
-    private PlayerScript player;
+    public PlayerScript player;
 
     [Header("Resource Variables")]
     public TMP_Text woodText;
@@ -217,14 +217,12 @@ public class HUDScript : MonoBehaviour
     //Updates the weapon for a specified tier
     public void UpdateWeaponIcon(Sprite weaponIcon, int tier)
     {
-        print("updating icon: " + tier);
         if (tier == 1)
         {
             primaryImage.sprite = weaponIcon;
         }
         else if (tier == 2)
         {
-            print("updating image");
             secondaryImage.sprite = weaponIcon;
         }
         else if (tier == 3)
