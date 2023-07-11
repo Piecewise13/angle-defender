@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class ResourceBank : MonoBehaviour
 {
-    private static MasterAI master;
+    private static Parent_MasterAI master;
 
     // Start is called before the first frame update
     void Start()
     {
-        master = FindObjectOfType<MasterAI>();
+        master = FindObjectOfType<Parent_MasterAI>();
     }
 
     public void OnTriggerEnter(Collider other)

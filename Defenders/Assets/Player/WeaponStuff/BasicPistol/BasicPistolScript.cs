@@ -60,7 +60,6 @@ public class BasicPistolScript : ParentWeaponScript
                 setUp = false;
                 canShoot = true;
                 setupTimer = 0;
-                print("set up");
             }
             setupTimer += Time.deltaTime;
         }

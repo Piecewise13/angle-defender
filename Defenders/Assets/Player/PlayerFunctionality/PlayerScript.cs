@@ -65,6 +65,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected float forwardValue;
     protected float sideValue;
     protected bool canJump;
+    private int jumpCount;
 
     protected Vector3 moveDir;
     protected float gravity = -9.81f;
@@ -100,9 +101,14 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected float startDashTime;
     [SerializeField] protected float dashForce;
     protected bool canDash = true;
+    [SerializeField] private float dashCooldown;
+    private float dashCooldownStart;
+    private bool isDashOnCooldown;
+
     protected bool isDashing;
     protected Vector3 initForward;
     public GameObject dashTrigger;
+    private float previousMaxSpeed;
 
 
     /*
@@ -148,9 +154,6 @@ public class PlayerScript : MonoBehaviour, Damageable
     [Header("Resource Vars")]
     #region Resources Vars
 
-
-    [SerializeField] protected int woodAmount;
-    [SerializeField] protected int ironAmount;
     [SerializeField] protected int diamondAmount;
 
     [SerializeField] protected int soulFire;
@@ -268,6 +271,7 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isWalking", false);
 
             }
+
             //DASH FUNCTIONALITY
             if (Input.GetButtonDown("Dash"))
             {
@@ -278,17 +282,36 @@ public class PlayerScript : MonoBehaviour, Damageable
                     rigidbody.useGravity = false;
                     rigidbody.velocity = Vector3.zero;
                     rigidbody.AddForce(transform.forward * dashForce, ForceMode.Impulse);
-                    movementSpeedVar = 40f;
+                    previousMaxSpeed = movementSpeedVar;
+                    movementSpeedVar = 50f;
                 }
             }
 
             if (!canDash)
             {
-                if (startDashTime + dashTime < Time.time)
+                if (isDashOnCooldown)
                 {
-                    rigidbody.useGravity = true;
-                    rigidbody.velocity = Vector3.zero;
-                    canDash = true;
+                    if (dashCooldown + dashCooldownStart < Time.time)
+                    {
+                        canDash = true;
+                        isDashOnCooldown = false;
+                    }
+                }
+                else
+                {
+
+                    if (startDashTime + dashTime < Time.time)
+                    {
+                        rigidbody.useGravity = true;
+                        rigidbody.velocity = rigidbody.velocity / 2f;
+                        print(previousMaxSpeed);
+                        movementSpeedVar = previousMaxSpeed;
+                        dashCooldownStart = Time.time;
+                        isDashOnCooldown = true;
+                    }
+
+
+
                 }
             }
 
@@ -299,7 +322,6 @@ public class PlayerScript : MonoBehaviour, Damageable
                 {
                     if (Input.GetButtonDown("Jump"))
                     {
-                        print("wall jump");
                         RaycastHit hit;
 
                         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, wallKickDistance, movementLayer))
@@ -445,18 +467,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void GrapplingAttached()
     {
-        /*
-        isGrapplingActive = true;
-        isGrapplingAttached = false;
-        isGrapplingRetracting = false;
-        grapplingHookObject.SetActive(true);
-        grapplingHookLine.enabled = true;
-        for (int i = 0; i < grapplingHookLine.positionCount; i++)
-        {
-            grapplingHookLine.SetPosition(i, transform.position);
-        }
-        */
-
         isGrapplingShooting = false;
         shouldControlSpeed = false;
 
@@ -476,13 +486,10 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         movementSpeedVar = grapplingSwingSpeed;
 
-        print("Grapple attached");
-
     }
 
     private void RetractGrapplingHook()
     {
-        print("retract");
         isGrapplingShooting = false;
         isGrapplingRetracting = true;
 
@@ -501,7 +508,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         grapplingHookLine.positionCount = 0;
         grapplingHookObject.SetActive(false);
-        print("grapple stop");
     }
 
     private void MovePlayer()
@@ -551,14 +557,21 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void Jump()
     {
+        if (jumpCount >= 1)
+        {
+            canJump = false;
+        }
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
 
         rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
-        canJump = false;
+        rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
+        jumpCount++;
+
     }
 
     private void ResetJump()
     {
+        jumpCount = 0;
         canJump = true;
     }
 
@@ -643,18 +656,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         targetFOV = defaultFov / amount;
     }
 
-    public bool CanAffordResources(int woodCost, int ironCost, int diamondCost)
-    {
-        if (woodAmount >= woodCost &&
-    ironAmount >= ironCost &&
-    diamondAmount >= diamondCost)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public bool CanAffordResources(int diamondCost)
     {
         return diamondAmount >= diamondCost;
@@ -690,72 +691,32 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
+    public void DisplayHint()
+    {
+
+    }
+
 
     /*
      * GET AND SET VARS
      */
     #region Get Set Functions
 
-    public void SetResourceAmount(ResourceType type, int delta)
+    public void ChangeDiamondAmount(int delta)
     {
-        switch (type)
-        {
-            case ResourceType.Wood:
-                woodAmount += delta;
-                break;
-            case ResourceType.Iron:
-                ironAmount += delta;
-                break;
-
-            case ResourceType.Diamond:
-                diamondAmount += delta;
-                break;
-
-        }
         if (delta == 0)
         {
             return;
         }
+        diamondAmount += delta;
+
         hudScript.UpdateResourceValues();
-        hudScript.ResoucesChangeFade(type, delta);
+        hudScript.SpawnResoucesChangeIndicator(true, delta);
     }
 
-    public void SetResourceAmount(int woodDelta, int ironDelta, int diamondDelta)
+    public int GetDiamondAmount()
     {
-        woodAmount += woodDelta;
-        ironAmount += ironDelta;
-        diamondAmount += diamondDelta;
-        hudScript.UpdateResourceValues();
-        if (woodDelta != 0)
-        {
-            hudScript.ResoucesChangeFade(ResourceType.Wood, woodDelta);
-        }
-        if (ironDelta != 0)
-        {
-            hudScript.ResoucesChangeFade(ResourceType.Iron, ironDelta);
-        }
-        if (diamondDelta != 0)
-        {
-            hudScript.ResoucesChangeFade(ResourceType.Diamond, diamondDelta);
-        }
-    }
-
-    public int GetResourceAmount(ResourceType type)
-    {
-
-        switch (type)
-        {
-            case ResourceType.Wood:
-                return woodAmount;
-
-            case ResourceType.Iron:
-                return ironAmount;
-
-            case ResourceType.Diamond:
-                return diamondAmount;
-
-        }
-        return -1;
+        return diamondAmount;
     }
 
     public void LaunchPlayer(float height)
@@ -772,6 +733,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         soulFire += delta;
         hudScript.UpdateSoulFireValues();
+        hudScript.SpawnResoucesChangeIndicator(false, delta);
     }
 
 
@@ -829,4 +791,13 @@ public class PlayerScript : MonoBehaviour, Damageable
     }
 
     #endregion
+
+
+}
+
+public enum PLAYER_HINT
+{
+    USE,
+    COST,
+    ROTATE,
 }

@@ -17,10 +17,7 @@ public class FurnaceTower : TowerParentScript
     [SerializeField] private int defaultFuelBurnAmount;
     private int fuelBurnAmount;
 
-    private int fuelAmount = 0;
-
-    [SerializeField] private int woodFuelAmount;
-    [SerializeField] private int ironFuelAmount;
+    [SerializeField]private int fuelAmount = 0;
     [SerializeField] private int diamondFuelAmount;
 
 
@@ -48,8 +45,7 @@ public class FurnaceTower : TowerParentScript
     //Gameobject Components
     [Space(20)]
     [Header("Effect Gameobjects")]
-    public BulletForgeUI bulletForgeUI;
-    public ParticleSystem forgeFire;
+    public FurnaceUI bulletForgeUI;
     public Transform fireSpawnPoint;
     public GameObject soulFireBall;
     private Vector3 soulfireBallScale;
@@ -101,7 +97,7 @@ public class FurnaceTower : TowerParentScript
                 fuelAmount -= fuelBurnAmount;
                 DispenseSoulFire();
 
-                //bulletForgeUI.UpdateFuelMeter();
+                bulletForgeUI.UpdateFuelMeter();
                 
             }
         } else
@@ -135,34 +131,21 @@ public class FurnaceTower : TowerParentScript
     {
         hasPlayer = true;
         base.SetPlayer(player);
+        player.hudScript.DisplayHint(PLAYER_HINT.USE);
     }
 
 
     public void PlayerExit()
     {
         hasPlayer = false;
+        player.hudScript.StopDisplayingHint();
     }
 
     //Called by the furnace UI when the player deposits resources into the tower
     public void DepositResources(ResourceType type, int num)
     {
-        switch (type)
-        {
-            case ResourceType.Wood:
-                player.SetResourceAmount(ResourceType.Wood, -num);
-                fuelAmount += woodFuelAmount * num;
-
-                break;
-            case ResourceType.Iron:
-                player.SetResourceAmount(ResourceType.Iron, -num);
-                fuelAmount += ironFuelAmount * num;
-
-                break;
-            case ResourceType.Diamond:
-                player.SetResourceAmount(ResourceType.Diamond, -num);
-                fuelAmount += diamondFuelAmount * num;
-                break;
-        }
+        player.ChangeDiamondAmount(-num);
+        fuelAmount += diamondFuelAmount * num;
 
         lastOutputTime = Time.time;
         if (anim != null)
@@ -240,17 +223,7 @@ public class FurnaceTower : TowerParentScript
 
     public int GetResourceFuelAmount(ResourceType type)
     {
-        switch (type)
-        {
-            case ResourceType.Wood:
-                return woodFuelAmount;
-            case ResourceType.Iron:
-                return ironFuelAmount;
-            case ResourceType.Diamond:
-                return diamondFuelAmount;
-
-        }
-        return 0;
+        return diamondFuelAmount;
     }
 
     public int GetFuelAmount()

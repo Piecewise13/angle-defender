@@ -6,7 +6,7 @@ public class Perk_TurretLevel1 : ParentPerkScript
 {
 
     public TurretScript[] turrets;
-    public BulletForgeUI forgeUI;
+    public FurnaceUI forgeUI;
 
 
     public override void UnlockUpgrade(PlayerScript player)

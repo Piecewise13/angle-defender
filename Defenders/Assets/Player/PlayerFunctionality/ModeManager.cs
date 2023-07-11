@@ -7,13 +7,13 @@ using UnityEngine;
 public class ModeManager : MonoBehaviour
 {
 
-    private PlayerMode mode;
-    private PlayerDataMangerScript dataManager;
-    private PlayerScript player;
+    protected PlayerMode mode;
+    protected PlayerDataMangerScript dataManager;
+    protected PlayerScript player;
     public Animator playerAnimator;
-    private Camera playerCamera;
+    protected Camera playerCamera;
 
-    private bool freeToPlay = true;
+    protected bool freeToPlay = true;
 
     /*
      * WEAPON VARS
@@ -21,17 +21,17 @@ public class ModeManager : MonoBehaviour
     [Header("Weapons")]
 
     public GameObject[] equipedWeapons;
-    private WeaponInformation[] equipedWeaponInformation;
-    private int equipedWeaponIndex;
+    protected WeaponInformation[] equipedWeaponInformation;
+    protected int equipedWeaponIndex;
     public WeaponInformation basicPistol;
   
     public GameObject weaponRoot;
-    private ParentWeaponScript equipedWeapon;
+    protected ParentWeaponScript equipedWeapon;
 
 
-    private List<WeaponInformation>[] weaponOptions = new List<WeaponInformation>[3];
+    protected List<WeaponInformation>[] weaponOptions = new List<WeaponInformation>[3];
 
-    [SerializeField] private int maxWeaponsToHold = 4;
+    [SerializeField] protected int maxWeaponsToHold = 4;
 
     /*
      * TOWER VARS
@@ -46,13 +46,13 @@ public class ModeManager : MonoBehaviour
     public GameObject towerPlacerObject;
 
     public GameObject towerRoot;
-    private bool isTowerUtility;
-    private int towerIndex;
-    private GameObject currentTower;
-    //private GameObject towerGhost;
-    private TowerParentScript currentTowerScript;
+    protected bool isTowerUtility;
+    protected int towerIndex;
+    protected GameObject currentTower;
+    //protected GameObject towerGhost;
+    protected TowerParentScript currentTowerScript;
     public LayerMask possibleLayers;
-    private static List<Vector3> snappableTowers = new List<Vector3>();
+    protected static List<Vector3> snappableTowers = new List<Vector3>();
 
     /*
      * BUILDING VARS
@@ -60,37 +60,37 @@ public class ModeManager : MonoBehaviour
     [Space(30)]
     [Header("Building")]
     public Defense[] defenses;
-    private int activeDefense;
-    private bool isDefenseUtility;
+    protected int activeDefense;
+    protected bool isDefenseUtility;
     public GameObject defenseUtilityObject;
-    [SerializeField] private float defenseUtilityRange;
+    [SerializeField] protected float defenseUtilityRange;
     public LayerMask defenseLayer;
 
 
     public float defenseRotationSpeed;
-    private float latchAngle;
-    Collider hitCollider = null;
+    protected float latchAngle;
+    protected Collider hitCollider = null;
 
-    [SerializeField] private float range;
+    [SerializeField] protected float range;
 
     public GameObject defenseRoot;
     public float gridSize;
 
 
-    private GameObject defenseGhost;
+    protected GameObject defenseGhost;
     public Material validMat;
     public Material invalidMat;
-    private GhostScript ghostRenderer;
-    Vector3 placeLocation = Vector3.up * -500;
-    private bool isLatched = false;
-    private GameObject hitTowerWall;
+    protected GhostScript ghostRenderer;
+    protected Vector3 placeLocation = Vector3.up * -500;
+    protected bool isLatched = false;
+    protected GameObject hitTowerWall;
 
 
 
     
 
     // Start is called before the first frame update
-    void Start()
+    public virtual void Start()
     {
         dataManager = FindObjectOfType<PlayerDataMangerScript>();
         player = GetComponentInChildren<PlayerScript>();
@@ -106,7 +106,7 @@ public class ModeManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public virtual void Update()
     {
         if (Input.GetButtonDown("SwitchMode"))
         {
@@ -218,7 +218,6 @@ public class ModeManager : MonoBehaviour
                         if (!isLatched) {
                             if (hitout.collider.CompareTag("Ground"))
                             {
-                                print("world location");
                                 placeLocation = hitout.point;
                                 WallDefenceScript.showIndicators = true;
                                 validPlacement = true;
@@ -227,8 +226,6 @@ public class ModeManager : MonoBehaviour
                             {
                                 WallDefenceScript.showIndicators = false;
                                 isLatched = true;
-                                
-                                print("hitting wall");
                                 placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
                                 
                                 hitCollider = hitout.collider;
@@ -242,13 +239,9 @@ public class ModeManager : MonoBehaviour
                             if (isLatched)
                             {
                                 WallDefenceScript.showIndicators = false;
-                                /*OLD METHOD
-                                latchAngle += defenseRotationSpeed * Time.deltaTime;
-                                */
                                 RaycastHit rotHit;
                                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
                                 {
-                                    print("rotating defense");
                                     Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
                                     Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
                                     placeLocation = location;
@@ -264,7 +257,6 @@ public class ModeManager : MonoBehaviour
                             }
                             else
                             {
-                                print("rotate defense");
                                 defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
                             }
                         } else
@@ -314,14 +306,12 @@ public class ModeManager : MonoBehaviour
                         {
                             if (hitout.collider.CompareTag("Ground"))
                             {
-                                print("world location");
                                 placeLocation = hitout.point;
                                 validPlacement = true;
                             }
                             else if (hitout.collider.CompareTag("Wall"))
                             {
                                 isLatched = true;
-                                print("hitting wall");
                                 placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
                                 hitCollider = hitout.collider;
                                 validPlacement = true;
@@ -332,9 +322,6 @@ public class ModeManager : MonoBehaviour
                         {
                             if (isLatched)
                             {
-                                /*OLD METHOD
-                                latchAngle += defenseRotationSpeed * Time.deltaTime;
-                                */
                                 RaycastHit rotHit;
                                 if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
                                 {
@@ -405,7 +392,7 @@ public class ModeManager : MonoBehaviour
                         Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
 
 
-                        player.SetResourceAmount(ResourceType.Diamond, -defenses[activeDefense].diamondCost);
+                        player.ChangeDiamondAmount(-defenses[activeDefense].diamondCost);
                         latchAngle = 0;
                     }
                 }
@@ -638,7 +625,7 @@ public class ModeManager : MonoBehaviour
     }
     #region BUILDING METHODS
 
-    private void StartBuilding()
+    protected void StartBuilding()
     {
 
         weaponRoot.SetActive(false);
@@ -647,16 +634,13 @@ public class ModeManager : MonoBehaviour
         defenseUtilityObject.SetActive(false);
 
         activeDefense = 0;
-        defenseGhost = Instantiate(defenses[activeDefense].ghost);
-        
-        ghostRenderer = defenseGhost.GetComponent<GhostScript>();
-        player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
+        CreateDefenseGhost();
         isLatched = false;
         hitCollider = null;
 
     }
 
-    private void StopBuilding()
+    protected void StopBuilding()
     {
 
         weaponRoot.SetActive(true);
@@ -664,27 +648,33 @@ public class ModeManager : MonoBehaviour
         defenseRoot.SetActive(false);
         isDefenseUtility = false;
         Destroy(defenseGhost);
-        player.hudScript.StopPlacingEntity();
+        player.hudScript.StopDisplayingHint();
     }
 
     void ChangeDefense(int index)
     {
         activeDefense = index;
         Destroy(defenseGhost);
+        CreateDefenseGhost();
+
+    }
+
+    protected void CreateDefenseGhost()
+    {
         defenseGhost = Instantiate(defenses[activeDefense].ghost);
         ghostRenderer = defenseGhost.GetComponent<GhostScript>();
         player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
-        print("change tower");
+        player.hudScript.DisplayHint(PLAYER_HINT.COST);
     }
 
-    private void EquipBuildingUtility()
+    protected void EquipBuildingUtility()
     {
         isDefenseUtility = true;
         defenseUtilityObject.SetActive(true);
         Destroy(defenseGhost);
     }
 
-    private void UnequipBuildingUtility()
+    protected void UnequipBuildingUtility()
     {
         isDefenseUtility = false;
         defenseUtilityObject.SetActive(false);
@@ -700,7 +690,7 @@ public class ModeManager : MonoBehaviour
         towerRoot.SetActive(false);
         weaponRoot.SetActive(true);
         Destroy(currentTower);
-        player.hudScript.StopPlacingEntity();
+        player.hudScript.StopDisplayingHint();
         ChangeGun(0);
     }
 
@@ -768,7 +758,7 @@ public class ModeManager : MonoBehaviour
     public WeaponInformation GetEquipedWeaponInformation(int tier)
     {
         return equipedWeaponInformation[tier - 1];
-    }
+    } 
 
     //ABSOLUTLEY HATE THIS MORE THEN TRYING TO SPELL ABSOULTELY
     public List<WeaponInformation> GetWeaponOptions(int tier)
@@ -814,6 +804,7 @@ public class ModeManager : MonoBehaviour
         currentTowerScript = currentTower.GetComponent<TowerParentScript>();
         currentTowerScript.SetMaterials(invalidMat);
         player.hudScript.PlacingEntity(true, currentTowerScript.GetTowerCost());
+        player.hudScript.DisplayHint(PLAYER_HINT.COST);
     }
 
     void ChangeTower(int index)
@@ -855,7 +846,7 @@ public class ModeManager : MonoBehaviour
     }
     #endregion
 
-    private void CycleMode()
+    protected void CycleMode()
     {
         switch (mode)
         {

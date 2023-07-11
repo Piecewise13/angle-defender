@@ -5,109 +5,19 @@ using UnityEngine;
 
 namespace Tutorial {
 
-    public class Player_ModeManager : MonoBehaviour
+    public class Player_ModeManager : ModeManager
     {
 
-        private PlayerMode mode;
-        private PlayerDataMangerScript dataManager;
-        private PlayerScript player;
-        public Animator playerAnimator;
-        private Camera playerCamera;
+        new Tutorial_PlayerScript player;
 
-        private bool freeToPlay = true;
-
-        /*
-         * WEAPON VARS
-         */
-        [Header("Weapons")]
-
-        public GameObject[] equipedWeapons;
-        private WeaponInformation[] equipedWeaponInformation;
-        private int equipedWeaponIndex;
-        public WeaponInformation basicPistol;
-
-        public GameObject weaponRoot;
-        private global::ParentWeaponScript equipedWeapon;
-
-
-        private List<WeaponInformation>[] weaponOptions = new List<WeaponInformation>[3];
-
-        [SerializeField] private int maxWeaponsToHold = 4;
-
-        /*
-         * TOWER VARS
-         */
-        [Space(30)]
-        [Header("Tower")]
-        public GameObject[] towers;
-
-        public GameObject towerWrenchPlayer;
-        public GameObject towerWrenchThrowable;
-
-        public GameObject towerPlacerObject;
-
-        public GameObject towerRoot;
-        private bool isTowerUtility;
-        private int towerIndex;
-        private GameObject currentTower;
-        //private GameObject towerGhost;
-        private TowerParentScript currentTowerScript;
-        public LayerMask possibleLayers;
-        private static List<Vector3> snappableTowers = new List<Vector3>();
-
-        /*
-         * BUILDING VARS
-         */
-        [Space(30)]
-        [Header("Building")]
-        public Defense[] defenses;
-        private int activeDefense;
-        private bool isDefenseUtility;
-        public GameObject defenseUtilityObject;
-        [SerializeField] private float defenseUtilityRange;
-        public LayerMask defenseLayer;
-
-
-        public float defenseRotationSpeed;
-        private float latchAngle;
-        Collider hitCollider = null;
-
-        [SerializeField] private float range;
-
-        public GameObject defenseRoot;
-        public float gridSize;
-
-
-        private GameObject defenseGhost;
-        public Material validMat;
-        public Material invalidMat;
-        private GhostScript ghostRenderer;
-        Vector3 placeLocation = Vector3.up * -500;
-        private bool isLatched = false;
-        private GameObject hitTowerWall;
-
-
-
-
-
-        // Start is called before the first frame update
-        void Start()
+        new void Start()
         {
-            dataManager = FindObjectOfType<PlayerDataMangerScript>();
-            player = GetComponentInChildren<PlayerScript>();
-            playerCamera = GetComponentInChildren<Camera>();
-            equipedWeaponInformation = new WeaponInformation[equipedWeapons.Length];
-
-            for (int i = 0; i < weaponOptions.Length; i++)
-            {
-                weaponOptions[i] = new List<WeaponInformation>();
-            }
-            EquipNewGun(basicPistol);
-            EquipWeapons();
+            base.Start();
+            player = GetComponent<Tutorial_PlayerScript>();
         }
 
         // Update is called once per frame
-        void Update()
+        new void Update()
         {
             if (Input.GetButtonDown("SwitchMode"))
             {
@@ -244,10 +154,9 @@ namespace Tutorial {
                             {
                                 if (isLatched)
                                 {
+                                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES2 + 1);
                                     WallDefenceScript.showIndicators = false;
-                                    /*OLD METHOD
-                                    latchAngle += defenseRotationSpeed * Time.deltaTime;
-                                    */
+
                                     RaycastHit rotHit;
                                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
                                     {
@@ -267,7 +176,7 @@ namespace Tutorial {
                                 }
                                 else
                                 {
-                                    print("rotate defense");
+                                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES1 + 1);
                                     defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
                                 }
                             }
@@ -343,7 +252,6 @@ namespace Tutorial {
                                     RaycastHit rotHit;
                                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
                                     {
-                                        print("rotating defense");
                                         Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
                                         Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
                                         placeLocation = location;
@@ -358,7 +266,6 @@ namespace Tutorial {
                                 }
                                 else
                                 {
-                                    print("rotate defense");
                                     defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
                                 }
                             }
@@ -411,7 +318,8 @@ namespace Tutorial {
                             Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
 
 
-                            player.SetResourceAmount(ResourceType.Diamond, -defenses[activeDefense].diamondCost);
+                            player.ChangeDiamondAmount(-defenses[activeDefense].diamondCost);
+                            player.miniGameScript.DisplayText(TUTORIAL_STEPS.PLACE_DEFENSE + 1);
                             latchAngle = 0;
                         }
                     }
@@ -658,6 +566,7 @@ namespace Tutorial {
 
             ghostRenderer = defenseGhost.GetComponent<GhostScript>();
             player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
+            player.hudScript.DisplayHint(PLAYER_HINT.COST);
             isLatched = false;
             hitCollider = null;
 
@@ -671,7 +580,7 @@ namespace Tutorial {
             defenseRoot.SetActive(false);
             isDefenseUtility = false;
             Destroy(defenseGhost);
-            player.hudScript.StopPlacingEntity();
+            player.hudScript.StopDisplayingHint();
         }
 
         void ChangeDefense(int index)
@@ -681,6 +590,7 @@ namespace Tutorial {
             defenseGhost = Instantiate(defenses[activeDefense].ghost);
             ghostRenderer = defenseGhost.GetComponent<GhostScript>();
             player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
+            player.hudScript.DisplayHint(PLAYER_HINT.COST);
             print("change tower");
         }
 
@@ -707,7 +617,7 @@ namespace Tutorial {
             towerRoot.SetActive(false);
             weaponRoot.SetActive(true);
             Destroy(currentTower);
-            player.hudScript.StopPlacingEntity();
+            player.hudScript.StopDisplayingHint();
             ChangeGun(0);
         }
 
@@ -821,6 +731,7 @@ namespace Tutorial {
             currentTowerScript = currentTower.GetComponent<TowerParentScript>();
             currentTowerScript.SetMaterials(invalidMat);
             player.hudScript.PlacingEntity(true, currentTowerScript.GetTowerCost());
+            player.hudScript.DisplayHint(PLAYER_HINT.COST);
         }
 
         void ChangeTower(int index)
@@ -868,6 +779,8 @@ namespace Tutorial {
             {
                 case PlayerMode.Weapons:
                     mode = PlayerMode.Defense;
+                    print("GOING TO BUILD MODE");
+                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.BUILD_DEFENSES + 1);
                     StartBuilding();
                     break;
                 case PlayerMode.Defense:

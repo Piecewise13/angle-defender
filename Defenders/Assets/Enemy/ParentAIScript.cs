@@ -17,7 +17,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     //protected static Object soulFireBallPrefab;
     [SerializeField] protected int soulFireWorth;
 
-    public MasterAI masterAI;
+    public Parent_MasterAI masterAI;
     public static WallDefenceScript[] walls;
     protected bool inLure;
     protected Vector3 lureDestination;
@@ -58,7 +58,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         //soulFireBallPrefab = Resources.Load("SoulFireBall");
         if (masterAI == null)
         {
-            masterAI = FindObjectOfType<MasterAI>();
+            masterAI = FindObjectOfType<Parent_MasterAI>();
         }
 
         if (playerDataManager == null)

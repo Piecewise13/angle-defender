@@ -99,14 +99,11 @@ public class WallHealer_Script : TowerParentScript
     //Creates a robot, initalizes its values, adds it to robots
     public void SendOutRobot(WallDefenceScript wall)
     {
-        print("sending out robots");
         int index = robotSpawnpointTracker % robotSpawnpoints.Length;
 
         GameObject robot = Instantiate(robotPrefab, robotSpawnpoints[index].position, robotSpawnpoints[index].rotation);
         
         RobotScript script = robot.GetComponent<RobotScript>();
-
-        print(script);
         script.InitializeRobot(this, wall, robotSpawnpoints[index]);
         script.SetSpeed(currentRobotSpeed);
         script.SetRepairAmount(currentRepairValue);
@@ -151,7 +148,6 @@ public class WallHealer_Script : TowerParentScript
     public void UpdateWallsToHeal()
     {
         Collider[] overlapDefenses = Physics.OverlapSphere(transform.position, currentRange, defenseLayer);
-        print(overlapDefenses.Length);
 
         foreach (var item in overlapDefenses)
         {

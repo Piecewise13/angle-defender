@@ -37,6 +37,10 @@ namespace Tutorial
                     SpawnDamageIndicator(hit.point, damageGiven, crit);
 
                 }
+                if (damageMultiplier > 1)
+                {
+                    player.shootingRangeScript.DisplayNextText(TUTORIAL_STEPS.MOVEMENT);
+                }
 
             }
             else

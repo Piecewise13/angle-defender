@@ -37,36 +37,6 @@ public class BasicEnemyScript : ParentAIScript
     private void Update()
     {
 
-        if (!agent.isStopped)
-        {
-            if (agent.hasPath)
-            {
-                /*
-                if (shouldAttack)
-                {
-                    if (Vector3.Distance(transform.position, targetWall.transform.position) < 2f)
-                    {
-                        StartAttack();
-                    }
-                }
-                */
-            }
-            else
-            {
-                if (inLure)
-                {
-                    print("in lure");
-                }
-                else
-                {
-                    UpdatePath();
-                }
-            }
-
-        }
-
-
-
         if (canAttack)
         {
             if (attackTarget != null)
@@ -74,7 +44,8 @@ public class BasicEnemyScript : ParentAIScript
                 if (attackTarget.isDead)
                 {
                     LeaveWall();
-                } else
+                }
+                else
                 {
                     if (attackTime + timeLastAttack < Time.time)
                     {
@@ -89,12 +60,28 @@ public class BasicEnemyScript : ParentAIScript
                     }
                 }
 
-            } else
+            }
+            else
             {
                 EndAttack();
             }
 
         }
+
+        if (agent.isStopped)
+        {
+            return;
+        }
+
+        if (agent.hasPath)
+        {
+            return;
+        }
+
+        UpdatePath();
+
+
+       
     }
 
     void UpdatePath()
@@ -104,29 +91,6 @@ public class BasicEnemyScript : ParentAIScript
         anim.SetBool("isWalking", true);
         //figure out if there is a path to player
         agent.destination = egg.transform.position;
-
-        /*
-        agent.CalculatePath(egg.transform.position, path);
-        if (path.status == NavMeshPathStatus.PathComplete)
-        {
-            shouldAttack = false;
-            agent.SetPath(path);
-
-        }
-        else
-        {
-            shouldAttack = true;
-        }
-
-        
-        targetWall = GetRandomWall();
-        atttackTargetGO = targetWall.gameObject;
-        attackTarget = targetWall;
-        if (!agent.hasPath)
-        {
-            agent.destination = targetWall.transform.position;
-        }
-        */
 
     }
 

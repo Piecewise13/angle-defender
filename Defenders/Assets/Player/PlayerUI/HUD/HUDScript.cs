@@ -10,24 +10,25 @@ public class HUDScript : MonoBehaviour
     public PlayerScript player;
 
     [Header("Resource Variables")]
-    public TMP_Text woodText;
-    public TMP_Text ironText;
     public TMP_Text diamondText;
+    public TMP_Text soulFireText;
+
+    [Space(10)]
+    public RectTransform diamondChangePos;
+    public RectTransform soulFireChangePos;
+    public GameObject changeValue;
+
     [Space(10)]
     public float fadeInDur;
     public float fadeOutDur;
 
-    [Space(10)]
-    public RectTransform woodChangePos;
-    public RectTransform ironChangePos;
-    public RectTransform diamondChangePos;
-    public GameObject changeValue;
+
 
     [Header("Player Variables")]
     public Slider healthSlider;
     public TMP_Text healthText;
     //public Slider soulFireSlider;
-    public TMP_Text soulFireText;
+
     private float previousSoulFire;
 
 
@@ -95,6 +96,13 @@ public class HUDScript : MonoBehaviour
     public TMP_Text roundsCounter;
     public TMP_Text enemiesCounter;
 
+    [Space(20)]
+    [Header("Hint Panel")]
+    public GameObject hintPanel;
+    public GameObject costHint;
+    public GameObject useHint;
+    public GameObject rotateHint;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -148,10 +156,7 @@ public class HUDScript : MonoBehaviour
 
     public void UpdateResourceValues()
     {
-
-        woodText.text = player.GetResourceAmount(ResourceType.Wood).ToString();
-        ironText.text = player.GetResourceAmount(ResourceType.Iron).ToString();
-        diamondText.text = player.GetResourceAmount(ResourceType.Diamond).ToString();
+        diamondText.text = player.GetDiamondAmount() + "";
     }
 
 
@@ -161,29 +166,51 @@ public class HUDScript : MonoBehaviour
         eggHealthSlider.value = egg.health / egg.maxHealth;
     }
 
-
-    public void ResoucesChangeFade(ResourceType resource, int amount)
+    public void DisplayHint(PLAYER_HINT hint)
     {
-        switch (resource)
+        
+        switch (hint)
         {
-            case ResourceType.Wood:
-                Instantiate(changeValue, woodChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
-
+            case PLAYER_HINT.USE:
+                useHint.SetActive(true);
                 break;
-            case ResourceType.Iron:
-                Instantiate(changeValue, ironChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
+            case PLAYER_HINT.COST:
+                costHint.SetActive(true);
                 break;
-            case ResourceType.Diamond:
-                Instantiate(changeValue, diamondChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
+            case PLAYER_HINT.ROTATE:
+                rotateHint.SetActive(true);
+                break;
+            default:
                 break;
         }
+        hintPanel.SetActive(true);
+    }
+
+    public void StopDisplayingHint()
+    {
+        useHint.SetActive(false);
+        costHint.SetActive(false);
+        //rotateHint.SetActive(false);
+        hintPanel.SetActive(false);
+    }
+
+
+    public void SpawnResoucesChangeIndicator(bool isDiamond, int amount)
+    {
+        if (isDiamond)
+        {
+            Instantiate(changeValue, diamondChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
+            return;
+        }
+
+        Instantiate(changeValue, soulFireChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);
+
     }
 
 
     //TODO MAKE A COOL ANIMATION OR SOMETHING HERE
     public void UpdatePlayerMode(PlayerMode newMode)
     {
-        print("Start Switch");
         informationPanelAnim.SetTrigger("ModeSwitch");
         switch (newMode)
         {
@@ -300,16 +327,6 @@ public class HUDScript : MonoBehaviour
         enemiesCounter.text = "" + number;
     }
 
-    public void SpawnDamageIndicator(float damage)
-    {
-        //Instantiate(damageIndicator, damageIndicatorSpawn.position + Vector3.up * 20f, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<DamageIndicatorScript>().SetDamage(damage);
-    }
-
-    public void SwitchPlayerMode()
-    {
-
-    }
-
     //I LIKE THE WAY IT SWITCHES BUT MAKE IT SWITCH SMOOTHER
     /*
     private IEnumerator PlayerModeSwitchAnimation(PlayerMode newMode)
@@ -383,7 +400,6 @@ public class HUDScript : MonoBehaviour
     */
     public void PlacingEntity(bool isSoulFire, int cost)
     {
-        entityCostObject.SetActive(true);
         if (isSoulFire)
         {
             costIcon.sprite = soulFireIcon;
@@ -404,20 +420,12 @@ public class HUDScript : MonoBehaviour
 
     public IEnumerator CantAffordResourcesFlash()
     {
-        woodText.color = Color.red;
-        ironText.color = Color.red;
         diamondText.color = Color.red;
         yield return new WaitForSeconds(.5f);
-        woodText.color = Color.white;
-        ironText.color = Color.white;
         diamondText.color = Color.white;
         yield return new WaitForSeconds(.5f);
-        woodText.color = Color.red;
-        ironText.color = Color.red;
         diamondText.color = Color.red;
         yield return new WaitForSeconds(.5f);
-        woodText.color = Color.white;
-        ironText.color = Color.white;
         diamondText.color = Color.white;
         yield return null;
     }

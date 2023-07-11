@@ -6,8 +6,9 @@ using UnityEngine.AI;
 public class WallDefenceScript : MonoBehaviour, Damageable
 {
     [Header("Resource")]
-    public ResourceType type;
-    public static Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
+    [SerializeField] private int[] upgradeCosts;
+    private int wallTier = 1;
+
 
     public static bool showIndicators;
 
@@ -56,10 +57,6 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     {
         health = maxHealth;
         obstacle = GetComponentInChildren<NavMeshObstacle>();
-        cost.Clear();
-        cost.Add(ResourceType.Wood, 10);
-        cost.Add(ResourceType.Iron, 0);
-        cost.Add(ResourceType.Diamond, 0);
 
         if (egg == null)
         {
@@ -146,25 +143,7 @@ public class WallDefenceScript : MonoBehaviour, Damageable
     private bool CanAfford()
     {
 
-        for (int i = 0; i < (int)ResourceType.Count; i++)
-        {
-            if (player.GetResourceAmount((ResourceType)i) < WallDefenceScript.cost[(ResourceType)i])
-            {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    private void ChargePlayer()
-    {
-        for (int i = 0; i < (int)ResourceType.Count; i++)
-        {
-            player.SetResourceAmount((ResourceType)i, -WallDefenceScript.cost[(ResourceType)i]);
-        }
+        return player.GetDiamondAmount() > upgradeCosts[wallTier - 1];
     }
 
 

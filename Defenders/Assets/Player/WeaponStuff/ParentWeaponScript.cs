@@ -171,8 +171,8 @@ public abstract class ParentWeaponScript : WeaponScript
         canShoot = false;
         isReloading = true;
         startReloadTime = Time.time;
-        playerAnimator.SetBool("isReloading", true);
-        
+        playerAnimator.SetTrigger("isReloading");
+
 
 
     }
@@ -183,7 +183,7 @@ public abstract class ParentWeaponScript : WeaponScript
         {
             return;
         }
-        playerAnimator.SetBool("isReloading", false);
+
         isReloading = false;
         canShoot = true;
         player.hudScript.UpdateBulletCount(currentNumOfBullets);

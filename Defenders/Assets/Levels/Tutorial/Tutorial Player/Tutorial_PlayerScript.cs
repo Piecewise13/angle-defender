@@ -12,7 +12,11 @@ namespace Tutorial
         [Header("Tutorial Vars")]
         //[TextArea]
         public TUTORIAL_STEPS currentStep;
+
+        [Header("Tutorial Sections")]
         public ShootingRangeTextScript shootingRangeScript;
+        public MiniGameTutorialScript miniGameScript;
+
         [TextArea]
         public string[] tutorialPrompts;
 
@@ -23,7 +27,7 @@ namespace Tutorial
             base.Start();
 
             shootingRangeScript = FindObjectOfType<ShootingRangeTextScript>();
-
+            miniGameScript = FindObjectOfType<MiniGameTutorialScript>();       
         }
     }
 
@@ -35,6 +39,15 @@ namespace Tutorial
         AIM,
         RELOAD,
         MOVEMENT,
+        USE,
+        EGG,
+        EGG_POWERS,
+        COLLECT_RESOURCES,
+        BUILD_DEFENSES,
+        ROTATE_DEFENSES1,
+        PLACE_DEFENSE,
+        ROTATE_DEFENSES2,
+        START_GAME
 
     }
 
