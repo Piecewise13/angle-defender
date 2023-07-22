@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e0be396e20574dc9959f5684c4413c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 30
+  speed: 60
   splitBombPrefab: {fileID: 7987361994596020693, guid: 5dfca4a41d6fd4ab1b754aa4fdd50971,
     type: 3}
   numberOfSplits: 4

@@ -48,7 +48,7 @@ void Start()
                 //playerScript.upgradeTreeOpen(!isOpen);
                 isOpen = !isOpen;
                 upgradeTree.SetActive(isOpen);
-                player.openUIElement(isOpen);
+                player.OpenMenu(isOpen);
                 if (isOpen)
                 {
                     shop.SetPlayerInShop(player);

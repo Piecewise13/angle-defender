@@ -47,7 +47,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public GameObject inventory;
     protected Player_InventoryScript inventoryScript;
     protected bool inInventory = false;
-
+    private bool menuIsOpen = false;
 
     /**
      * MOVEMENT VARS
@@ -57,10 +57,12 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected float defaultMovementSpeed;
     #region Movment Vars
     protected bool canMove = true;
+    protected bool canControlPlayer = true;
+    
 
     [SerializeField] protected float groundDrag;
     [SerializeField] protected float airMovementSpeedMultiplier;
-    protected float movementSpeedVar = 10f;
+    protected float maxSpeed = 10f;
     [SerializeField] protected float jumpHeight;
     protected float forwardValue;
     protected float sideValue;
@@ -70,7 +72,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected Vector3 moveDir;
     protected float gravity = -9.81f;
     protected Vector3 velocity;
-    protected bool isGrounded;
+    public bool isGrounded;
 
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -94,21 +96,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     public LayerMask movementLayer;
 
 
-    [Space(10)]
-    [Header("Dash Vars")]
-    //Dash Vars
-    [SerializeField] protected float dashTime;
-    protected float startDashTime;
-    [SerializeField] protected float dashForce;
-    protected bool canDash = true;
-    [SerializeField] private float dashCooldown;
-    private float dashCooldownStart;
-    private bool isDashOnCooldown;
 
-    protected bool isDashing;
-    protected Vector3 initForward;
-    public GameObject dashTrigger;
-    private float previousMaxSpeed;
 
 
     /*
@@ -132,17 +120,29 @@ public class PlayerScript : MonoBehaviour, Damageable
     private SpringJoint grappleJoint;
 
 
-    protected bool firstPerkUnlocked = false;
-    protected bool secondPerkUnlocked = false;
-    protected bool thirdPerkUnlocked = false;
+
+    protected bool ultimateAbilityUnlocked = false;
 
     [Space(10)]
     [Header("Ladder Vars")]
     public float ladderSpeed;
     private bool isOnLadder;
 
+    [Space(20)]
+    [Header("Ultimate Ability")]
+    [SerializeField] private UltimateAbilityInformation ultimateAbilityInformation;
+    protected bool canUseUltimateAbility = false;
+    private ParentUltimateAbility ultimateAbilityScript;
 
+    public UltimateAbilityInformation testUltimateAbility;
 
+    [Space(10)]
+    [Header("Special Ability")]
+    [SerializeField] private SpecialAbilityInformation specialAbilityInformation;
+    protected bool canUseSpecialAbility = false;
+    private ParentSpecialAbility specialAbilityScript;
+
+    public SpecialAbilityInformation testAbility;
 
 
     #endregion
@@ -194,10 +194,20 @@ public class PlayerScript : MonoBehaviour, Damageable
 
         //upgradeTree.gameObject.SetActive(false);
         defaultFov = playerCamera.fieldOfView;
-        movementSpeedVar = defaultMovementSpeed;
-        dashTrigger.SetActive(false);
+        maxSpeed = defaultMovementSpeed;
         health = maxHealth;
         hudScript.UpdateHealth();
+        if (testAbility != null)
+        {
+            print("Giving ability");
+            GiveSpecialAbility(testAbility);
+        }
+
+        if (testAbility != null)
+        {
+            print("Giving ability");
+            GiveUltimateAbility(testUltimateAbility);
+        }
 
     }
 
@@ -207,7 +217,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         /**
          * MOVEMENT REGION
          */
-        #region
+        #region BASIC MOVEMENT REGION
 
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
@@ -225,7 +235,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             ResetJump();
             canWallKick = true;
             rigidbody.drag = groundDrag;
-            movementSpeedVar = defaultMovementSpeed;
+            maxSpeed = defaultMovementSpeed;
 
         } else
         {
@@ -238,15 +248,16 @@ public class PlayerScript : MonoBehaviour, Damageable
             if (sonicEffectTime + startSonicEffectTime < Time.time)
             {
                 isSonicEffect = false;
-                movementSpeedVar = defaultMovementSpeed;
+                maxSpeed = defaultMovementSpeed;
             }
-            movementSpeedVar = sonicMovementSpeed;
+            maxSpeed = sonicMovementSpeed;
         }
 
 
 
         if (canMove)
         {
+
             forwardValue = Input.GetAxis("Vertical");
             sideValue = Input.GetAxis("Horizontal");
 
@@ -259,9 +270,9 @@ public class PlayerScript : MonoBehaviour, Damageable
             else
             {
                 moveDir = forwardValue * Vector3.up + sideValue * transform.right;
-                movementSpeedVar = ladderSpeed;
+                maxSpeed = ladderSpeed;
             }
-
+            
             if (!moveDir.Equals(Vector3.zero))
             {
                 animator.SetBool("isWalking", true);
@@ -271,69 +282,18 @@ public class PlayerScript : MonoBehaviour, Damageable
                 animator.SetBool("isWalking", false);
 
             }
+            #endregion
 
-            //DASH FUNCTIONALITY
-            if (Input.GetButtonDown("Dash"))
+            if (Input.GetButtonDown("SpecialAbility"))
             {
-                if (canDash)
-                {
-                    canDash = false;
-                    startDashTime = Time.time;
-                    rigidbody.useGravity = false;
-                    rigidbody.velocity = Vector3.zero;
-                    rigidbody.AddForce(transform.forward * dashForce, ForceMode.Impulse);
-                    previousMaxSpeed = movementSpeedVar;
-                    movementSpeedVar = 50f;
-                }
+                ActivateSpecialAbility();
             }
 
-            if (!canDash)
+            if (Input.GetButtonDown("UltimateAbility"))
             {
-                if (isDashOnCooldown)
-                {
-                    if (dashCooldown + dashCooldownStart < Time.time)
-                    {
-                        canDash = true;
-                        isDashOnCooldown = false;
-                    }
-                }
-                else
-                {
-
-                    if (startDashTime + dashTime < Time.time)
-                    {
-                        rigidbody.useGravity = true;
-                        rigidbody.velocity = rigidbody.velocity / 2f;
-                        print(previousMaxSpeed);
-                        movementSpeedVar = previousMaxSpeed;
-                        dashCooldownStart = Time.time;
-                        isDashOnCooldown = true;
-                    }
-
-
-
-                }
+                ActivateUltimateAbility();
             }
 
-
-            if (firstPerkUnlocked)
-            {
-                if (!isGrounded && canWallKick)
-                {
-                    if (Input.GetButtonDown("Jump"))
-                    {
-                        RaycastHit hit;
-
-                        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, wallKickDistance, movementLayer))
-                        {
-                            velocity.y = wallKickHeight;
-                            canWallKick = false;
-                        }
-                    }
-                }
-
-
-            }
 
             if (Input.GetButtonDown("Jump") && canJump)
             {
@@ -385,7 +345,6 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
 
         #endregion
-        #endregion
 
         if (isDead)
         {
@@ -395,10 +354,11 @@ public class PlayerScript : MonoBehaviour, Damageable
             }
         }
 
+        #region MENU REGION
         if (Input.GetButtonDown("Settings"))
         {
             inSettings = !inSettings;
-            openUIElement(inSettings);
+            OpenMenu(inSettings);
             settingsMenu.SetActive(inSettings);
         }
 
@@ -406,10 +366,10 @@ public class PlayerScript : MonoBehaviour, Damageable
         {
             inInventory = !inInventory;
             
-            openUIElement(inInventory);
+            OpenMenu(inInventory);
             inventory.SetActive(inInventory);
         }
-
+        #endregion
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
 
         SpeedControl();
@@ -436,7 +396,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
-
+    #region Grappling Hook Methods
     private bool ShootGrapplingHook()
     {
 
@@ -484,7 +444,7 @@ public class PlayerScript : MonoBehaviour, Damageable
         grappleJoint.damper = 8f;
         grappleJoint.massScale = 4.5f;
 
-        movementSpeedVar = grapplingSwingSpeed;
+        maxSpeed = grapplingSwingSpeed;
 
     }
 
@@ -509,29 +469,37 @@ public class PlayerScript : MonoBehaviour, Damageable
         grapplingHookLine.positionCount = 0;
         grapplingHookObject.SetActive(false);
     }
+    #endregion
+
+    #region Basic Movement Methods
 
     private void MovePlayer()
     {
+        if (!canControlPlayer)
+        {
+            return;
+        }
+
         if (isGrapplingAttached)
         {
             return;
         }
         if (isGrounded)
         {
-            rigidbody.AddForce(moveDir.normalized * movementSpeedVar * 10f, ForceMode.Force);
+            rigidbody.AddForce(moveDir.normalized * maxSpeed * 10f, ForceMode.Force);
         } else
         {
-            rigidbody.AddForce(moveDir.normalized * movementSpeedVar * 10f * airMovementSpeedMultiplier, ForceMode.Force);
+            rigidbody.AddForce(moveDir.normalized * maxSpeed * 10f * airMovementSpeedMultiplier, ForceMode.Force);
         }
     }
 
     private void SpeedControl()
     {
         Vector3 flatVelo = rigidbody.velocity.xz3();
-        if (flatVelo.magnitude > movementSpeedVar)
+        if (flatVelo.magnitude > maxSpeed)
         {
 
-            Vector3 limitedVel = flatVelo.normalized * movementSpeedVar;
+            Vector3 limitedVel = flatVelo.normalized * maxSpeed;
 
             rigidbody.velocity = new Vector3(limitedVel.x, rigidbody.velocity.y, limitedVel.z);
         }
@@ -550,14 +518,9 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     }
 
-    private void ResetDash()
-    {
-
-    }
-
     private void Jump()
     {
-        if (jumpCount >= 1)
+        if (jumpCount > 1)
         {
             canJump = false;
         }
@@ -574,6 +537,104 @@ public class PlayerScript : MonoBehaviour, Damageable
         jumpCount = 0;
         canJump = true;
     }
+    #endregion
+
+    public void ActivateUltimateAbility()
+    {
+        if (!canUseUltimateAbility)
+        {
+            return;
+        }
+
+        if (ultimateAbilityInformation == null)
+        {
+            return;
+        }
+
+        ultimateAbilityScript.ActivateAbility();
+        ultimateAbilityScript.DepleteCharge();
+    }
+
+    public void GiveUltimateAbility(UltimateAbilityInformation information)
+    {
+        if (ultimateAbilityScript != null)
+        {
+            ultimateAbilityScript.DestroyAbility();
+        }
+        ultimateAbilityInformation = information;
+
+        System.Type classtype = information.functionalityScript.GetClass();
+        ultimateAbilityScript = gameObject.AddComponent(classtype) as ParentUltimateAbility;
+
+
+
+        hudScript.ChangeUltimateAbilityImage(information.icon);
+        hudScript.UpdateUltimateAbilityCharge(0f);
+        ultimateAbilityScript.SetChargeAmount(information.chargeAmount);
+        canUseUltimateAbility = false;
+    }
+
+    public void ChargeUltimateAbility(float multiplier)
+    {
+        if(ultimateAbilityScript == null)
+        {
+            return;
+        }
+
+        canUseUltimateAbility = ultimateAbilityScript.ChargeUp(multiplier);
+
+    }
+
+
+
+    public void ActivateSpecialAbility()
+    {
+        if (!canUseSpecialAbility)
+        {
+            return;
+        }
+
+        if (specialAbilityInformation == null)
+        {
+            return;
+        }
+        specialAbilityScript.ActivateAbility();
+        StartCoroutine(SpecialAbilityOnCooldown());
+
+        
+    }
+
+    public void GiveSpecialAbility(SpecialAbilityInformation information)
+    {
+        if (specialAbilityScript != null)
+        {
+            specialAbilityScript.DestroyAbility();
+        }
+        specialAbilityInformation = information;
+        System.Type classtype = information.functionalityScript.GetClass();
+        specialAbilityScript = gameObject.AddComponent(classtype) as ParentSpecialAbility;
+        hudScript.ChangeSpecialAbilityImage(information.icon);
+        StartCoroutine(SpecialAbilityOnCooldown());
+    }
+
+    public IEnumerator SpecialAbilityOnCooldown()
+    {
+
+        float timer = 0f;
+        canUseSpecialAbility = false;
+        hudScript.UpdateSpecialAbilityCooldown(timer);
+        while (timer <= specialAbilityInformation.cooldown)
+        {
+            hudScript.UpdateSpecialAbilityCooldown(timer / specialAbilityInformation.cooldown);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        canUseSpecialAbility = true;
+        hudScript.UpdateSpecialAbilityCooldown(1f);
+
+        yield return null;
+    }
+
 
     public void Death()
     {
@@ -620,22 +681,6 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     }
 
-    public virtual void UnlockFirstUpgrade()
-    {
-        firstPerkUnlocked = true;
-    }
-
-
-    public virtual void UnlockSecondUpgrade()
-    {
-
-    }
-
-    public virtual void UnlockUlt()
-    {
-
-    }
-
 
 
     public void SonicAttackEffect()
@@ -667,8 +712,13 @@ public class PlayerScript : MonoBehaviour, Damageable
     }
 
 
-    public void openUIElement(bool isOpen)
+    public void OpenMenu(bool isOpen)
     {
+        if (isOpen && menuIsOpen)
+        {
+            return;
+        }
+
         if (isOpen)
         {
             SetAllBoolsFalse();
@@ -679,6 +729,7 @@ public class PlayerScript : MonoBehaviour, Damageable
             canMove = false;
             //weaponManager.canShoot(false);
             modeManager.SetFreeToPlay(false);
+            menuIsOpen = true;
         }
         else
         {
@@ -688,14 +739,9 @@ public class PlayerScript : MonoBehaviour, Damageable
             canMove = true;
 
             modeManager.SetFreeToPlay(true);
+            menuIsOpen = false;
         }
     }
-
-    public void DisplayHint()
-    {
-
-    }
-
 
     /*
      * GET AND SET VARS
@@ -719,9 +765,19 @@ public class PlayerScript : MonoBehaviour, Damageable
         return diamondAmount;
     }
 
-    public void LaunchPlayer(float height)
+    public Rigidbody GetRigidbody()
     {
-        velocity.y = height;
+        return rigidbody;
+    }
+
+    public float GetMaxSpeed()
+    {
+        return maxSpeed;
+    }
+
+    public void SetMaxSpeed(float speed)
+    {
+        maxSpeed = speed;
     }
 
     public int GetSoulFire()
@@ -736,6 +792,10 @@ public class PlayerScript : MonoBehaviour, Damageable
         hudScript.SpawnResoucesChangeIndicator(false, delta);
     }
 
+    public void SetCanControlPlayer(bool value)
+    {
+        canControlPlayer = value;
+    }
 
 
     public void SetHealthMax(int delta)
@@ -747,6 +807,8 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         return respawnTime;
     }
+
+    
 
     protected void SetAllBoolsFalse()
     {
@@ -768,6 +830,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     {
         return isOnLadder;
     }
+    #endregion
 
     public void GiveDamage(float damage, Collider hitCollider, out float damageGiven, out bool crit)
     {
@@ -790,9 +853,20 @@ public class PlayerScript : MonoBehaviour, Damageable
         }
     }
 
-    #endregion
 
+}
 
+public enum SPECIAL_ABILITY
+{
+    NONE,
+    DASH
+
+}
+
+public enum ULTIMATE_ABILITY
+{
+    NONE,
+    GROUND_SLAM
 }
 
 public enum PLAYER_HINT

@@ -91,7 +91,7 @@ public class BulletForge : MonoBehaviour
             {
                 inMenu = !inMenu;
                 bulletForgeUI.gameObject.SetActive(inMenu);
-                player.openUIElement(inMenu);
+                player.OpenMenu(inMenu);
             }
 
             if (fireStored >= playerTransferAmount)
@@ -161,14 +161,14 @@ public class BulletForge : MonoBehaviour
     {
         inMenu = false;
         bulletForgeUI.gameObject.SetActive(inMenu);
-        player.openUIElement(inMenu);
+        player.OpenMenu(inMenu);
     }
 
     public void OpenMenu()
     {
         inMenu = true;
         bulletForgeUI.gameObject.SetActive(inMenu);
-        player.openUIElement(inMenu);
+        player.OpenMenu(inMenu);
     }
 
     public void UpgradeForge(int upgradeAmount)

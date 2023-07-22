@@ -34,7 +34,6 @@ public class JumpPadScript : MonoBehaviour
             if (other.transform.root.tag.Equals("Player"))
             {
                 PlayerScript script = other.GetComponentInParent<PlayerScript>();
-                script.LaunchPlayer(height);
             }
         }
 

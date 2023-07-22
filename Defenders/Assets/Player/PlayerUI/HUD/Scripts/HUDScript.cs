@@ -103,6 +103,12 @@ public class HUDScript : MonoBehaviour
     public GameObject useHint;
     public GameObject rotateHint;
 
+    [Space(20)]
+    [Header("Abilities")]
+    public Image normalAbilityIcon;
+    public Image specialAbilityIcon;
+    public Image ultimateAbilityIcon;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -139,6 +145,36 @@ public class HUDScript : MonoBehaviour
         
     }
 
+    public void ChangeNormalAbilityImage(Sprite icon)
+    {
+        normalAbilityIcon.sprite = icon;
+    }
+
+
+
+
+    public void ChangeSpecialAbilityImage(Sprite icon)
+    {
+        specialAbilityIcon.sprite = icon;
+    }
+
+    public void UpdateSpecialAbilityCooldown(float percent)
+    {
+        specialAbilityIcon.fillAmount = percent;
+    }
+
+    public void ChangeUltimateAbilityImage(Sprite icon)
+    {
+        ultimateAbilityIcon.sprite = icon;
+
+    }
+
+    public void UpdateUltimateAbilityCharge(float percent)
+    {
+        ultimateAbilityIcon.fillAmount = percent;
+    }
+
+    #region PLAYER VALUES
     public void UpdateSoulFireValues()
     {
 
@@ -159,12 +195,9 @@ public class HUDScript : MonoBehaviour
         diamondText.text = player.GetDiamondAmount() + "";
     }
 
+    #endregion
 
-    public void UpdateEggValues()
-    {
-
-        eggHealthSlider.value = egg.health / egg.maxHealth;
-    }
+    #region INDICATOR FUNCTIONS
 
     public void DisplayHint(PLAYER_HINT hint)
     {
@@ -194,7 +227,7 @@ public class HUDScript : MonoBehaviour
         hintPanel.SetActive(false);
     }
 
-
+    //Used for when player picks up new resources or gets more soul fire
     public void SpawnResoucesChangeIndicator(bool isDiamond, int amount)
     {
         if (isDiamond)
@@ -239,6 +272,40 @@ public class HUDScript : MonoBehaviour
 
 
     }
+
+    public void PlacingEntity(bool isSoulFire, int cost)
+    {
+        if (isSoulFire)
+        {
+            costIcon.sprite = soulFireIcon;
+        }
+        else
+        {
+            costIcon.sprite = resourceIcon;
+        }
+
+        costValue.text = "" + cost;
+
+    }
+
+    public void StopPlacingEntity()
+    {
+        entityCostObject.SetActive(false);
+    }
+
+    public IEnumerator CantAffordResourcesFlash()
+    {
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        diamondText.color = Color.white;
+        yield return new WaitForSeconds(.5f);
+        diamondText.color = Color.red;
+        yield return new WaitForSeconds(.5f);
+        diamondText.color = Color.white;
+        yield return null;
+    }
+
+    #endregion
 
     #region WEAPONS INFORMATION
     //Updates the weapon for a specified tier
@@ -316,6 +383,14 @@ public class HUDScript : MonoBehaviour
         damageMultiplier.text = "x" + multiplier;
     }
 
+    #region GAME VALUES
+    public void UpdateEggValues()
+    {
+
+        eggHealthSlider.value = egg.health / egg.maxHealth;
+    }
+
+
     public void UpdateRoundsCounter(int number)
     {
         roundsCounter.text = "" + number;
@@ -326,6 +401,7 @@ public class HUDScript : MonoBehaviour
     {
         enemiesCounter.text = "" + number;
     }
+    #endregion
 
     //I LIKE THE WAY IT SWITCHES BUT MAKE IT SWITCH SMOOTHER
     /*
@@ -398,36 +474,9 @@ public class HUDScript : MonoBehaviour
 
     }
     */
-    public void PlacingEntity(bool isSoulFire, int cost)
-    {
-        if (isSoulFire)
-        {
-            costIcon.sprite = soulFireIcon;
-        } else
-        {
-            costIcon.sprite = resourceIcon;
-        }
-
-        costValue.text = "" + cost;
-
-    }
-
-    public void StopPlacingEntity()
-    {
-        entityCostObject.SetActive(false);
-    }
 
 
-    public IEnumerator CantAffordResourcesFlash()
-    {
-        diamondText.color = Color.red;
-        yield return new WaitForSeconds(.5f);
-        diamondText.color = Color.white;
-        yield return new WaitForSeconds(.5f);
-        diamondText.color = Color.red;
-        yield return new WaitForSeconds(.5f);
-        diamondText.color = Color.white;
-        yield return null;
-    }
+
+
 
 }

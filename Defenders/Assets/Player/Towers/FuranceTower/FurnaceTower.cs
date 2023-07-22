@@ -121,7 +121,7 @@ public class FurnaceTower : TowerParentScript
             {
                 inMenu = !inMenu;
                 bulletForgeUI.gameObject.SetActive(inMenu);
-                player.openUIElement(inMenu);
+                player.OpenMenu(inMenu);
             }
         }
     }

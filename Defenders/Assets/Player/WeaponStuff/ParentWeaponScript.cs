@@ -118,6 +118,7 @@ public abstract class ParentWeaponScript : WeaponScript
             {
                 float damageGiven;
                 bool crit;
+                player.ChargeUltimateAbility(damageMultiplier);
                 hitGameobject.GiveDamage(damage * damageMultiplier, hit.collider, out damageGiven, out crit);
 
                 SpawnDamageIndicator(hit.point, damageGiven, crit);

@@ -52,7 +52,7 @@ public class WorkBenchScript : MonoBehaviour
             if (Input.GetButtonDown("Use"))
             {
                 inMenu = !inMenu;
-                player.openUIElement(inMenu);
+                player.OpenMenu(inMenu);
                 UpdatePlayerValues();
                 workbenchUI.SetActive(inMenu);
                 if (inMenu)

@@ -88,7 +88,7 @@ public abstract class TowerParentScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         towerCamera.gameObject.SetActive(true);
         player.playerCamera.gameObject.SetActive(false);
-        player.openUIElement(true);
+        player.OpenMenu(true);
         towerUI.gameObject.SetActive(true);        
     }
 
@@ -98,7 +98,7 @@ public abstract class TowerParentScript : MonoBehaviour
         player.playerCamera.gameObject.SetActive(true);
         towerCamera.gameObject.SetActive(false);
         towerUI.gameObject.SetActive(false);
-        player.openUIElement(false);
+        player.OpenMenu(false);
     }
 
     protected List<Transform> FindSpawnPoints(GameObject parent)

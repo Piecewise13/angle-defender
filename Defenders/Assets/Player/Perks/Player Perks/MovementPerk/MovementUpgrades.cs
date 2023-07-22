@@ -6,7 +6,6 @@ public class MovementUpgrades : ParentPerkScript
 {
     public override void UnlockUpgrade(PlayerScript player)
     {
-        player.UnlockFirstUpgrade();
     }
 
 
