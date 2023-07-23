@@ -167,6 +167,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public void ReachedEgg() {
         masterAI.Enemy_Killed(gameObject);
         Destroy(gameObject);
+        print(gameObject + " has Reached Egg");
         //START A COUROTINE TO MAKE COOL EFFECTS AND SHIT
     }
 

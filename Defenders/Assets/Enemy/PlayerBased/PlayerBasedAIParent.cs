@@ -18,13 +18,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         players = FindObjectsOfType<PlayerScript>();
     }
 
-    
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 
     public abstract void PlayerFound(PlayerScript player);
     public abstract void PlayerLost(PlayerScript player);

@@ -17,6 +17,6 @@ MonoBehaviour:
   abilityDescription: Rapidly hurls your self toward the ground to cause a shock
     wave that does horrendous damage. The higher up you are, the more damage you'll
     do.
-  chargeAmount: 10
+  chargeAmount: 100
   functionalityScript: {fileID: 11500000, guid: d481f3c6edefe4d40b7420ac2c5c6de0,
     type: 3}

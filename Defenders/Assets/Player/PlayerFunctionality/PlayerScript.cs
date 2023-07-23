@@ -67,7 +67,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     protected float forwardValue;
     protected float sideValue;
     protected bool canJump;
-    private int jumpCount;
+    public int jumpCount;
 
     protected Vector3 moveDir;
     protected float gravity = -9.81f;
@@ -520,14 +520,16 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void Jump()
     {
-        if (jumpCount > 1)
+
+        if (jumpCount >= 1)
         {
             canJump = false;
+            return;
         }
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
 
         rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
-        rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
+
         jumpCount++;
 
     }
