@@ -66,7 +66,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     [SerializeField] protected float jumpHeight;
     protected float forwardValue;
     protected float sideValue;
-    protected bool canJump;
+    protected bool canJump = true;
     public int jumpCount;
 
     protected Vector3 moveDir;
@@ -232,7 +232,12 @@ public class PlayerScript : MonoBehaviour, Damageable
             {
                 rigidbody.useGravity = true;
             }
-            ResetJump();
+            if (jumpCount > 0)
+            {
+                ResetJump();
+            }
+
+
             canWallKick = true;
             rigidbody.drag = groundDrag;
             maxSpeed = defaultMovementSpeed;
@@ -521,7 +526,7 @@ public class PlayerScript : MonoBehaviour, Damageable
     private void Jump()
     {
 
-        if (jumpCount >= 1)
+        if (jumpCount > 1)
         {
             canJump = false;
             return;
@@ -536,8 +541,8 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void ResetJump()
     {
-        jumpCount = 0;
         canJump = true;
+        jumpCount = 0;
     }
     #endregion
 
