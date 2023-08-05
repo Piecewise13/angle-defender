@@ -56,6 +56,7 @@ public abstract class TowerParentScript : MonoBehaviour
         }
     }
 
+    /*
     private void OnTriggerExit(Collider other)
     {
         if (other.transform.root.gameObject.tag.Equals("Player"))
@@ -64,6 +65,7 @@ public abstract class TowerParentScript : MonoBehaviour
         }
 
     }
+    */
 
     public void SetMaterials(Material mat)
     {
@@ -89,6 +91,7 @@ public abstract class TowerParentScript : MonoBehaviour
         towerCamera.gameObject.SetActive(true);
         player.playerCamera.gameObject.SetActive(false);
         player.OpenMenu(true);
+        print("Tower menu on");
         towerUI.gameObject.SetActive(true);        
     }
 

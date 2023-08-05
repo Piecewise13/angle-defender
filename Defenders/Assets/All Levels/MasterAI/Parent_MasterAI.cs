@@ -27,7 +27,7 @@ public abstract class Parent_MasterAI : MonoBehaviour
 
     [Space(20)]
     [Header("Round Data")]
-    int roundNumber = 0;
+    protected int roundNumber = 0;
     public List<GameObject> ai = new List<GameObject>();
 
     public int[] spawnNumber = new int[4];
@@ -36,13 +36,13 @@ public abstract class Parent_MasterAI : MonoBehaviour
     public float randTimeMin;
     public float randTimeMax;
 
-    private bool isSpawning;
+    protected bool isSpawning;
 
-    float tier1Time, tier2Time, tier3Time;
+    protected float tier1Time, tier2Time, tier3Time;
 
     public int numberKilled;
     public int totalToSpawn;
-    private int killedMOE = 5;
+    [SerializeField] private int enemyLeftBuffer = 3;
     private int numberLeft;
 
 
@@ -51,7 +51,7 @@ public abstract class Parent_MasterAI : MonoBehaviour
 
 
     public ResourceSpawner resourceSpawner;
-    private PlayerDataMangerScript playerData;
+    protected PlayerDataMangerScript playerData;
 
 
     
@@ -185,7 +185,7 @@ public abstract class Parent_MasterAI : MonoBehaviour
         {
             return;
         }
-        if (ai.Count < 3)
+        if (ai.Count < enemyLeftBuffer)
         {
             End_Wave();
         }

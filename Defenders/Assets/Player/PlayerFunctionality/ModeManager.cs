@@ -70,6 +70,7 @@ public class ModeManager : MonoBehaviour
     public float defenseRotationSpeed;
     protected float latchAngle;
     protected Collider hitCollider = null;
+    protected bool freezeMovement;
 
     [SerializeField] protected float range;
 
@@ -174,8 +175,7 @@ public class ModeManager : MonoBehaviour
                     } else
                     {
                         EquipBuildingUtility();
-                    }
-                    
+                    }                   
                 }
 
 
@@ -218,7 +218,11 @@ public class ModeManager : MonoBehaviour
                         if (!isLatched) {
                             if (hitout.collider.CompareTag("Ground"))
                             {
-                                placeLocation = hitout.point;
+                                if (!freezeMovement)
+                                {
+                                    placeLocation = hitout.point;
+                                }
+
                                 WallDefenceScript.showIndicators = true;
                                 validPlacement = true;
                             }
@@ -234,6 +238,21 @@ public class ModeManager : MonoBehaviour
                             }
                         }
 
+                        if (Input.GetButtonDown("RotateDefense"))
+                        {
+                            if (!isLatched)
+                            {
+                                freezeMovement = true;
+                                placeLocation = hitout.point;
+                            }
+                        }
+
+                        if (Input.GetButtonUp("RotateDefense"))
+                        {
+                            freezeMovement = false;
+                        }
+
+
                         if (Input.GetButton("RotateDefense"))
                         {
                             if (isLatched)
@@ -244,7 +263,7 @@ public class ModeManager : MonoBehaviour
                                 {
                                     Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
                                     Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
-                                    placeLocation = location;
+                                    placeLocation = Extns.LocationWithOthersHeight(location, hitCollider.transform.root.position);
                                 }
                                 else
                                 {
@@ -257,13 +276,19 @@ public class ModeManager : MonoBehaviour
                             }
                             else
                             {
-                                defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
+                                RaycastHit rotHit;
+                                if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
+                                {
+                                    defenseGhost.transform.LookAt(hitout.point.xz3(), Vector3.up);
+                                }
                             }
                         } else
                         {
                             isLatched = false;
 
                         }
+
+
                     }
                     else
                     {
@@ -387,9 +412,13 @@ public class ModeManager : MonoBehaviour
                         {
                             dataManager.AddTowerPlacedOnWall(hitTowerWall);
                         }
-                        
 
-                        Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+                        GameObject defense = Instantiate(defenses[activeDefense].defense, defenseGhost.transform.position, defenseGhost.transform.rotation);
+
+                        if (activeDefense == 0)
+                        {
+                            dataManager.PlacedWall(defense);
+                        }
 
 
                         player.ChangeDiamondAmount(-defenses[activeDefense].diamondCost);
@@ -585,6 +614,7 @@ public class ModeManager : MonoBehaviour
                     }
                     else
                     {
+
                         //HIGH HIGH PROBABILITY THAT THIS WILL FAIL WITH OTHER TOWERS CHECK THIS WITH FURNACE
                         if (hit.collider.gameObject.layer.Equals(LayerMask.NameToLayer("Tower")))
                         {
@@ -651,7 +681,7 @@ public class ModeManager : MonoBehaviour
         player.hudScript.StopDisplayingHint();
     }
 
-    void ChangeDefense(int index)
+    protected void ChangeDefense(int index)
     {
         activeDefense = index;
         Destroy(defenseGhost);
@@ -692,9 +722,10 @@ public class ModeManager : MonoBehaviour
         Destroy(currentTower);
         player.hudScript.StopDisplayingHint();
         ChangeGun(0);
+        TurretDefenseScript.showSnapIndicator = false;
     }
 
-    void ChangeGun(int index)
+    protected void ChangeGun(int index)
     {
         if (equipedWeapons[index] == null)
         {
@@ -798,16 +829,17 @@ public class ModeManager : MonoBehaviour
         
     }
 
-    void SpawnNewTower()
+    protected void SpawnNewTower()
     {
         currentTower = Instantiate(towers[towerIndex]);
         currentTowerScript = currentTower.GetComponent<TowerParentScript>();
         currentTowerScript.SetMaterials(invalidMat);
         player.hudScript.PlacingEntity(true, currentTowerScript.GetTowerCost());
         player.hudScript.DisplayHint(PLAYER_HINT.COST);
+        TurretDefenseScript.showSnapIndicator = currentTowerScript.GetIsSnapping();
     }
 
-    void ChangeTower(int index)
+    protected void ChangeTower(int index)
     {
         isTowerUtility = false;
         towerWrenchPlayer.SetActive(false);
@@ -818,6 +850,7 @@ public class ModeManager : MonoBehaviour
             Destroy(currentTower);
         }
 
+
         SpawnNewTower();
         
         //TODO make a cool animation and play it here
@@ -825,7 +858,7 @@ public class ModeManager : MonoBehaviour
 
     }
 
-    void EquipTowerUtility()
+    protected void EquipTowerUtility()
     {
         Destroy(currentTower);
         towerWrenchPlayer.SetActive(true);
@@ -846,8 +879,9 @@ public class ModeManager : MonoBehaviour
     }
     #endregion
 
-    protected void CycleMode()
+    protected virtual void CycleMode()
     {
+
         switch (mode)
         {
             case PlayerMode.Weapons:

@@ -25,17 +25,24 @@ namespace Tutorial
         public float forwardDistance;
         public float rightDistance;
         public float upDistance;
+
         [Space(5)]
         public float rotationSnappiness;
+
         [Space(5)]
         [SerializeField] private float stepTime;
         private float startStepTime;
         bool isTimedStep;
         public List<TUTORIAL_STEPS> timedSteps;
 
+        private bool hasPlayer = false;
+
         [Header("Objects")]
         public List<GameObject> resources;
-        public GameObject spawner;
+        public Tutorial_MasterAI spawner;
+        private ShootingRangeTextScript shootRange;
+
+        bool textFlash = true;
 
 
         // Start is called before the first frame update
@@ -45,20 +52,23 @@ namespace Tutorial
             {
                 item.SetActive(false);
             }
-            spawner.SetActive(false);
+            spawner.gameObject.SetActive(false);
+            player = FindObjectOfType<Tutorial_PlayerScript>();
+            tutorialText.gameObject.SetActive(false);
+            shootRange = FindObjectOfType<ShootingRangeTextScript>();
         }
 
         // Update is called once per frame
         void Update()
         {
 
-            if (player)
+            if (hasPlayer)
             {
                 canvasTransform.position = player.transform.position + (player.transform.forward * forwardDistance
                     + player.transform.right * rightDistance
                     + Vector3.up * upDistance);
 
-                canvasTransform.rotation = Quaternion.Lerp(canvasTransform.rotation, Quaternion.LookRotation(canvasTransform.position - player.transform.position), 10f * Time.deltaTime);
+                canvasTransform.rotation = Quaternion.Lerp(canvasTransform.rotation, Quaternion.LookRotation(canvasTransform.position - player.transform.position), rotationSnappiness * Time.deltaTime);
                 //canvasTransform.LookAt(player.transform.position);
             }
 
@@ -81,6 +91,11 @@ namespace Tutorial
             {
                 return;
             }
+            if (textFlash)
+            {
+                StartCoroutine(TextFlash());
+            }
+
 
             if (timedSteps.Contains(step))
             {
@@ -90,8 +105,7 @@ namespace Tutorial
             }
 
 
-            player.currentStep = step;
-            tutorialText.text = textToDisplay[(int)step - (int)TUTORIAL_STEPS.EGG];
+
 
             if (step == TUTORIAL_STEPS.COLLECT_RESOURCES)
             {
@@ -100,12 +114,15 @@ namespace Tutorial
                     item.SetActive(true);
                 }
             }
-
-            if (step == TUTORIAL_STEPS.START_GAME)
+            if (step == TUTORIAL_STEPS.START_GAME || step == TUTORIAL_STEPS.START_GAME2 || step == TUTORIAL_STEPS.START_GAME3 || step == TUTORIAL_STEPS.FINAL_START)
             {
-                spawner.SetActive(true);
+                spawner.gameObject.SetActive(true);
+                spawner.ShowStartSign();
+                
             }
 
+            player.currentStep = step;
+            tutorialText.text = textToDisplay[(int)step - (int)TUTORIAL_STEPS.EGG];
         }
 
         private void OnTriggerEnter(Collider other)
@@ -114,9 +131,32 @@ namespace Tutorial
             {
                 return;
             }
-
-            player = other.GetComponentInParent<Tutorial_PlayerScript>();
+            shootRange.HideText();
+            //tutorialText.gameObject.SetActive(true);
+            hasPlayer = true;
             DisplayText(TUTORIAL_STEPS.EGG);
+            tutorialText.gameObject.SetActive(true);
+        }
+
+        IEnumerator TextFlash()
+        {
+            tutorialText.gameObject.SetActive(false);
+            yield return new WaitForSeconds(.5f);
+            tutorialText.gameObject.SetActive(true);
+            print("Show text");
+
+        }
+
+        public void HideText()
+        {
+            tutorialText.gameObject.SetActive(false);
+            textFlash = false;
+        }
+
+        public void ShowText()
+        {
+            tutorialText.gameObject.SetActive(true);
+            textFlash = true;
         }
     }
 }

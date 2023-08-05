@@ -93,16 +93,17 @@ public class FurnaceTower : TowerParentScript
             if (outputSpeed + lastOutputTime < Time.time)
             {
                 lastOutputTime = Time.time;
-                print("output speed: " + outputSpeed);
+
                 fuelAmount -= fuelBurnAmount;
                 DispenseSoulFire();
 
                 bulletForgeUI.UpdateFuelMeter();
-                
+
             }
-        } else
+        }
+        else
         {
-            if(anim != null)
+            if (anim != null)
             {
                 anim.SetBool("isBurning", false);
             }
@@ -115,15 +116,42 @@ public class FurnaceTower : TowerParentScript
         {
             return;
         }
+
+        //if in forge menu, player can close it
+        if (inMenu)
+        {
+            if (Input.GetButtonDown("Use"))
+            {
+                CloseForgeMenu();
+            }
+            return;
+        }
+
+        //if player is in the trigger, they can open the menu
         if (hasPlayer)
         {
             if (Input.GetButtonDown("Use"))
             {
-                inMenu = !inMenu;
-                bulletForgeUI.gameObject.SetActive(inMenu);
-                player.OpenMenu(inMenu);
+                OpenForgeMenu();
             }
+            return;
         }
+
+
+    }
+
+    private void OpenForgeMenu()
+    {
+        inMenu = true;
+        bulletForgeUI.gameObject.SetActive(inMenu);
+        player.OpenMenu(inMenu);
+    }
+
+    private void CloseForgeMenu()
+    {
+        inMenu = false;
+        bulletForgeUI.gameObject.SetActive(inMenu);
+        player.OpenMenu(inMenu);
     }
 
 
@@ -215,7 +243,6 @@ public class FurnaceTower : TowerParentScript
         script.gameObject.transform.localScale = soulfireBallScale;
         Vector3 launchDir = Quaternion.Euler(Vector3.up * Random.Range(0f, 360f)) * Vector3.forward * launchForce / 5 + Vector3.up * launchForce;
         //Vector3.up + Vector3.right * Random.Range(-1f, 1f) + Vector3.forward * Random.Range(-1f, 1f);
-        print(launchDir);
         script.LaunchBall(launchDir);
         dispenserTracker++;
     }

@@ -230,6 +230,11 @@ public class HUDScript : MonoBehaviour
     //Used for when player picks up new resources or gets more soul fire
     public void SpawnResoucesChangeIndicator(bool isDiamond, int amount)
     {
+        if (amount == 0 )
+        {
+            return;
+        }
+
         if (isDiamond)
         {
             Instantiate(changeValue, diamondChangePos.position, Quaternion.Euler(Vector3.zero), gameObject.transform).GetComponent<ChangeValueScript>().SetValue(amount);

@@ -211,6 +211,10 @@ public abstract class ParentWeaponScript : WeaponScript
 
     protected void SpawnDamageIndicator(Vector3 hitPos, float damage, bool crit)
     {
+        if(damage == 0)
+        {
+            return;
+        }
 
         DamageIndicatorScript script = Instantiate(damageIndicator, hitPos, Quaternion.LookRotation((hitPos - transform.position).normalized)).GetComponent<DamageIndicatorScript>();
         script.SetDamage(damage, Vector3.Distance(hitPos, transform.position));

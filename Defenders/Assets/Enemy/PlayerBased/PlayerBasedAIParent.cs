@@ -5,12 +5,12 @@ public abstract class PlayerBasedAIParent : ParentAIScript
 {
 
     protected PlayerScript player;
-    [SerializeField] protected float playerSearchRange;
+    [SerializeField] protected float targetSearchRange;
     [SerializeField] protected LayerMask playerMask;
 
 
     protected static PlayerScript[] players;
-    protected bool hasPlayer;
+    protected bool hasTarget;
 
     public new void Start()
     {
@@ -31,7 +31,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
         {
             if (!players[i].isDead) {
                 float distance = Vector3.Distance(postion, players[i].transform.position);
-                if (distance < currentDistance && distance < playerSearchRange)
+                if (distance < currentDistance && distance < targetSearchRange)
                 {
                     closestIndex = i;
                 }
@@ -53,7 +53,7 @@ public abstract class PlayerBasedAIParent : ParentAIScript
             if (!players[i].isDead)
             {
                 float distance = Vector3.Distance(transform.position, players[i].transform.position);
-                if (distance < currentDistance && distance < playerSearchRange)
+                if (distance < currentDistance && distance < targetSearchRange)
                 {
                     closestIndex = i;
                 }

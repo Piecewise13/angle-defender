@@ -38,7 +38,6 @@ public class SpawnBallScript : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //
-        print("trig hit");
     }
 
     private void OnCollisionEnter(Collision collision)

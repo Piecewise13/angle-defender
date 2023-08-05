@@ -7,17 +7,19 @@ public class GroundSlamScript : ParentUltimateAbility
 
     private float slamSpeed = 30f;
 
-    private float maxDistance = 40f;
+    private float maxDistance = 100f;
 
-    private float maxRadius = 15f;
+    private float maxRadius = 20f;
 
-    private float maxDamage = 100f;
+    private float maxDamage = 400f;
 
     private bool isSlamming = false;
 
     private float distanceFromGround;
 
     private Rigidbody rb;
+
+    private GameObject particle;
     
 
     // Start is called before the first frame update
@@ -25,6 +27,7 @@ public class GroundSlamScript : ParentUltimateAbility
     {
         base.Start();
         rb = player.GetRigidbody();
+        particle = Resources.Load("GroundSlamParticles") as GameObject;
     }
 
     // Update is called once per frame
@@ -47,22 +50,34 @@ public class GroundSlamScript : ParentUltimateAbility
 
     private void DamageEnemies()
     {
-        float multiplier = distanceFromGround / maxDistance;
+        print(distanceFromGround);
+        float multiplier = Mathf.Clamp(distanceFromGround / maxDistance, 0.3f, 1f);
 
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, maxRadius * multiplier, LayerMask.GetMask("EntityTrigger"));
+        print(multiplier);
+
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, maxRadius * multiplier, LayerMask.GetMask("Enemy"));
 
 
         foreach (var item in hitEnemies)
         {
-            if (item.tag != "Enemy")
-            {
-                continue;
-            }
 
-            Damageable aiScript = GetComponent<Damageable>();
+            Damageable aiScript = item.transform.root.GetComponentInChildren<Damageable>();
+            print("Gave " + item.transform.root.gameObject + " " + maxDamage * multiplier + " damage");
+
 
             aiScript.GiveDamage(maxDamage * multiplier);
         }
+
+        ParticleSystem groundSlam = Instantiate(particle, transform.position, Quaternion.Euler(-90f, 0f, 0f)).GetComponent<ParticleSystem>();
+
+        var hemi = groundSlam.shape;
+        hemi.shapeType = ParticleSystemShapeType.Cone;
+        hemi.radius = maxRadius * multiplier;
+
+        var main = groundSlam.main;
+        main.startSizeMultiplier = 500 * multiplier;
+        main.startSpeed = 8 * multiplier;
+
         EndAbility();
     }
 
@@ -77,7 +92,6 @@ public class GroundSlamScript : ParentUltimateAbility
         if (Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, LayerMask.GetMask("Ground", "Block", "Default")))
         {
             distanceFromGround = hit.distance;
-            print(hit.distance);
         }
         isSlamming = true;
         player.SetCanControlPlayer(false);

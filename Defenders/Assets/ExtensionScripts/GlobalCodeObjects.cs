@@ -51,6 +51,11 @@ public static class Extns
         return new Vector3(vv.x, 0f, vv.z);
     }
 
+    public static Vector3 LocationWithOthersHeight(Vector3 vec, Vector3 other)
+    {
+        return vec.xz3() + other.y * Vector3.up;
+    }
+
     public static IEnumerator TextFlash(TMP_Text text)
     {
         text.color = Color.red;

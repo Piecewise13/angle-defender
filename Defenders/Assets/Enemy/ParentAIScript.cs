@@ -24,7 +24,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     [SerializeField]protected bool canBeLured;
     protected bool atWall;
 
-    private PlayerDataMangerScript playerDataManager;
+    protected PlayerDataMangerScript playerDataManager;
 
 
     public float health { get; set; }
@@ -46,7 +46,7 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
         if (eggScript == null)
         {
             eggScript = FindObjectOfType<EggScript>();
-            egg = eggScript.transform.root.gameObject;
+            egg = eggScript.gameObject;
         }
 
 
@@ -167,7 +167,6 @@ public abstract class ParentAIScript : MonoBehaviour, Damageable
     public void ReachedEgg() {
         masterAI.Enemy_Killed(gameObject);
         Destroy(gameObject);
-        print(gameObject + " has Reached Egg");
         //START A COUROTINE TO MAKE COOL EFFECTS AND SHIT
     }
 

@@ -46,7 +46,7 @@ public class DamageIndicatorScript : MonoBehaviour
 
     public void SetDamage(float damage, float distance)
     {
-        print("damage");
+
         startTime = Time.time;
         text.text = damage + "";
         transform.localScale = Vector3.one * (distance / normalDist);

@@ -80,9 +80,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resource: 2
   spawnLocation: {fileID: 533758927283861322}
-  resourceHealth: 30
+  spawner: {fileID: 0}
+  resourceHealth: 0
   objectSpawn: {fileID: 4669785059525900011, guid: d0ce4a1129d244353aba397d5f0c6b27,
     type: 3}
+  critDamageMultiplier: 1
 --- !u!65 &5201328654768903227
 BoxCollider:
   m_ObjectHideFlags: 0

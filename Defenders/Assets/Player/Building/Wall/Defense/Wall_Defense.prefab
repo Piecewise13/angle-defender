@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 7497879279945623230}
   m_Layer: 9
   m_Name: Wall_Defense
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d25021a629d442c9b9b817ca04908a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  upgradeCosts: 
   latch1: {fileID: 8443532803830449546}
   latch2: {fileID: 4813353448577150417}
   wallObjects:

@@ -27,7 +27,6 @@ public abstract class ParentUltimateAbility : MonoBehaviour
     {
         currentCharge += chargeRate * multiplier;
         player.hudScript.UpdateUltimateAbilityCharge(currentCharge / chargeAmount);
-        print(currentCharge / chargeAmount);
         return currentCharge >= chargeAmount;
     }
 

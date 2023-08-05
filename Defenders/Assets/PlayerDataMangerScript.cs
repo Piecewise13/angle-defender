@@ -16,6 +16,8 @@ public class PlayerDataMangerScript : MonoBehaviour
 
     HashSet<GameObject> defenseLocations = new HashSet<GameObject>();
 
+    List<GameObject> placedWalls = new List<GameObject>();
+
     private int roundNumber;
 
 
@@ -86,6 +88,29 @@ public class PlayerDataMangerScript : MonoBehaviour
     public void WallDestroyed(GameObject wall)
     {
         defenseLocations.Remove(wall);
+    }
+
+    public void PlacedWall(GameObject wall)
+    {
+        placedWalls.Add(wall);
+    }
+
+    public GameObject GetClosestWall(Vector3 from)
+    {
+        float currDist = float.MaxValue;
+        GameObject closest = null;
+        foreach (var item in placedWalls)
+        {
+            float distance = Vector3.Distance(from, item.transform.position);
+            if (distance < currDist)
+            {
+                currDist = distance;
+                closest = item;
+            }
+        }
+
+
+        return closest;
     }
 
 }

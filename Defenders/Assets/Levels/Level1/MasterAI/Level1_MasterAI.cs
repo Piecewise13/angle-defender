@@ -17,7 +17,7 @@ public class Level1_MasterAI : Parent_MasterAI
         base.Start_Wave();
     }
 
-    public new void End_Wave()
+    public override void End_Wave()
     {
         fireParticles.Stop();
         chaliceAnim.SetBool("isSwinging", false);

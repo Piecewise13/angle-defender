@@ -5,12 +5,12 @@ using UnityEngine;
 public class DashScript : ParentSpecialAbility
 {
 
-    private float dashForce = 50f;
-    private float dashMaxSpeed = 60f;
+    private float dashForce = 80f;
+    private float dashMaxSpeed = 80f;
 
     private float previousMovementSpeed;
 
-    private float dashingTime = .6f;
+    private float dashingTime = .3f;
     private float startDashingTime;
     private bool isDashing = false;
 
@@ -27,7 +27,6 @@ public class DashScript : ParentSpecialAbility
     
     public override void ActivateAbility()
     {
-        print("Using Ability");
         previousMovementSpeed = player.GetMaxSpeed();
         Rigidbody rb = player.GetRigidbody();
         rb.useGravity = false;
@@ -37,6 +36,7 @@ public class DashScript : ParentSpecialAbility
         player.SetMaxSpeed(dashMaxSpeed);
         isDashing = true;
         startDashingTime = Time.time;
+        rb.useGravity = false;
     }
 
     public override void EndAbility()
@@ -45,7 +45,7 @@ public class DashScript : ParentSpecialAbility
         rb.velocity /= 2f;
         player.SetMaxSpeed(previousMovementSpeed);
         isDashing = false;
-        
+        rb.useGravity = true;
     }
 
     // Update is called once per frame

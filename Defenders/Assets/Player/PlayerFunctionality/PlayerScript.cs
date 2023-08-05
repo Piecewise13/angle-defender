@@ -300,11 +300,11 @@ public class PlayerScript : MonoBehaviour, Damageable
             }
 
 
-            if (Input.GetButtonDown("Jump") && canJump)
+            if (Input.GetButtonDown("Jump"))
             {
                 Jump();
 
-                animator.SetTrigger("isJumping");
+
             }
 
 
@@ -525,6 +525,10 @@ public class PlayerScript : MonoBehaviour, Damageable
 
     private void Jump()
     {
+        if (!canJump)
+        {
+            return;
+        }
 
         if (jumpCount > 1)
         {
@@ -536,6 +540,8 @@ public class PlayerScript : MonoBehaviour, Damageable
         rigidbody.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
 
         jumpCount++;
+
+        animator.SetTrigger("isJumping");
 
     }
 

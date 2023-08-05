@@ -40,33 +40,48 @@ void Start()
     // Update is called once per frame
     void Update()
     {
+
+        if (!playerInTrigger && !isOpen)
+        {
+            return;
+        }
+
+        //if menu is open, player can close it regardless of if they're in the trigger or not
+        if (isOpen)
+        {
+            if (Input.GetButtonDown("Use"))
+            {
+                CloseUpgradeMenu();
+            }
+            return;
+        }
+
+        //if menu is closed but player is in the trigger, player can open the menu
         if (playerInTrigger)
         {
             if (Input.GetButtonDown("Use"))
             {
-
-                //playerScript.upgradeTreeOpen(!isOpen);
-                isOpen = !isOpen;
-                upgradeTree.SetActive(isOpen);
-                player.OpenMenu(isOpen);
-                if (isOpen)
-                {
-                    shop.SetPlayerInShop(player);
-                } else
-                {
-                    shop.SetPlayerInShop(null);
-                }
-
-
+                OpenUpgradeMenu();
             }
         }
-
-        if (resourceSpawnRate + lastResourceSpawnTime < Time.deltaTime)
-        {
-            SpawnResource();
-            lastResourceSpawnTime = Time.time;
-        }
     }
+
+    private void OpenUpgradeMenu()
+    {
+        isOpen = true;
+        upgradeTree.SetActive(isOpen);
+        player.OpenMenu(isOpen);
+        shop.SetPlayerInShop(player);
+    }
+
+    private void CloseUpgradeMenu()
+    {
+        isOpen = false;
+        upgradeTree.SetActive(isOpen);
+        player.OpenMenu(isOpen);
+        shop.SetPlayerInShop(null);
+    }
+
 
     public void SpawnResource()
     {
@@ -88,6 +103,7 @@ void Start()
     {
 
         string otherTag = other.transform.root.tag;
+
         if (otherTag.Equals("Player"))
         {
             player = other.gameObject.GetComponentInParent<PlayerScript>();

@@ -131,8 +131,10 @@ namespace Tutorial {
                             {
                                 if (hitout.collider.CompareTag("Ground"))
                                 {
-                                    print("world location");
-                                    placeLocation = hitout.point;
+                                    if (!freezeMovement)
+                                    {
+                                        placeLocation = hitout.point;
+                                    }
                                     WallDefenceScript.showIndicators = true;
                                     validPlacement = true;
                                 }
@@ -140,8 +142,6 @@ namespace Tutorial {
                                 {
                                     WallDefenceScript.showIndicators = false;
                                     isLatched = true;
-
-                                    print("hitting wall");
                                     placeLocation = (hitout.collider.transform.position + hitout.collider.transform.forward.normalized * 4).xz3();
 
                                     hitCollider = hitout.collider;
@@ -150,20 +150,34 @@ namespace Tutorial {
                                 }
                             }
 
+                            if (Input.GetButtonDown("RotateDefense"))
+                            {
+                                if (!isLatched)
+                                {
+                                    freezeMovement = true;
+                                    placeLocation = hitout.point;
+                                }
+                            }
+
+                            if (Input.GetButtonUp("RotateDefense"))
+                            {
+                                freezeMovement = false;
+                            }
+
                             if (Input.GetButton("RotateDefense"))
                             {
                                 if (isLatched)
                                 {
-                                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES2 + 1);
+
                                     WallDefenceScript.showIndicators = false;
 
                                     RaycastHit rotHit;
                                     if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
-                                    {
-                                        print("rotating defense");
+                                    {  
                                         Vector3 dir = (rotHit.point.xz3() - hitCollider.transform.position.xz3()).normalized;
                                         Vector3 location = (hitCollider.transform.position.xz3() + dir * 4);
-                                        placeLocation = location;
+                                        placeLocation = Extns.LocationWithOthersHeight(location, hitCollider.transform.root.position);
+                                        player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES2 + 1);
                                     }
                                     else
                                     {
@@ -171,13 +185,17 @@ namespace Tutorial {
                                         isLatched = false;
                                     }
 
-                                    defenseGhost.transform.LookAt(hitCollider.transform.position.xz3(), Vector3.up);
+                                    defenseGhost.transform.LookAt(Extns.LocationWithOthersHeight(hitCollider.transform.position, hitCollider.transform.root.position), Vector3.up);
 
                                 }
                                 else
                                 {
-                                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES1 + 1);
-                                    defenseGhost.transform.Rotate(Vector3.up * (defenseRotationSpeed * Time.deltaTime));
+                                    RaycastHit rotHit;
+                                    if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out rotHit, 100f, LayerMask.GetMask("Ground")))
+                                    {
+                                        defenseGhost.transform.LookAt(hitout.point.xz3() + defenseGhost.transform.position.y * Vector3.up, Vector3.up);
+                                        player.miniGameScript.DisplayText(TUTORIAL_STEPS.ROTATE_DEFENSES1 + 1);
+                                    }
                                 }
                             }
                             else
@@ -194,6 +212,8 @@ namespace Tutorial {
                     }
                     else if (activeDefense == 1)
                     {
+
+                        player.miniGameScript.DisplayText(TUTORIAL_STEPS.ENTER_TURRET + 1);
                         RaycastHit towerHit;
                         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out towerHit, range, LayerMask.GetMask("Defense", "Ground")))
                         {
@@ -203,6 +223,7 @@ namespace Tutorial {
                                 validPlacement = !dataManager.TowerAlreadyPlacedOnWall(hitTowerWall);
                                 placeLocation = towerHit.point.xz3();
                                 defenseGhost.transform.rotation = towerHit.collider.transform.root.rotation;
+
                             }
                             else if (towerHit.collider.gameObject.CompareTag("Ground"))
                             {
@@ -321,6 +342,11 @@ namespace Tutorial {
                             player.ChangeDiamondAmount(-defenses[activeDefense].diamondCost);
                             player.miniGameScript.DisplayText(TUTORIAL_STEPS.PLACE_DEFENSE + 1);
                             latchAngle = 0;
+                            if (activeDefense == 1)
+                            {
+                                player.miniGameScript.DisplayText(TUTORIAL_STEPS.PLACE_TURRET + 1);
+                            }
+
                         }
                     }
                     else
@@ -449,6 +475,7 @@ namespace Tutorial {
                     if (Input.GetButtonDown("Utility"))
                     {
                         EquipTowerUtility();
+                        player.miniGameScript.DisplayText(TUTORIAL_STEPS.WRENCH + 1);
                         //equip utility
                     }
 
@@ -460,6 +487,7 @@ namespace Tutorial {
                         {
                             GameObject hammer = Instantiate(towerWrenchThrowable, towerRoot.transform.position, towerRoot.transform.rotation);
                             hammer.GetComponent<WrenchThrowableScript>().SetPlayer(player);
+                            player.miniGameScript.DisplayText(TUTORIAL_STEPS.THROW_WRENCH + 1);
                         }
 
                         return;
@@ -474,39 +502,46 @@ namespace Tutorial {
                         int objLayer = (1 << hit.collider.gameObject.layer);
                         if ((currentTowerScript.placementLayers.value & objLayer) <= 0)
                         {
+
                             validPlacement = false;
-                            return;
                         }
 
                         if (!player.CanAffordSoulFire(currentTowerScript.GetTowerCost()))
                         {
                             validPlacement = false;
-                            return;
                         }
+
 
                         if (currentTowerScript.GetIsSnapping())
                         {
                             if (!hit.collider.gameObject.CompareTag("SpawnPoint"))
                             {
-                                return;
+                                currentTower.transform.position = hit.point;
+                                validPlacement = false;
+                            } else
+                            {
+                                currentTower.transform.position = hit.collider.transform.position;
                             }
-                            currentTower.transform.position = hit.collider.transform.position;
+
 
                             if (snappableTowers.Contains(currentTower.transform.position))
                             {
                                 validPlacement = false;
-                                return;
                             }
 
-                            if (Input.GetButtonDown("Fire1"))
+                            if (validPlacement)
                             {
-                                currentTower.transform.SetParent(hit.collider.transform);
-                                currentTowerScript.Place();
-                                snappableTowers.Add(currentTower.transform.position);
-                                player.SetSoulFire(-currentTowerScript.GetTowerCost());
-                                SpawnNewTower();
-                                print("placing at snap");
+                                if (Input.GetButtonDown("Fire1"))
+                                {
+                                    currentTower.transform.SetParent(hit.collider.transform);
+                                    currentTowerScript.Place();
+                                    snappableTowers.Add(currentTower.transform.position);
+                                    player.SetSoulFire(-currentTowerScript.GetTowerCost());
+                                    SpawnNewTower();
+                                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.PLACE_SENTRY + 1);
+                                }
                             }
+
 
 
                         }
@@ -516,22 +551,28 @@ namespace Tutorial {
                             if (hit.collider.gameObject.layer.Equals(LayerMask.NameToLayer("Tower")))
                             {
                                 validPlacement = false;
-                                return;
                             }
 
+
                             currentTower.transform.position = hit.point;
-                            if (Input.GetButtonDown("Fire1"))
+
+                            if (validPlacement)
                             {
-                                currentTowerScript.Place();
-                                SpawnNewTower();
-                                player.SetSoulFire(-currentTowerScript.GetTowerCost());
+                                if (Input.GetButtonDown("Fire1"))
+                                {
+                                    currentTowerScript.Place();
+                                    SpawnNewTower();
+                                    player.SetSoulFire(-currentTowerScript.GetTowerCost());
+                                }
                             }
+
                         }
                     }
                     else
                     {
                         validPlacement = false;
                     }
+                    print(validPlacement) ;
 
                     if (validPlacement)
                     {
@@ -551,240 +592,30 @@ namespace Tutorial {
             }
 
         }
-        #region BUILDING METHODS
 
-        private void StartBuilding()
+
+
+        protected override void CycleMode()
         {
-
-            weaponRoot.SetActive(false);
-            towerRoot.SetActive(false);
-            defenseRoot.SetActive(true);
-            defenseUtilityObject.SetActive(false);
-
-            activeDefense = 0;
-            defenseGhost = Instantiate(defenses[activeDefense].ghost);
-
-            ghostRenderer = defenseGhost.GetComponent<GhostScript>();
-            player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
-            player.hudScript.DisplayHint(PLAYER_HINT.COST);
-            isLatched = false;
-            hitCollider = null;
-
-        }
-
-        private void StopBuilding()
-        {
-
-            weaponRoot.SetActive(true);
-            towerRoot.SetActive(false);
-            defenseRoot.SetActive(false);
-            isDefenseUtility = false;
-            Destroy(defenseGhost);
-            player.hudScript.StopDisplayingHint();
-        }
-
-        void ChangeDefense(int index)
-        {
-            activeDefense = index;
-            Destroy(defenseGhost);
-            defenseGhost = Instantiate(defenses[activeDefense].ghost);
-            ghostRenderer = defenseGhost.GetComponent<GhostScript>();
-            player.hudScript.PlacingEntity(false, defenses[activeDefense].diamondCost);
-            player.hudScript.DisplayHint(PLAYER_HINT.COST);
-            print("change tower");
-        }
-
-        private void EquipBuildingUtility()
-        {
-            isDefenseUtility = true;
-            defenseUtilityObject.SetActive(true);
-            Destroy(defenseGhost);
-        }
-
-        private void UnequipBuildingUtility()
-        {
-            isDefenseUtility = false;
-            defenseUtilityObject.SetActive(false);
-            StartBuilding();
-        }
-
-        #endregion
-
-        #region WEAPONS METHOD
-        public void EquipWeapons()
-        {
-            player.ChangeCameraZoom(1f);
-            towerRoot.SetActive(false);
-            weaponRoot.SetActive(true);
-            Destroy(currentTower);
-            player.hudScript.StopDisplayingHint();
-            ChangeGun(0);
-        }
-
-        void ChangeGun(int index)
-        {
-            if (equipedWeapons[index] == null)
+            
+            if (player.currentStep < TUTORIAL_STEPS.CYCLE_MODE)
             {
                 return;
             }
-            foreach (GameObject weapon in equipedWeapons)
-            {
-                if (weapon != null)
-                    weapon.SetActive(false);
-            }
-            equipedWeaponIndex = index;
-            equipedWeapons[equipedWeaponIndex].SetActive(true);
-            player.hudScript.UpdateEquipedWeapon(equipedWeaponInformation[index].tier);
 
-            try
-            {
-                equipedWeapon = equipedWeapons[equipedWeaponIndex].GetComponent<global::ParentWeaponScript>();
-                playerAnimator.runtimeAnimatorController = equipedWeapon.gunAnims;
-                equipedWeapon.EquipGun();
-                player.hudScript.UpdateClipSize(equipedWeapon.clipSize);
-            }
-            catch
-            {
-
-            }
-
-            playerAnimator.SetTrigger("newGun");
-        }
-
-
-        public bool GiveNewGun(WeaponInformation weapon)
-        {
-            int tier = weapon.tier;
-            print(tier);
-            print(weaponOptions.Length);
-            if (weaponOptions[tier - 1].Count == maxWeaponsToHold)
-            {
-                return false;
-            }
-
-            weaponOptions[tier - 1].Add(weapon);
-            return true;
-        }
-
-
-
-
-        public void EquipNewGun(WeaponInformation weapon)
-        {
-            equipedWeaponIndex = weapon.tier - 1;
-            Destroy(equipedWeapons[equipedWeaponIndex]);
-            equipedWeapons[equipedWeaponIndex] = Instantiate(weapon.weapon, weaponRoot.transform);
-            equipedWeapons[equipedWeaponIndex].transform.localPosition = Vector3.zero;
-            equipedWeaponInformation[equipedWeaponIndex] = weapon;
-
-            player.hudScript.UpdateWeaponIcon(weapon.icon, weapon.tier);
-
-            ChangeGun(equipedWeaponIndex);
-        }
-
-        public WeaponInformation GetEquipedWeaponInformation(int tier)
-        {
-            return equipedWeaponInformation[tier - 1];
-        }
-
-        //ABSOLUTLEY HATE THIS MORE THEN TRYING TO SPELL ABSOULTELY
-        public List<WeaponInformation> GetWeaponOptions(int tier)
-        {
-            WeaponInformation equiped = equipedWeaponInformation[tier - 1];
-            List<WeaponInformation> options = new List<WeaponInformation>();
-            foreach (var option in weaponOptions[tier - 1])
-            {
-                if (!option.Equals(equiped))
-                {
-                    options.Add(option);
-                }
-            }
-
-            return options;
-        }
-
-        #endregion
-
-        #region TOWER METHODS
-        public void EquipTower()
-        {
-            player.ChangeCameraZoom(.8f);
-            player.animator.SetBool("isAiming", false);
-            player.lookScript.bUseAimSens = false;
-            weaponRoot.SetActive(false);
-            towerRoot.SetActive(true);
-            foreach (var item in equipedWeapons)
-            {
-                if (item != null)
-                {
-                    item.SetActive(false);
-                }
-            }
-
-            ChangeTower(0);
-
-        }
-
-        void SpawnNewTower()
-        {
-            currentTower = Instantiate(towers[towerIndex]);
-            currentTowerScript = currentTower.GetComponent<TowerParentScript>();
-            currentTowerScript.SetMaterials(invalidMat);
-            player.hudScript.PlacingEntity(true, currentTowerScript.GetTowerCost());
-            player.hudScript.DisplayHint(PLAYER_HINT.COST);
-        }
-
-        void ChangeTower(int index)
-        {
-            isTowerUtility = false;
-            towerWrenchPlayer.SetActive(false);
-            towerPlacerObject.SetActive(true);
-            towerIndex = index;
-            if (currentTower != null)
-            {
-                Destroy(currentTower);
-            }
-
-            SpawnNewTower();
-
-            //TODO make a cool animation and play it here
-
-
-        }
-
-        void EquipTowerUtility()
-        {
-            Destroy(currentTower);
-            towerWrenchPlayer.SetActive(true);
-            towerPlacerObject.SetActive(false);
-            isTowerUtility = true;
-        }
-
-
-        public bool TowerThrown()
-        {
-            return true;
-
-        }
-
-        public void TowerRemoved(GameObject tower)
-        {
-            snappableTowers.Remove(tower.transform.position);
-        }
-        #endregion
-
-        private void CycleMode()
-        {
+            player.miniGameScript.DisplayText(TUTORIAL_STEPS.CYCLE_MODE + 1);
+            
             switch (mode)
             {
                 case PlayerMode.Weapons:
                     mode = PlayerMode.Defense;
-                    print("GOING TO BUILD MODE");
                     player.miniGameScript.DisplayText(TUTORIAL_STEPS.BUILD_DEFENSES + 1);
                     StartBuilding();
                     break;
                 case PlayerMode.Defense:
                     mode = PlayerMode.Tower;
+                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.TOWER_MODE + 1);
+                    player.miniGameScript.DisplayText(TUTORIAL_STEPS.TOWER_MODE2 + 1);
                     StopBuilding();
                     EquipTower();
                     break;
@@ -794,27 +625,6 @@ namespace Tutorial {
                     break;
             }
             player.hudScript.UpdatePlayerMode(mode);
-        }
-
-        public void canShoot(bool value)
-        {
-            global::ParentWeaponScript.SetCanShoot(value);
-        }
-
-        public void SetFreeToPlay(bool value)
-        {
-            freeToPlay = value;
-            canShoot(value);
-        }
-
-        public global::ParentWeaponScript GetEquipedWeapon()
-        {
-            return equipedWeapon;
-        }
-
-        public PlayerMode GetPlayerMode()
-        {
-            return mode;
         }
 
     }

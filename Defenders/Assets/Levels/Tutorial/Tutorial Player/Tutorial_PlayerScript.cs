@@ -41,12 +41,23 @@ namespace Tutorial
         USE,
         EGG,
         EGG_POWERS,
+        START_GAME,
         COLLECT_RESOURCES,
+        CYCLE_MODE,
         BUILD_DEFENSES,
         ROTATE_DEFENSES1,
         PLACE_DEFENSE,
         ROTATE_DEFENSES2,
-        START_GAME
+        START_GAME2,
+        ENTER_TURRET,
+        PLACE_TURRET,
+        TOWER_MODE,
+        PLACE_SENTRY,
+        START_GAME3,
+        TOWER_MODE2,
+        WRENCH,
+        THROW_WRENCH,
+        FINAL_START
 
     }
 
